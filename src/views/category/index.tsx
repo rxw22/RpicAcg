@@ -1,18 +1,19 @@
-import { StyleSheet, View } from "react-native";
+import { StyleSheet } from "react-native";
 import { Text } from "react-native-paper";
+
+import BgBox from "@/components/bgBox";
 
 export default function Category() {
   return (
-    <View style={styles.container}>
+    <BgBox style={styles.container}>
       <Text variant="headlineMedium">Category!</Text>
-    </View>
+    </BgBox>
   );
 }
 
 const styles = StyleSheet.create({
   container: {
     flex: 1,
-    backgroundColor: "#fff",
     alignItems: "center",
     justifyContent: "center",
   },

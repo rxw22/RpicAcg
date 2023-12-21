@@ -2,6 +2,7 @@ import { HmacSHA256 } from "crypto-js";
 
 const picacg = {
   api: "https://picaapi.picacomic.com/",
+  imageApi: "https://s3.picacomic.com/static/",
   apiKey: "C69BAF41DA5ABD1FFEDC6D2FEA56B",
   secretKey: "~d}$Q7$eIni=V)9\\RK/P.RM4;9[7|@/CA}b~OW!3?EV`:<>M7pddUBL5n|0/*Cn",
 };
@@ -50,7 +51,19 @@ export const getHeaders = (
 ) => {
   const headers = { ...defaultHeaders, ...options };
   headers.time = (new Date().getTime() / 1000).toFixed(0);
-  headers.nonce = randomString(32).toLowerCase();
   headers.signature = getSign(url, headers.time, headers.nonce, method);
   return headers;
 };
+
+export function fixedSearchParams (searchParams?: any): string {
+  if (typeof searchParams === 'string') {
+    return searchParams[0] === '?' ? searchParams : '?' + searchParams
+  } else if (searchParams instanceof URLSearchParams) {
+    return `?${searchParams.toString()}`
+  } else if (typeof searchParams === 'object') {
+    const params = Object.entries(searchParams).map(([key, value]) => `${key}=${value}`)
+    return `?${params.join('&')}`
+  } else {
+    return ''
+  }
+}

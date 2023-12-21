@@ -4,14 +4,15 @@ import Icon from "@expo/vector-icons/MaterialCommunityIcons";
 import { BottomNavigation } from "react-native-paper";
 
 import Home from "@/views/home";
-import Settings from "@/views/settings";
 import User from "@/views/user";
 import Category from "@/views/category";
 import Ranking from "@/views/ranking";
+import usePunchIn from "@/hooks/usePunchIn";
 
 const Tab = createBottomTabNavigator();
 
 export default function BottomTabs() {
+  // const { result } = usePunchIn();
   const srceens: React.ComponentProps<typeof Tab.Screen>[] = [
     {
       name: "home",
@@ -25,26 +26,15 @@ export default function BottomTabs() {
       component: Home,
     },
     {
-      name: "settings",
+      name: "category",
       options: {
-        tabBarLabel: "设置",
+        tabBarLabel: "分类",
         tabBarIcon: ({ color, size, focused }) => {
-          const name = focused ? "cog" : "cog-outline";
+          const name = focused ? "shape" : "shape-outline";
           return <Icon name={name} size={size} color={color} />;
         },
       },
-      component: Settings,
-    },
-    {
-      name: "user",
-      options: {
-        tabBarLabel: "我的",
-        tabBarIcon: ({ color, size, focused }) => {
-          const name = focused ? "account" : "account-outline";
-          return <Icon name={name} size={size} color={color} />;
-        },
-      },
-      component: User,
+      component: Category,
     },
     {
       name: "ranking",
@@ -58,15 +48,15 @@ export default function BottomTabs() {
       component: Ranking,
     },
     {
-      name: "category",
+      name: "user",
       options: {
-        tabBarLabel: "分类",
+        tabBarLabel: "我的",
         tabBarIcon: ({ color, size, focused }) => {
-          const name = focused ? "shape" : "shape-outline";
+          const name = focused ? "account" : "account-outline";
           return <Icon name={name} size={size} color={color} />;
         },
       },
-      component: Category,
+      component: User,
     },
   ];
 
@@ -120,7 +110,7 @@ export default function BottomTabs() {
       }}
     >
       {srceens.map((item) => (
-        <Tab.Screen {...item} key={item.name}/>
+        <Tab.Screen {...item} key={item.name} />
       ))}
     </Tab.Navigator>
   );

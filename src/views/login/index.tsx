@@ -7,17 +7,22 @@ import {
   useTheme,
 } from "react-native-paper";
 import { useForm, Controller } from "react-hook-form";
+import { useState } from "react";
 
 import BgBox from "@/components/bgBox";
-import http from '@/services/http';
+import usePicaHttp from "@/services/http";
 
 import type { RootStackParamList } from "@/navigations/mainStacks/types";
 import type { NativeStackScreenProps } from "@react-navigation/native-stack";
+import type { SignInPayload } from "@/services/types";
 
 type Props = NativeStackScreenProps<RootStackParamList, "login">;
 
 const Login: React.FC<Props> = ({ navigation }) => {
   const theme = useTheme();
+  const { signIn } = usePicaHttp();
+  // 导航前隐藏错误提示
+  const [isShow, setIsShow] = useState(true);
 
   const {
     control,
@@ -30,10 +35,13 @@ const Login: React.FC<Props> = ({ navigation }) => {
     },
   });
 
-  const onSubmit = async (data: any) => {
+  const onSubmit = async (data: SignInPayload) => {
     try {
-      const result = await http.signIn(data);
-      console.log(result);
+      const result = await signIn(data);
+      if (result.data.token) {
+        setIsShow(false);
+        navigation.replace("main");
+      }
     } catch (error) {
       console.log(error);
     }
@@ -67,9 +75,11 @@ const Login: React.FC<Props> = ({ navigation }) => {
           )}
           name="email"
         />
-        <HelperText type="error" visible={!!errors.email}>
-          请输入账号。
-        </HelperText>
+        {isShow && (
+          <HelperText type="error" visible={!!errors.email}>
+            请输入账号。
+          </HelperText>
+        )}
 
         <Controller
           control={control}
@@ -89,9 +99,11 @@ const Login: React.FC<Props> = ({ navigation }) => {
           )}
           name="password"
         />
-        <HelperText type="error" visible={!!errors.password}>
-          请输入密码。
-        </HelperText>
+        {isShow && (
+          <HelperText type="error" visible={!!errors.password}>
+            请输入密码。
+          </HelperText>
+        )}
 
         <Button onPress={handleSubmit(onSubmit)} mode="contained">
           登录

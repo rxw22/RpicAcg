@@ -16,7 +16,7 @@ export const useAppConfigStore = create(
       setMode: (mode: ThemeMode) => set({ mode }),
     }),
     {
-      name: "app-config", // name of the item in the storage (must be unique)
+      name: "app-config-storage", // name of the item in the storage (must be unique)
       storage: createJSONStorage(() => AsyncStorage), // (optional) by default, 'localStorage' is used
     }
   )

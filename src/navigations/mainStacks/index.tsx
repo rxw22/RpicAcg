@@ -4,6 +4,9 @@ import { createNativeStackNavigator } from "@react-navigation/native-stack";
 import Login from "@/views/login";
 import BottomTabs from "@/navigations/bottomTabs";
 import CustomNavigationBar from "@/components/appBar";
+import Settings from "@/views/settings";
+import Search from "@/views/search";
+import CustomSearchBar from "@/components/searchBar";
 
 import type { RootStackParamList } from "./types";
 
@@ -15,6 +18,7 @@ export default function MainStacks() {
       initialRouteName="login"
       screenOptions={{
         header: (props) => <CustomNavigationBar {...props} />,
+        animation: "slide_from_right",
       }}
     >
       <Stack.Screen
@@ -22,7 +26,23 @@ export default function MainStacks() {
         component={Login}
         options={{ headerShown: false }}
       />
-      <Stack.Screen name="main" component={BottomTabs} />
+      <Stack.Screen
+        name="main"
+        component={BottomTabs}
+        options={{ title: "RpicAcg" }}
+      />
+      <Stack.Screen
+        name="settings"
+        component={Settings}
+        options={{ title: "设置" }}
+      />
+      <Stack.Screen
+        name="search"
+        component={Search}
+        options={{
+          header: (props) => <CustomSearchBar {...props} />,
+        }}
+      />
     </Stack.Navigator>
   );
 }

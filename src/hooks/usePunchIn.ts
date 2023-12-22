@@ -1,7 +1,7 @@
 import { useEffect, useState } from "react";
 
-import usePicaHttp from "@/services/http";
-import { PunchInResponse } from "@/services/types";
+import usePicaHttp from "@/network/httpRequest";
+import { PunchInResponse } from "@/network/types";
 
 const usePunchIn = () => {
   const { punchIn } = usePicaHttp();

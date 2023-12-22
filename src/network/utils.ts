@@ -34,7 +34,7 @@ function getSign(
   return HmacSHA256(key.toLowerCase(), picacg.secretKey).toString();
 }
 
-const randomString = (e: number = 32) => {
+export const randomString = (e: number = 32) => {
   let t = "ABCDEFGHJKMNPQRSTWXYZabcdefhijkmnprstwxyz2345678";
   let a = t.length;
   let n = "";
@@ -44,26 +44,24 @@ const randomString = (e: number = 32) => {
   return n;
 };
 
-export const getHeaders = (
-  url: string,
-  method: "GET" | "POST",
-  options: any = {}
-) => {
-  const headers = { ...defaultHeaders, ...options };
+export const getHeaders = (url: string, method: "GET" | "POST") => {
+  const headers = { ...defaultHeaders };
   headers.time = (new Date().getTime() / 1000).toFixed(0);
   headers.signature = getSign(url, headers.time, headers.nonce, method);
   return headers;
 };
 
-export function fixedSearchParams (searchParams?: any): string {
-  if (typeof searchParams === 'string') {
-    return searchParams[0] === '?' ? searchParams : '?' + searchParams
+export function fixedSearchParams(searchParams?: any): string {
+  if (typeof searchParams === "string") {
+    return searchParams[0] === "?" ? searchParams : "?" + searchParams;
   } else if (searchParams instanceof URLSearchParams) {
-    return `?${searchParams.toString()}`
-  } else if (typeof searchParams === 'object') {
-    const params = Object.entries(searchParams).map(([key, value]) => `${key}=${value}`)
-    return `?${params.join('&')}`
+    return `?${searchParams.toString()}`;
+  } else if (typeof searchParams === "object") {
+    const params = Object.entries(searchParams).map(
+      ([key, value]) => `${key}=${value}`
+    );
+    return `?${params.join("&")}`;
   } else {
-    return ''
+    return "";
   }
 }

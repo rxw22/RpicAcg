@@ -7,12 +7,10 @@ import Home from "@/views/home";
 import User from "@/views/user";
 import Category from "@/views/category";
 import Ranking from "@/views/ranking";
-import usePunchIn from "@/hooks/usePunchIn";
 
 const Tab = createBottomTabNavigator();
 
 export default function BottomTabs() {
-  // const { result } = usePunchIn();
   const srceens: React.ComponentProps<typeof Tab.Screen>[] = [
     {
       name: "home",

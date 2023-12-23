@@ -28,6 +28,7 @@ const Login: React.FC<Props> = ({ navigation }) => {
   const [isShow, setIsShow] = useState(true);
   const [visible, setVisible] = useState(false);
   const [error, setError] = useState<Error>();
+  const [isPwd, setIsPwd] = useState(true);
 
   const { run, loading } = useRequest(httpRequest.signIn.bind(httpRequest), {
     manual: true,
@@ -40,10 +41,10 @@ const Login: React.FC<Props> = ({ navigation }) => {
         navigation.replace("main");
       }
     },
-    onError(e){
+    onError(e) {
       setVisible(true);
-      setError(e)
-    }
+      setError(e);
+    },
   });
 
   // 设置Snackbar的隐藏
@@ -85,7 +86,9 @@ const Login: React.FC<Props> = ({ navigation }) => {
               onBlur={onBlur}
               onChangeText={onChange}
               value={value}
-              left={<TextInput.Icon icon="account" />}
+              left={
+                <TextInput.Icon icon="account" forceTextInputFocus={false} />
+              }
             />
           )}
           name="email"
@@ -108,8 +111,19 @@ const Login: React.FC<Props> = ({ navigation }) => {
               onBlur={onBlur}
               onChangeText={onChange}
               value={value}
-              secureTextEntry
-              left={<TextInput.Icon icon="lock" />}
+              secureTextEntry={isPwd}
+              left={<TextInput.Icon icon="lock" forceTextInputFocus={false} />}
+              right={
+                value ? (
+                  <TextInput.Icon
+                    icon={isPwd ? "eye" : "eye-off"}
+                    forceTextInputFocus={false}
+                    onPress={() => {
+                      setIsPwd(!isPwd);
+                    }}
+                  />
+                ) : null
+              }
             />
           )}
           name="password"

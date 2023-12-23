@@ -29,7 +29,7 @@ export default function MainStacks() {
       <Stack.Screen
         name="main"
         component={BottomTabs}
-        options={{ title: "RpicAcg" }}
+        options={{ title: "main", headerShown: false }}
       />
       <Stack.Screen
         name="settings"

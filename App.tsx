@@ -4,6 +4,7 @@ import { NavigationContainer } from "@react-navigation/native";
 import { useFonts } from "expo-font";
 import * as SplashScreen from "expo-splash-screen";
 import { useCallback } from "react";
+import { GestureHandlerRootView } from "react-native-gesture-handler";
 
 import MainStacks from "@/navigations/mainStacks";
 import useCustomTheme from "@/hooks/useCustomTheme";
@@ -26,13 +27,15 @@ export default function App() {
   }
 
   return (
-    <PaperProvider theme={paperTheme}>
-      <NavigationContainer theme={navTheme} onReady={onLayoutRootView}>
-        <NetworkProvider>
-          <MainStacks />
-          <StatusBar style="auto" />
-        </NetworkProvider>
-      </NavigationContainer>
-    </PaperProvider>
+    <GestureHandlerRootView style={{ flex: 1 }}>
+      <PaperProvider theme={paperTheme}>
+        <NavigationContainer theme={navTheme} onReady={onLayoutRootView}>
+          <NetworkProvider>
+            <MainStacks />
+            <StatusBar style="auto" />
+          </NetworkProvider>
+        </NavigationContainer>
+      </PaperProvider>
+    </GestureHandlerRootView>
   );
 }

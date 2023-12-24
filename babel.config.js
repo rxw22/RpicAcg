@@ -1,24 +1,24 @@
-module.exports = function(api) {
+module.exports = function (api) {
   api.cache(true);
   return {
-    presets: ['babel-preset-expo'],
+    presets: ["babel-preset-expo"],
     // react-native-paper 按需导入插件
     env: {
       production: {
-        plugins: ['react-native-paper/babel'],
+        plugins: ["react-native-paper/babel"],
       },
     },
     // 路径别名插件
     plugins: [
       [
-        'module-resolver',
+        "module-resolver",
         {
           alias: {
-            '@': './src',
+            "@": "./src",
           },
         },
       ],
-      "@loadable/babel-plugin",
-    ]
+      "react-native-reanimated/plugin",
+    ],
   };
 };

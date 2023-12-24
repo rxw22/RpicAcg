@@ -7,15 +7,18 @@ import CustomNavigationBar from "@/components/appBar";
 import Settings from "@/views/settings";
 import Search from "@/views/search";
 import CustomSearchBar from "@/components/searchBar";
+import { useUserStore } from "@/store/userStore";
 
 import type { RootStackParamList } from "./types";
 
 const Stack = createNativeStackNavigator<RootStackParamList>();
 
 export default function MainStacks() {
+  const { email, token, password } = useUserStore();
+  const isLogin = email && token && password ? "main" : "login";
   return (
     <Stack.Navigator
-      initialRouteName="login"
+      initialRouteName={isLogin}
       screenOptions={{
         header: (props) => <CustomNavigationBar {...props} />,
         animation: "slide_from_right",

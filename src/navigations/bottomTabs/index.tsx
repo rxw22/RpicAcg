@@ -88,7 +88,7 @@ export default function BottomTabs() {
           tabBarLabel: "排行",
           headerShown: false,
           tabBarIcon: ({ color, size, focused }) => {
-            const name = focused ? "account" : "account-outline";
+            const name = focused ? "equalizer" : "equalizer-outline";
             return <Icon name={name} size={size} color={color} />;
           },
         }}

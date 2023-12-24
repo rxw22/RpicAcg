@@ -3,16 +3,19 @@ import {
   View,
   ScrollView,
   StatusBar,
-  LayoutChangeEvent,
+  NativeScrollEvent,
+  NativeSyntheticEvent,
 } from "react-native";
-import { Appbar, Text } from "react-native-paper";
+import { Text } from "react-native-paper";
 import { useRequest } from "ahooks";
 import { Image, ImageBackground } from "expo-image";
-import { useEffect, useRef } from "react";
+import { useEffect, useState, useLayoutEffect } from "react";
 
 import BgBox from "@/components/bgBox";
 import { useNetworkProvider } from "@/network/networkProvider";
 import { RootBottomTabsParamList } from "@/navigations/bottomTabs/types";
+import AppBar from "./appBar";
+import LoadingWarpper from "@/components/loadingWarpper";
 
 import type { CompositeScreenProps } from "@react-navigation/native";
 import type { BottomTabScreenProps } from "@react-navigation/bottom-tabs";
@@ -27,79 +30,85 @@ type Props = CompositeScreenProps<
 const User: React.FC<Props> = (props) => {
   const { httpRequest } = useNetworkProvider();
   const statusBarHeight = StatusBar.currentHeight ? StatusBar.currentHeight : 0;
-  const imageViewHeight = useRef(0);
-
-  useEffect(() => {
-    props.navigation.setOptions({
-      header: () => (
-        <Appbar.Header>
-          <Appbar.Content title="我的" />
-          <Appbar.Action icon="archive-edit" onPress={() => {}} />
-        </Appbar.Header>
-      ),
-    });
-  }, []);
-
-  const imageViewLayout = (e: LayoutChangeEvent) => {
-    const { height } = e.nativeEvent.layout;
-    imageViewHeight.current = height;
-  };
+  const [errorMsg, setErrorMsg] = useState("");
 
   const { data, loading, refresh } = useRequest(
     httpRequest.fetchUserProfile.bind(httpRequest),
     {
       onError(e) {
         console.log(e);
+        setErrorMsg(e.message || "发生了某些出乎意料的错误！");
       },
     }
   );
+
+  useLayoutEffect(() => {
+    props.navigation.setOptions({
+      headerTransparent: true,
+      header: () => <AppBar flag={true} />,
+    });
+  }, []);
+
+  const _onScroll = (e: NativeSyntheticEvent<NativeScrollEvent>) => {
+    const { contentOffset } = e.nativeEvent;
+    const { y } = contentOffset;
+    props.navigation.setOptions({
+      header: () => <AppBar flag={y <= 20} />,
+    });
+  };
+
   const { user } = data?.data || {};
 
   return (
     <BgBox style={styles.container}>
-      <ScrollView
-        showsVerticalScrollIndicator={false}
-        style={{ height: "100%", width: "100%" }}
+      <LoadingWarpper loading={loading} errorMsg={errorMsg} />
+      <ImageBackground
+        style={[styles.background, { paddingTop: statusBarHeight + 64 }]}
+        source={{
+          uri: `${user?.avatar?.fileServer}/static/${user?.avatar?.path}`,
+        }}
+        blurRadius={4}
       >
-        <ImageBackground
-          onLayout={imageViewLayout}
-          style={[styles.userWarpper]}
-          source={{
-            uri: `${user?.avatar?.fileServer}/static/${user?.avatar?.path}`,
-          }}
-          blurRadius={4}
+        <ScrollView
+          style={styles.scrollWarpper}
+          showsVerticalScrollIndicator={false}
+          onScroll={_onScroll}
         >
-          <View style={{ alignItems: "center" }}>
-            <Text variant="bodyLarge" style={styles.text}>
-              Lv.{user?.level}
-            </Text>
-            <Text variant="bodyLarge" style={styles.text}>
-              Exp: {user?.exp}
-            </Text>
+          <View style={styles.userWapper}>
+            <View style={styles.center}>
+              <Text variant="bodyLarge" style={{ color: "#fff" }}>
+                Lv.{user?.level}
+              </Text>
+              <Text variant="bodyLarge" style={{ color: "#fff" }}>
+                Exp: {user?.exp}
+              </Text>
+            </View>
+            <View style={styles.avatar}>
+              <Image
+                source={{
+                  uri: `${user?.avatar?.fileServer}/static/${user?.avatar?.path}`,
+                }}
+                style={styles.avatarImage}
+              />
+            </View>
+            <View style={styles.center}>
+              <Text variant="bodyLarge" style={{ color: "#fff" }}>
+                {user?.name}
+              </Text>
+              <Text
+                variant="bodyLarge"
+                style={{ color: "#fff" }}
+                numberOfLines={3}
+              >
+                {user?.slogan}
+              </Text>
+            </View>
           </View>
-          <View style={{ marginTop: 10, marginBottom: 15 }}>
-            <Image
-              source={{
-                uri: `${user?.avatar?.fileServer}/static/${user?.avatar?.path}`,
-              }}
-              style={styles.avatar}
-              contentFit="contain"
-            />
-          </View>
-          <View style={{ alignItems: "center" }}>
-            <Text variant="bodyLarge" style={styles.text}>
-              {user?.name}
-            </Text>
-            <Text variant="bodyLarge" style={styles.text}>
-              {user?.title}
-            </Text>
-            <Text variant="bodyLarge" style={styles.text} numberOfLines={3}>
-              {user?.slogan}
-            </Text>
-          </View>
-        </ImageBackground>
-        <Text variant="headlineLarge">{JSON.stringify(data)}</Text>
-      </ScrollView>
+          <BgBox style={styles.content}>
+            <Text variant="headlineLarge">{JSON.stringify(data)}</Text>
+          </BgBox>
+        </ScrollView>
+      </ImageBackground>
     </BgBox>
   );
 };
@@ -110,21 +119,34 @@ const styles = StyleSheet.create({
   container: {
     height: "100%",
     width: "100%",
-    alignItems: "center",
-    justifyContent: "center",
   },
-  userWarpper: {
+  background: {
+    height: "100%",
     width: "100%",
-    backgroundColor: "#ccc",
-    alignItems: "center",
+  },
+  userWapper: {
+    height: 200,
+  },
+  content: {
+    borderTopLeftRadius: 16,
+    borderTopRightRadius: 16,
     padding: 5,
+    flex: 1,
+  },
+  center: {
+    alignItems: "center",
   },
   avatar: {
-    height: 90,
-    width: 90,
-    borderRadius: 45,
+    marginVertical: 8,
+    alignItems: "center",
   },
-  text: {
-    color: "#fff",
+  avatarImage: {
+    width: 70,
+    height: 70,
+    borderRadius: 35,
+  },
+  scrollWarpper: {
+    height: "100%",
+    width: "100%",
   },
 });

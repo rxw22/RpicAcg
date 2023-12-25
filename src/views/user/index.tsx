@@ -5,12 +5,11 @@ import {
   StatusBar,
   NativeScrollEvent,
   NativeSyntheticEvent,
-  FlatList,
 } from "react-native";
-import { Button, Card, Text } from "react-native-paper";
+import { Text } from "react-native-paper";
 import { useRequest } from "ahooks";
 import { Image, ImageBackground } from "expo-image";
-import { useState, useLayoutEffect } from "react";
+import { useLayoutEffect } from "react";
 
 import BgBox from "@/components/bgBox";
 import { useNetworkProvider } from "@/network/networkProvider";
@@ -21,6 +20,7 @@ import type { CompositeScreenProps } from "@react-navigation/native";
 import type { BottomTabScreenProps } from "@react-navigation/bottom-tabs";
 import type { NativeStackScreenProps } from "@react-navigation/native-stack";
 import { RootStackParamList } from "@/navigations/mainStacks/types";
+import HorizontalList from "./horizontalList";
 
 type Props = CompositeScreenProps<
   BottomTabScreenProps<RootBottomTabsParamList, "user">,
@@ -30,14 +30,12 @@ type Props = CompositeScreenProps<
 const User: React.FC<Props> = (props) => {
   const { httpRequest } = useNetworkProvider();
   const statusBarHeight = StatusBar.currentHeight ? StatusBar.currentHeight : 0;
-  const [errorMsg, setErrorMsg] = useState("");
 
-  const { data, loading, refresh } = useRequest(
+  const { data, loading, refresh, error } = useRequest(
     httpRequest.fetchUserProfile.bind(httpRequest),
     {
       onError(e) {
         console.log(e);
-        setErrorMsg(e.message || "发生了某些出乎意料的错误！");
       },
     }
   );
@@ -46,10 +44,10 @@ const User: React.FC<Props> = (props) => {
     data: favourites,
     loading: favouriteLoading,
     refresh: favouriteRefresh,
+    error: favouriteError,
   } = useRequest(httpRequest.fetchUserFavourite.bind(httpRequest), {
     onError(e) {
       console.log(e);
-      setErrorMsg(e.message || "发生了某些出乎意料的错误！");
     },
   });
 
@@ -73,7 +71,7 @@ const User: React.FC<Props> = (props) => {
   return (
     <BgBox
       style={styles.container}
-      error={errorMsg}
+      error={error?.message || favouriteError?.message}
       loading={loading || favouriteLoading}
       refresh={() => {
         refresh();
@@ -130,53 +128,11 @@ const User: React.FC<Props> = (props) => {
         >
           <View style={styles.userWapperMask}></View>
           <BgBox style={styles.content}>
-            <View style={styles.title}>
-              <Text variant="headlineSmall" style={{ lineHeight: 40 }}>
-                网络收藏
-              </Text>
-              <Button icon="unfold-more-vertical">更多</Button>
-            </View>
-            <FlatList
-              showsHorizontalScrollIndicator={false}
-              horizontal={true}
-              data={favourites?.data.comics.docs || []}
-              keyExtractor={(item) => item._id}
-              renderItem={({ item }) => {
-                return (
-                  <View
-                    style={{ width: 120, height: 260, marginHorizontal: 8 }}
-                  >
-                    <Card
-                      style={{
-                        width: 120,
-                        height: 170,
-                        overflow: "hidden",
-                      }}
-                    >
-                      <Image
-                        source={{
-                          uri: `${item.thumb.fileServer}/static/${item.thumb.path}`,
-                        }}
-                        style={{ width: "100%", height: 170 }}
-                        contentFit="cover"
-                      />
-                    </Card>
-                    <View
-                      style={{
-                        width: 120,
-                        height: 90,
-                        alignItems: "center",
-                        marginTop: 5,
-                      }}
-                    >
-                      <Text variant="bodyMedium" numberOfLines={4}>
-                        {item.title}
-                      </Text>
-                    </View>
-                  </View>
-                );
-              }}
-            />
+            <HorizontalList title="网络收藏" dataSource={favourites} />
+            <View style={styles.sizeBox} />
+            <HorizontalList title="浏览记录" dataSource={favourites} />
+            <View style={styles.sizeBox} />
+            <HorizontalList title="本地收藏" dataSource={favourites} />
           </BgBox>
         </ScrollView>
       </ImageBackground>
@@ -215,7 +171,7 @@ const styles = StyleSheet.create({
     borderTopLeftRadius: 16,
     borderTopRightRadius: 16,
     padding: 5,
-    height: 700,
+    // height: 700,
   },
   center: {
     alignItems: "center",
@@ -232,13 +188,8 @@ const styles = StyleSheet.create({
   scrollWarpper: {
     width: "100%",
   },
-  title: {
-    height: 40,
+  sizeBox: {
     width: "100%",
-    justifyContent: "space-between",
-    marginBottom: 8,
-    flexDirection: "row",
-    alignItems: "center",
-    paddingLeft: 8,
+    height: 30,
   },
 });

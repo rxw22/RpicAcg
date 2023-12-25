@@ -17,8 +17,11 @@ class HttpRequest {
 
   // 登录
   async signIn(payload: SignInPayload) {
-    const result = await this.httpClient.post<SignInResponse, SignInPayload>("auth/sign-in", payload);
-    if(result.code !== 200){
+    const result = await this.httpClient.post<SignInResponse, SignInPayload>(
+      "auth/sign-in",
+      payload
+    );
+    if (result.code !== 200) {
       throw new Error(result.message);
     }
     this.httpClient.setHeaders({ authorization: result.data.token });
@@ -27,8 +30,10 @@ class HttpRequest {
 
   // 打卡
   async punchIn() {
-    const result = await this.httpClient.post<PunchInResponse>("users/punch-in");
-    if(result.code !== 200){
+    const result = await this.httpClient.post<PunchInResponse>(
+      "users/punch-in"
+    );
+    if (result.code !== 200) {
       throw new Error(result.message);
     }
     return result;
@@ -36,8 +41,10 @@ class HttpRequest {
 
   // 获取个人信息
   async fetchUserProfile() {
-    const result = await this.httpClient.get<UserProfileResponse>("users/profile");
-    if(result.code !== 200){
+    const result = await this.httpClient.get<UserProfileResponse>(
+      "users/profile"
+    );
+    if (result.code !== 200) {
       throw new Error(result.message);
     }
     return result;
@@ -45,13 +52,15 @@ class HttpRequest {
 
   // 获取个人收藏
   async fetchUserFavourite(searchParams: UserFavouritePayload) {
-    const result = await this.httpClient.get<UserFavouriteResponse>("users/favourite", searchParams);
-    if(result.code !== 200){
+    const result = await this.httpClient.get<UserFavouriteResponse>(
+      "users/favourite",
+      searchParams
+    );
+    if (result.code !== 200) {
       throw new Error(result.message);
     }
     return result;
   }
-
 }
 
 export default HttpRequest;

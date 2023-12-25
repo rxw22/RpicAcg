@@ -1,7 +1,6 @@
 import { useUserStore } from "@/store/userStore";
 import HttpRequest from "./httpRequest";
 import React, { useContext, useMemo } from "react";
-// import { Portal, Surface, Text } from "react-native-paper";
 import { StyleSheet } from 'react-native';
 
 const Context = React.createContext<HttpRequest>(new HttpRequest({}));

@@ -3,6 +3,8 @@ import {
   PunchInResponse,
   SignInPayload,
   SignInResponse,
+  UserFavouritePayload,
+  UserFavouriteResponse,
   UserProfileResponse,
 } from "./types";
 import HttpClient, { type HttpClientConfig } from "./httpClient";
@@ -35,6 +37,15 @@ class HttpRequest {
   // 获取个人信息
   async fetchUserProfile() {
     const result = await this.httpClient.get<UserProfileResponse>("users/profile");
+    if(result.code !== 200){
+      throw new Error(result.message);
+    }
+    return result;
+  }
+
+  // 获取个人收藏
+  async fetchUserFavourite(searchParams: UserFavouritePayload) {
+    const result = await this.httpClient.get<UserFavouriteResponse>("users/favourite", searchParams);
     if(result.code !== 200){
       throw new Error(result.message);
     }

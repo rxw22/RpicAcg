@@ -48,7 +48,7 @@ class HttpClient {
     return response.json() as Promise<T>;
   }
 
-  async get<T>(url: string, searchParams: Record<string, string> = {}): Promise<T> {
+  async get<T>(url: string, searchParams: Record<string, any> = {}): Promise<T> {
     const response = await this.request(url, "GET", { searchParams });
     return response.json() as Promise<T>;
   }

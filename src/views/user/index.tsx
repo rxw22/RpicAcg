@@ -8,8 +8,9 @@ import {
 } from "react-native";
 import { Text } from "react-native-paper";
 import { useRequest } from "ahooks";
-import { Image, ImageBackground } from "expo-image";
+import { ImageBackground } from "expo-image";
 import { useLayoutEffect } from "react";
+import Image from "@/components/image";
 
 import BgBox from "@/components/bgBox";
 import { useNetworkProvider } from "@/network/networkProvider";
@@ -100,12 +101,16 @@ const User: React.FC<Props> = (props) => {
           </View>
           <View style={styles.avatar}>
             <Image
-              source={{
-                uri: `${user?.avatar?.fileServer}/static/${user?.avatar?.path}`,
-              }}
+              source={
+                loading
+                  ? require("@/assets/imgs/猫爪.png")
+                  : {
+                      uri: `${user?.avatar?.fileServer}/static/${user?.avatar?.path}`,
+                    }
+              }
               contentPosition="top center"
               style={styles.avatarImage}
-              placeholder={require("@/assets/imgs/猫爪.png")}
+              // placeholder={require("@/assets/imgs/猫爪.png")}
             />
           </View>
           <View style={styles.center}>

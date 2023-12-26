@@ -15,7 +15,7 @@ type Props = React.ComponentProps<typeof View> & {
   refresh?(): void;
 };
 
-const BgBox: React.FC<Props> = (props) => {
+const BgBox: React.FC<Props> = ({loading, error, refresh, ...props}) => {
   const theme = useTheme();
 
   const bgStyle = StyleSheet.create({
@@ -49,19 +49,19 @@ const BgBox: React.FC<Props> = (props) => {
   const errorStyle = props.style
     ? [props.style, bgStyle.bg, bgStyle.center]
     : [bgStyle.bg, bgStyle.center];
-
-  if (props.error) {
+    
+  if (error && !loading) {
     return (
       <View style={errorStyle}>
         <Icon name="alert" size={60} color={theme.colors.onBackground} />
-        <Text variant="headlineMedium">{props.error}</Text>
-        <Button mode="contained" onPress={() => props.refresh?.()}>
+        <Text variant="headlineMedium">{error}</Text>
+        <Button mode="contained" onPress={() => refresh?.()}>
           重新加载
         </Button>
         <FAB
           icon="restore"
           style={bgStyle.fab}
-          onPress={() => props.refresh?.()}
+          onPress={() => refresh?.()}
           size="medium"
         />
       </View>
@@ -71,7 +71,7 @@ const BgBox: React.FC<Props> = (props) => {
   return (
     <View {...props} style={style}>
       {props.children}
-      {props.loading && (
+      {loading && (
         <View style={bgStyle.loadingWarpper}>
           <ActivityIndicator animating={true} size="large" />
         </View>

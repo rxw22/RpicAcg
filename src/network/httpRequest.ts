@@ -1,5 +1,10 @@
 import {
   CategoriesResponse,
+  ComicDetailResponse,
+  ComicEpisode,
+  ComicEpisodePagesResponse,
+  ComicEpisodesResponse,
+  ComicRecommendResponse,
   PunchInResponse,
   SignInPayload,
   SignInResponse,
@@ -55,6 +60,64 @@ class HttpRequest {
     const result = await this.httpClient.get<UserFavouriteResponse>(
       "users/favourite",
       searchParams
+    );
+    if (result.code !== 200) {
+      throw new Error(result.message);
+    }
+    return result;
+  }
+
+  // 获取本子详情
+  async fetchComicDetail(comicId: string) {
+    const result = await this.httpClient.get<ComicDetailResponse>(
+      `comics/${comicId}`
+    );
+    if (result.code !== 200) {
+      throw new Error(result.message);
+    }
+    return result;
+  }
+
+  // 获取本子章节
+  async fetchComicEpisodes(comicId: string) {
+    let page = 0;
+    let pages = 1;
+    let results = [];
+    while (page < pages) {
+      page++;
+      const result = await this.httpClient.get<ComicEpisodesResponse>(
+        `comics/${comicId}/eps`,
+        { page }
+      );
+      if (result.code !== 200) {
+        throw new Error(result.message);
+      }
+      const { pages: realPages } = result.data.eps;
+      pages = realPages;
+      results.push(result);
+    }
+    const initEps = results[0].data.eps;
+    const result = results.reduce(
+      (pre, current) => {
+        const eps = current.data.eps.docs;
+        pre.data.eps.docs.push(...eps);
+        return pre;
+      },
+      {
+        data: {
+          eps: { ...initEps, docs: <ComicEpisode[]>[] },
+          code: results[0].code,
+          message: results[0].message,
+        },
+      }
+    );
+    return result;
+  }
+
+  // 相关推荐
+  async fetchComicRecommend(comicId: string) {
+    const result = await this.httpClient.get<ComicRecommendResponse>(
+      `comics/${comicId}/recommendation`
     );
     if (result.code !== 200) {
       throw new Error(result.message);

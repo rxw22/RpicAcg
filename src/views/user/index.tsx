@@ -110,7 +110,6 @@ const User: React.FC<Props> = (props) => {
               }
               contentPosition="top center"
               style={styles.avatarImage}
-              // placeholder={require("@/assets/imgs/猫爪.png")}
             />
           </View>
           <View style={styles.center}>
@@ -131,13 +130,13 @@ const User: React.FC<Props> = (props) => {
           showsVerticalScrollIndicator={false}
           onScroll={_onScroll}
         >
-          <View style={styles.userWapperMask}></View>
+          <View style={styles.userWapperMask} />
           <BgBox style={styles.content}>
-            <HorizontalList title="网络收藏" dataSource={favourites} />
+            <HorizontalList title="网络收藏" dataSource={favourites} navigation={props.navigation}/>
             <View style={styles.sizeBox} />
-            <HorizontalList title="浏览记录" dataSource={favourites} />
+            <HorizontalList title="浏览记录" dataSource={favourites} navigation={props.navigation}/>
             <View style={styles.sizeBox} />
-            <HorizontalList title="本地收藏" dataSource={favourites} />
+            <HorizontalList title="本地收藏" dataSource={favourites} navigation={props.navigation}/>
           </BgBox>
         </ScrollView>
       </ImageBackground>
@@ -195,6 +194,6 @@ const styles = StyleSheet.create({
   },
   sizeBox: {
     width: "100%",
-    height: 30,
+    height: 15,
   },
 });

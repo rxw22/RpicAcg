@@ -30,7 +30,7 @@ class HttpClient {
   ): Promise<Response> {
     const { payload, searchParams } = params;
     const urlParams = fixedSearchParams(searchParams);
-    const headers = { ...getHeaders(url, method), ...this.headers };
+    const headers = { ...getHeaders(url + urlParams, method), ...this.headers };
     const options =
       method === "POST"
         ? {

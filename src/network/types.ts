@@ -72,6 +72,61 @@ export interface UserFavouritePayload {
   s?: ComicSort
 }
 
+export interface ComicEpisode {
+  _id: string
+  title: string
+  order: number
+  updated_at: string
+  id: string
+}
+
+export interface Creator {
+  _id: string
+  gender: string
+  name: string
+  slogan?: string
+  title?: string
+  verified?: boolean
+  exp: number
+  level: number
+  characters: string[]
+  character?: string
+  role?: string
+  avatar?: ImageMedia
+}
+
+export interface ComicDetail extends Comic {
+  _id: string;
+	_creator: Creator;
+	title: string;
+	description: string;
+	author: string;
+	chineseTeam: string;
+	categories: string[];
+	tags: any[];
+	pagesCount: number;
+	epsCount: number;
+	finished: boolean;
+	updated_at: string;
+	created_at: string;
+	allowDownload: boolean;
+	allowComment: boolean;
+	totalLikes: number;
+	totalViews: number;
+	totalComments: number;
+	viewsCount: number;
+	likesCount: number;
+	commentsCount: number;
+	isFavourite: boolean;
+	isLiked: boolean;
+}
+
+export interface ComicEpisodePage {
+  _id: string
+  media: ImageMedia
+  id: string
+}
+
 export type SignInResponse = BaseResponse<{ token: string }>
 
 export type PunchInResponse = BaseResponse<{ res: { status: 'ok' | 'fail', punchInLastDay?: string } }>
@@ -88,4 +143,31 @@ export type UserFavouriteResponse = BaseResponse<{
     page: number
     pages: number
   }
+}>
+
+export type ComicEpisodesResponse = BaseResponse<{
+  eps: {
+    docs: ComicEpisode[]
+    total: number
+    limit: number
+    page: number
+    pages: number
+  }
+}>
+
+export type ComicDetailResponse = BaseResponse<{ comic: ComicDetail }>
+
+export type ComicEpisodePagesResponse = BaseResponse<{
+  pages: {
+    docs: ComicEpisodePage[]
+    total: number
+    limit: number
+    page: number
+    pages: number
+  },
+  ep: Pick<ComicEpisode, '_id' | 'title'>
+}>
+
+export type ComicRecommendResponse = BaseResponse<{
+  comics: Comic[]
 }>

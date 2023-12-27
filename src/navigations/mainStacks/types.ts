@@ -3,4 +3,5 @@ export type RootStackParamList = {
   main: undefined;
   settings: undefined;
   search: undefined;
+  details: { comicId: string };
 };

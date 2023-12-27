@@ -9,9 +9,11 @@ import React, { useState } from "react";
 import { ActivityIndicator, useTheme } from "react-native-paper";
 import Icon from "@expo/vector-icons/MaterialCommunityIcons";
 
-interface Props extends ImageProps {}
+interface Props extends ImageProps {
+  size?: number;
+}
 
-const ExpoImage: React.FC<Props> = ({ ...props }) => {
+const ExpoImage: React.FC<Props> = ({ size = 40, ...props }) => {
   const [loading, setLoading] = useState(true);
   const [error, setError] = useState("");
   const theme = useTheme();
@@ -37,7 +39,7 @@ const ExpoImage: React.FC<Props> = ({ ...props }) => {
     <View style={styles.container}>
       {loading && (
         <View style={styles.progressView}>
-          <ActivityIndicator animating={true} size={40} />
+          <ActivityIndicator animating={true} size={size} />
         </View>
       )}
       {!loading && error && (

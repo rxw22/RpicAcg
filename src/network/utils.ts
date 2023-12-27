@@ -57,6 +57,9 @@ export function fixedSearchParams(searchParams?: any): string {
   } else if (searchParams instanceof URLSearchParams) {
     return `?${searchParams.toString()}`;
   } else if (typeof searchParams === "object") {
+    if(JSON.stringify(searchParams) === "{}"){
+      return "";
+    }
     const params = Object.entries(searchParams).map(
       ([key, value]) => `${key}=${value}`
     );

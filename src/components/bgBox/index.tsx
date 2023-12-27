@@ -39,7 +39,7 @@ const BgBox: React.FC<Props> = ({loading, error, refresh, ...props}) => {
       height: "100%",
       width: "100%",
       zIndex: 1,
-      backgroundColor: "#00000020",
+      backgroundColor: "#00000010",
       alignItems: "center",
       justifyContent: "center",
     },

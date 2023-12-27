@@ -8,6 +8,8 @@ import Settings from "@/views/settings";
 import Search from "@/views/search";
 import CustomSearchBar from "@/components/searchBar";
 import { useUserStore } from "@/store/userStore";
+import CollectBar from "@/components/collectBar";
+import ComicDetails from "@/views/details";
 
 import type { RootStackParamList } from "./types";
 
@@ -44,6 +46,14 @@ export default function MainStacks() {
         component={Search}
         options={{
           header: (props) => <CustomSearchBar {...props} />,
+        }}
+      />
+      <Stack.Screen
+        name="details"
+        component={ComicDetails}
+        options={{
+          title: "漫画详情",
+          header: (props) => <CollectBar {...props} />,
         }}
       />
     </Stack.Navigator>

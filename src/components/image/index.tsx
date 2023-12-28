@@ -11,10 +11,16 @@ import Icon from "@expo/vector-icons/MaterialCommunityIcons";
 
 interface Props extends ImageProps {
   size?: number;
+  pageLoading?: boolean;
 }
 
-const ExpoImage: React.FC<Props> = ({ size = 40, ...props }) => {
-  const [loading, setLoading] = useState(true);
+const ExpoImage: React.FC<Props> = ({
+  size = 40,
+  pageLoading,
+  source,
+  ...props
+}) => {
+  const [loading, setLoading] = useState(false);
   const [error, setError] = useState("");
   const theme = useTheme();
 
@@ -54,6 +60,7 @@ const ExpoImage: React.FC<Props> = ({ size = 40, ...props }) => {
       <Image
         transition={300}
         {...props}
+        source={pageLoading ? {} : source}
         onError={_onError}
         onLoadEnd={_onLoadEnd}
         onLoadStart={_onLoadStart}

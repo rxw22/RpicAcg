@@ -10,6 +10,7 @@ import CustomSearchBar from "@/components/searchBar";
 import { useUserStore } from "@/store/userStore";
 import CollectBar from "@/components/collectBar";
 import ComicDetails from "@/views/details";
+import Reader from "@/views/reader";
 
 import type { RootStackParamList } from "./types";
 
@@ -54,6 +55,15 @@ export default function MainStacks() {
         options={{
           title: "漫画详情",
           header: (props) => <CollectBar {...props} />,
+        }}
+      />
+      <Stack.Screen
+        name="reader"
+        component={Reader}
+        options={{
+          title: "阅读器",
+          headerShown: false,
+          headerTransparent: true,
         }}
       />
     </Stack.Navigator>

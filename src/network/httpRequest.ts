@@ -124,6 +124,15 @@ class HttpRequest {
     }
     return result;
   }
+
+  // 获取章节图片
+  async fetchComicEpisodePages(comicId: string, order: number, page: number){
+    const result = await this.httpClient.get<ComicEpisodePagesResponse>(`comics/${comicId}/order/${order}/pages`, { page });
+    if (result.code !== 200) {
+      throw new Error(result.message);
+    }
+    return result;
+  }
 }
 
 export default HttpRequest;

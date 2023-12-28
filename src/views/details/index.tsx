@@ -12,7 +12,6 @@ import {
 } from "react-native-paper";
 import { useRequest } from "ahooks";
 import dayjs from "dayjs";
-// import { FlashList } from '@shopify/flash-list';
 
 import { RootStackParamList } from "@/navigations/mainStacks/types";
 import BgBox from "@/components/bgBox";
@@ -72,6 +71,7 @@ const ComicDetails: React.FC<Props> = ({ route, navigation }) => {
       refresh={() => {
         refresh();
         comicEpisodesRefresh();
+        comicRecommendRefresh();
       }}
     >
       <ScrollView showsVerticalScrollIndicator={false}>
@@ -87,13 +87,10 @@ const ComicDetails: React.FC<Props> = ({ route, navigation }) => {
             <Card mode="contained" style={styles.coverView}>
               <Image
                 style={styles.cover}
-                source={
-                  loading
-                    ? {}
-                    : {
-                        uri: `${response?.comic.thumb.fileServer}/static/${response?.comic.thumb.path}`,
-                      }
-                }
+                pageLoading={loading}
+                source={{
+                  uri: `${response?.comic.thumb.fileServer}/static/${response?.comic.thumb.path}`,
+                }}
               />
             </Card>
           </View>
@@ -136,7 +133,17 @@ const ComicDetails: React.FC<Props> = ({ route, navigation }) => {
             <Button mode="contained" style={styles.operatesItem}>
               下载
             </Button>
-            <Button mode="contained" style={styles.operatesItem}>
+            <Button
+              mode="contained"
+              style={styles.operatesItem}
+              onPress={() => {
+                navigation.navigate("reader", {
+                  comicId,
+                  order: eps?.docs[0].order || 1,
+                  page: 1,
+                });
+              }}
+            >
               从头开始
             </Button>
           </View>
@@ -153,7 +160,7 @@ const ComicDetails: React.FC<Props> = ({ route, navigation }) => {
                   backgroundColor: theme.colors.surfaceVariant,
                 }}
               >
-                {response?.comic.author}
+                {response?.comic.author || "未知"}
               </Chip>
             </View>
             <View style={{ flexDirection: "row", marginTop: 8 }}>
@@ -194,7 +201,7 @@ const ComicDetails: React.FC<Props> = ({ route, navigation }) => {
                 ))}
               </View>
             </View>
-            <View style={{ flexDirection: "row" }}>
+            <View style={{ flexDirection: "row", marginTop: response ? 0 : 8 }}>
               <View>
                 <Chip
                   style={{ backgroundColor: theme.colors.primaryContainer }}
@@ -228,13 +235,10 @@ const ComicDetails: React.FC<Props> = ({ route, navigation }) => {
                 <Card style={styles.authorAvatar} mode="contained">
                   <Image
                     style={{ width: "100%", height: "100%" }}
-                    source={
-                      loading
-                        ? {}
-                        : {
-                            uri: `${response?.comic._creator.avatar?.fileServer}/static/${response?.comic._creator.avatar?.path}`,
-                          }
-                    }
+                    pageLoading={loading}
+                    source={{
+                      uri: `${response?.comic._creator.avatar?.fileServer}/static/${response?.comic._creator.avatar?.path}`,
+                    }}
                     size={14}
                   />
                 </Card>

@@ -43,7 +43,7 @@ export default function App() {
         <NavigationContainer theme={navTheme} onReady={onLayoutRootView}>
           <NetworkProvider>
             <MainStacks />
-            <StatusBar style="auto" />
+            <StatusBar style="auto" translucent={true}/>
           </NetworkProvider>
         </NavigationContainer>
       </PaperProvider>

@@ -1,36 +1,37 @@
-import { StyleSheet, FlatList, ViewToken } from "react-native";
-import React, { useState, useRef } from "react";
+import { StyleSheet, ViewToken, Dimensions } from "react-native";
+import React from "react";
 import Image from "./Image";
 import { ComicEpisodePage } from "@/network/types";
+import { FlashList } from "@shopify/flash-list";
 
 interface Props {
   dataSource: ComicEpisodePage[];
 }
 
-let rows = {}; 
 const VerticalView: React.FC<Props> = ({ dataSource }) => {
-  const onViewRef = useRef<any>(
-    ({
-      viewableItems,
-    }: {
-      viewableItems: ViewToken[];
-      changed: ViewToken[];
-    }) => {
-      if (viewableItems.length <= 0) {
-        return;
-      }
+  const { width: screenWidth, height: screenHeight } = Dimensions.get("window");
+
+  const _onViewableItemsChanged = ({
+    viewableItems,
+  }: {
+    viewableItems: ViewToken[];
+    changed: ViewToken[];
+  }) => {
+    if (viewableItems.length <= 0) {
+      return;
     }
-  );
-  const onViewabilityConfig = useRef({ itemVisiblePercentThreshold: 50 })
+  };
 
   return (
-    <FlatList
+    <FlashList
       showsVerticalScrollIndicator={false}
       data={dataSource}
       keyExtractor={(item) => item._id}
-      onViewableItemsChanged={onViewRef.current}
-      viewabilityConfig={onViewabilityConfig.current}
-      renderItem={({ item, index }) => {  
+      onViewableItemsChanged={_onViewableItemsChanged}
+      viewabilityConfig={{ itemVisiblePercentThreshold: 50 }}
+      estimatedItemSize={(screenHeight * 3) / 4}
+      estimatedListSize={{ height: screenHeight, width: screenWidth }}
+      renderItem={({ item, index }) => {
         return (
           <Image
             shouldLoad={true}

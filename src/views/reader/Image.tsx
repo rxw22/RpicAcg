@@ -7,6 +7,7 @@ import {
   ImageErrorEventData,
 } from "expo-image";
 import { ActivityIndicator, Text } from "react-native-paper";
+import Animated, { useSharedValue, withTiming } from "react-native-reanimated";
 
 interface Props extends ImageProps {
   uri: string;
@@ -15,16 +16,18 @@ interface Props extends ImageProps {
 
 const ReaderImage: React.FC<Props> = ({ shouldLoad, uri, ...props }) => {
   const { width: screenWidth, height: screenHeight } = Dimensions.get("window");
-  const [loading, setLoading] = useState(false);
+  const [loading, setLoading] = useState(true);
   const [error, setError] = useState("");
   const [layout, setLayout] = useState({
     width: screenWidth,
-    height: (screenHeight * 3) / 4,
+    height: (screenHeight * 3) / 5,
   });
+  const imageOpacity = useSharedValue(0);
 
   const _onLoad = (event: ImageLoadEventData) => {
     const { height, width } = event.source;
     setLayout({ ...layout, height: (screenWidth * height) / width });
+    imageOpacity.value = withTiming(imageOpacity.value + 1, { duration: 400 });
   };
 
   const _onLoadStart = () => {
@@ -42,26 +45,64 @@ const ReaderImage: React.FC<Props> = ({ shouldLoad, uri, ...props }) => {
     console.log(error);
   };
 
+  if (loading) {
+    return (
+      <View
+        style={[
+          styles.loadingWarpper,
+          {
+            width: screenWidth,
+            height: (screenHeight * 3) / 5,
+            position: "relative",
+          },
+        ]}
+      >
+        <ActivityIndicator animating size="large" />
+        <Image
+          style={{
+            width: "100%",
+            height: "100%",
+            position: "absolute",
+            zIndex: -1,
+            opacity: 0,
+          }}
+          source={shouldLoad ? { uri } : {}}
+          onLoadStart={_onLoadStart}
+          onLoadEnd={_onLoadEnd}
+          onError={_onError}
+          onLoad={_onLoad}
+          cachePolicy="disk"
+        />
+      </View>
+    );
+  }
+
+  if (!loading && error) {
+    <View
+      style={[
+        styles.loadingWarpper,
+        {
+          width: screenWidth,
+          height: (screenHeight * 3) / 5
+        },
+      ]}
+    >
+      <Text variant="bodyLarge">{error}</Text>
+    </View>;
+  }
+
   return (
     <View style={{ ...layout, position: "relative" }}>
-      {!loading && error && (
-        <View style={styles.loadingWarpper}>
-          <Text variant="bodyLarge" style={{ color: "#fff" }}>
-            {error}
-          </Text>
-        </View>
-      )}
-      <Image
-        style={{ width: "100%", height: "100%" }}
-        source={shouldLoad ? { uri } : {}}
-        {...props}
-        onLoadStart={_onLoadStart}
-        onLoadEnd={_onLoadEnd}
-        onError={_onError}
-        onLoad={_onLoad}
-        cachePolicy="disk"
-        placeholder={require("@/assets/imgs/loading.gif")}
-      />
+      <Animated.View
+        style={{ width: "100%", height: "100%", opacity: imageOpacity }}
+      >
+        <Image
+          style={{ width: "100%", height: "100%" }}
+          source={{ uri }}
+          {...props}
+          cachePolicy="disk"
+        />
+      </Animated.View>
     </View>
   );
 };
@@ -69,16 +110,6 @@ const ReaderImage: React.FC<Props> = ({ shouldLoad, uri, ...props }) => {
 export default React.memo(ReaderImage);
 
 const styles = StyleSheet.create({
-  // loadingWarpper: {
-  //   width: "100%",
-  //   height: "100%",
-  //   alignItems: "center",
-  //   justifyContent: "center",
-  //   position: "absolute",
-  //   left: 0,
-  //   top: 0,
-  //   zIndex: 1,
-  // },
   loadingWarpper: {
     alignItems: "center",
     justifyContent: "center",

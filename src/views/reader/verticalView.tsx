@@ -1,16 +1,16 @@
-import { StyleSheet, ViewToken, Dimensions } from "react-native";
-import React from "react";
+import { StyleSheet, ViewToken, FlatList } from "react-native";
+import React, { useCallback, useRef } from "react";
 import Image from "./Image";
 import { ComicEpisodePage } from "@/network/types";
-import { FlashList } from "@shopify/flash-list";
+import { useUpdate } from "ahooks";
 
 interface Props {
   dataSource: ComicEpisodePage[];
 }
 
+let lastIndex = 0;
 const VerticalView: React.FC<Props> = ({ dataSource }) => {
-  const { width: screenWidth, height: screenHeight } = Dimensions.get("window");
-
+  const update = useUpdate();
   const _onViewableItemsChanged = ({
     viewableItems,
   }: {
@@ -20,25 +20,37 @@ const VerticalView: React.FC<Props> = ({ dataSource }) => {
     if (viewableItems.length <= 0) {
       return;
     }
+    const last = viewableItems.at(-1);
+    const index = last?.index || 0;
+    if (lastIndex < index) {
+      lastIndex = index;
+      update();
+    }
   };
+  const onViewRef = useRef(_onViewableItemsChanged);
+  const onViewConfig = useRef({ itemVisiblePercentThreshold: 50 });
+
+  const getItem = useCallback((item: ComicEpisodePage, mount: boolean) => {
+    const { media } = item;
+    return (
+      <Image
+        shouldLoad={mount}
+        uri={`${media.fileServer}/static/${media.path}`}
+        contentFit="cover"
+      />
+    );
+  }, []);
 
   return (
-    <FlashList
+    <FlatList
       showsVerticalScrollIndicator={false}
       data={dataSource}
       keyExtractor={(item) => item._id}
-      onViewableItemsChanged={_onViewableItemsChanged}
-      viewabilityConfig={{ itemVisiblePercentThreshold: 50 }}
-      estimatedItemSize={(screenHeight * 3) / 4}
-      estimatedListSize={{ height: screenHeight, width: screenWidth }}
+      onViewableItemsChanged={onViewRef.current}
+      viewabilityConfig={onViewConfig.current}
       renderItem={({ item, index }) => {
-        return (
-          <Image
-            shouldLoad={true}
-            uri={`${item.media.fileServer}/static/${item.media.path}`}
-            contentFit="cover"
-          />
-        );
+        const mount = index <= lastIndex + 1;
+        return getItem(item, mount);
       }}
     />
   );

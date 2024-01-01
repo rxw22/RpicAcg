@@ -3,6 +3,7 @@ import { getHeaders, fixedSearchParams } from "./utils";
 export type HttpClientConfig = {
   baseUrl?: string;
   headers?: HeadersInit;
+  refreshToken?(): Promise<any>;
 };
 
 type HttpRequestParams<T> = {
@@ -13,10 +14,14 @@ type HttpRequestParams<T> = {
 class HttpClient {
   private baseUrl: string = "https://picaapi.picacomic.com/";
   private headers: HeadersInit = {};
+  private refreshToken: () => Promise<any> = async () => {};
 
   constructor(config: HttpClientConfig) {
     this.baseUrl = config.baseUrl ? config.baseUrl : this.baseUrl;
     this.headers = config.headers ? config.headers : this.headers;
+    this.refreshToken = config.refreshToken
+      ? config.refreshToken
+      : this.refreshToken;
   }
 
   public setHeaders(headers: HeadersInit) {
@@ -39,7 +44,11 @@ class HttpClient {
             body: payload ? JSON.stringify(payload) : JSON.stringify({}),
           }
         : { method, headers };
-    const response = await fetch(this.baseUrl + url + urlParams, options);
+    let response = await fetch(this.baseUrl + url + urlParams, options);
+    if (response.status === 401) {
+      await this.refreshToken();
+      response = await fetch(this.baseUrl + url + urlParams, options);
+    }
     return response;
   }
 
@@ -48,7 +57,10 @@ class HttpClient {
     return response.json() as Promise<T>;
   }
 
-  async get<T>(url: string, searchParams: Record<string, any> = {}): Promise<T> {
+  async get<T>(
+    url: string,
+    searchParams: Record<string, any> = {}
+  ): Promise<T> {
     const response = await this.request(url, "GET", { searchParams });
     return response.json() as Promise<T>;
   }

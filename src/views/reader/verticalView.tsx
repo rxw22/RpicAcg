@@ -6,10 +6,11 @@ import { useUpdate } from "ahooks";
 
 interface Props {
   dataSource: ComicEpisodePage[];
+  loadMore(): void;
 }
 
 let lastIndex = 0;
-const VerticalView: React.FC<Props> = ({ dataSource }) => {
+const VerticalView: React.FC<Props> = ({ dataSource, loadMore }) => {
   const update = useUpdate();
   const _onViewableItemsChanged = ({
     viewableItems,
@@ -48,8 +49,12 @@ const VerticalView: React.FC<Props> = ({ dataSource }) => {
       keyExtractor={(item) => item._id}
       onViewableItemsChanged={onViewRef.current}
       viewabilityConfig={onViewConfig.current}
+      onEndReachedThreshold={3}
+      onEndReached={loadMore}
+      maxToRenderPerBatch={8}
+      windowSize={13}
       renderItem={({ item, index }) => {
-        const mount = index <= lastIndex + 1;
+        const mount = index <= lastIndex + 2;
         return getItem(item, mount);
       }}
     />

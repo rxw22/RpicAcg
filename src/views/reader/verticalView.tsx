@@ -1,5 +1,5 @@
 import { StyleSheet, ViewToken, FlatList } from "react-native";
-import React, { useCallback, useRef } from "react";
+import React, { useRef } from "react";
 import Image from "./Image";
 import { ComicEpisodePage } from "@/network/types";
 import { useUpdate } from "ahooks";
@@ -30,17 +30,6 @@ const VerticalView: React.FC<Props> = ({ dataSource }) => {
   const onViewRef = useRef(_onViewableItemsChanged);
   const onViewConfig = useRef({ itemVisiblePercentThreshold: 50 });
 
-  const getItem = useCallback((item: ComicEpisodePage, mount: boolean) => {
-    const { media } = item;
-    return (
-      <Image
-        shouldLoad={mount}
-        uri={`${media.fileServer}/static/${media.path}`}
-        contentFit="cover"
-      />
-    );
-  }, []);
-
   return (
     <FlatList
       showsVerticalScrollIndicator={false}
@@ -49,8 +38,15 @@ const VerticalView: React.FC<Props> = ({ dataSource }) => {
       onViewableItemsChanged={onViewRef.current}
       viewabilityConfig={onViewConfig.current}
       renderItem={({ item, index }) => {
-        const mount = index <= lastIndex + 1;
-        return getItem(item, mount);
+        const mount = index <= lastIndex + 1 && index >= lastIndex - 1;
+        const { media } = item;
+        return (
+          <Image
+            shouldLoad={mount}
+            uri={`${media.fileServer}/static/${media.path}`}
+            contentFit="cover"
+          />
+        );
       }}
     />
   );

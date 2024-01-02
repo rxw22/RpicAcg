@@ -18,6 +18,7 @@ const ReaderImage: React.FC<Props> = ({ shouldLoad, uri, ...props }) => {
   const { width: screenWidth, height: screenHeight } = Dimensions.get("window");
   const [loading, setLoading] = useState(true);
   const [error, setError] = useState("");
+  const [mounted, setMounted] = useState(false);
   const [layout, setLayout] = useState({
     width: screenWidth,
     height: (screenHeight * 3) / 5,
@@ -27,6 +28,7 @@ const ReaderImage: React.FC<Props> = ({ shouldLoad, uri, ...props }) => {
   const _onLoad = (event: ImageLoadEventData) => {
     const { height, width } = event.source;
     setLayout({ ...layout, height: (screenWidth * height) / width });
+    setMounted(true);
     imageOpacity.value = withTiming(imageOpacity.value + 1, { duration: 400 });
   };
 
@@ -45,6 +47,7 @@ const ReaderImage: React.FC<Props> = ({ shouldLoad, uri, ...props }) => {
     console.log(error);
   };
 
+  // 加载状态
   if (loading) {
     return (
       <View
@@ -77,18 +80,30 @@ const ReaderImage: React.FC<Props> = ({ shouldLoad, uri, ...props }) => {
     );
   }
 
+  // 加载错误
   if (!loading && error) {
     <View
       style={[
         styles.loadingWarpper,
         {
           width: screenWidth,
-          height: (screenHeight * 3) / 5
+          height: (screenHeight * 3) / 5,
         },
       ]}
     >
       <Text variant="bodyLarge">{error}</Text>
     </View>;
+  }
+
+  // 加载完成，并且不可见之后
+  if (!shouldLoad && mounted && !error) {
+    return (
+      <View
+        style={{ ...layout, alignItems: "center", justifyContent: "center" }}
+      >
+        <ActivityIndicator animating size="large" />
+      </View>
+    );
   }
 
   return (

@@ -236,6 +236,7 @@ const ComicDetails: React.FC<Props> = ({ route, navigation }) => {
                   <Image
                     style={{ width: "100%", height: "100%" }}
                     pageLoading={loading}
+                    showLoading={false}
                     source={{
                       uri: `${response?.comic._creator.avatar?.fileServer}/static/${response?.comic._creator.avatar?.path}`,
                     }}
@@ -243,10 +244,10 @@ const ComicDetails: React.FC<Props> = ({ route, navigation }) => {
                   />
                 </Card>
                 <View>
-                  <Text variant="headlineSmall">
+                  <Text variant="headlineSmall" numberOfLines={1}>
                     {response?.comic._creator.name}
                   </Text>
-                  <Text variant="bodyMedium">
+                  <Text variant="bodyMedium" numberOfLines={1}>
                     {dayjs(response?.comic.updated_at).format("YYYY-MM-DD")}
                   </Text>
                 </View>
@@ -269,22 +270,52 @@ const ComicDetails: React.FC<Props> = ({ route, navigation }) => {
                     key={eps?.docs[index * 2]._id}
                   >
                     {eps?.docs[index * 2] ? (
-                      <Card style={styles.epsCard} onPress={() => {}}>
-                        <Text style={{ textAlign: "center" }}>
-                          {eps?.docs[index * 2].title}
-                        </Text>
-                      </Card>
+                      <Button
+                        style={styles.epsBtn}
+                        contentStyle={styles.epsCard}
+                        mode="contained-tonal"
+                        onPress={() => {
+                          navigation.navigate("reader", {
+                            comicId,
+                            order: eps?.docs[index * 2].order,
+                            page: 1,
+                          });
+                        }}
+                      >
+                        {eps?.docs[index * 2].title}
+                      </Button>
                     ) : (
-                      <View style={styles.epsCard} />
+                      <Button
+                        style={styles.epsBtn}
+                        contentStyle={styles.epsCard}
+                        mode="text"
+                      >
+                        {null}
+                      </Button>
                     )}
                     {eps?.docs[index * 2 + 1] ? (
-                      <Card style={styles.epsCard} onPress={() => {}}>
-                        <Text style={{ textAlign: "center" }}>
-                          {eps?.docs[index * 2 + 1].title}
-                        </Text>
-                      </Card>
+                      <Button
+                        style={styles.epsBtn}
+                        contentStyle={styles.epsCard}
+                        mode="contained-tonal"
+                        onPress={() => {
+                          navigation.navigate("reader", {
+                            comicId,
+                            order: eps?.docs[index * 2 + 1].order,
+                            page: 1,
+                          });
+                        }}
+                      >
+                        {eps?.docs[index * 2 + 1].title}
+                      </Button>
                     ) : (
-                      <View style={styles.epsCard} />
+                      <Button
+                        style={styles.epsBtn}
+                        contentStyle={styles.epsCard}
+                        mode="text"
+                      >
+                        {null}
+                      </Button>
                     )}
                   </View>
                 );
@@ -384,13 +415,15 @@ const styles = StyleSheet.create({
   epsView: {
     paddingVertical: 15,
   },
-  epsCard: {
+  epsBtn: {
     flex: 1,
-    padding: 12,
-    alignItems: "center",
-    justifyContent: "center",
     marginVertical: 4,
     marginHorizontal: 12,
+  },
+  epsCard: {
+    flex: 1,
+    alignItems: "center",
+    justifyContent: "center",
   },
   description: {
     paddingVertical: 15,

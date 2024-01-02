@@ -22,6 +22,7 @@ import type { BottomTabScreenProps } from "@react-navigation/bottom-tabs";
 import type { NativeStackScreenProps } from "@react-navigation/native-stack";
 import { RootStackParamList } from "@/navigations/mainStacks/types";
 import HorizontalList from "./horizontalList";
+import { ComicSort } from "@/network/types";
 
 type Props = CompositeScreenProps<
   BottomTabScreenProps<RootBottomTabsParamList, "user">,
@@ -47,6 +48,7 @@ const User: React.FC<Props> = (props) => {
     refresh: favouriteRefresh,
     error: favouriteError,
   } = useRequest(httpRequest.fetchUserFavourite.bind(httpRequest), {
+    defaultParams: [{ page: 1, s: ComicSort.NewToOld }],
     onError(e) {
       console.log(e);
     },
@@ -110,6 +112,7 @@ const User: React.FC<Props> = (props) => {
               }
               contentPosition="top center"
               style={styles.avatarImage}
+              showLoading={false}
             />
           </View>
           <View style={styles.center}>
@@ -132,11 +135,23 @@ const User: React.FC<Props> = (props) => {
         >
           <View style={styles.userWapperMask} />
           <BgBox style={styles.content}>
-            <HorizontalList title="网络收藏" dataSource={favourites} navigation={props.navigation}/>
+            <HorizontalList
+              title="网络收藏"
+              dataSource={favourites}
+              navigation={props.navigation}
+            />
             <View style={styles.sizeBox} />
-            <HorizontalList title="浏览记录" dataSource={favourites} navigation={props.navigation}/>
+            <HorizontalList
+              title="浏览记录"
+              dataSource={favourites}
+              navigation={props.navigation}
+            />
             <View style={styles.sizeBox} />
-            <HorizontalList title="本地收藏" dataSource={favourites} navigation={props.navigation}/>
+            <HorizontalList
+              title="本地收藏"
+              dataSource={favourites}
+              navigation={props.navigation}
+            />
           </BgBox>
         </ScrollView>
       </ImageBackground>

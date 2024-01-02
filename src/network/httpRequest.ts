@@ -14,9 +14,11 @@ import {
 } from "./types";
 import HttpClient, { type HttpClientConfig } from "./httpClient";
 
+type HttpRequestConfig = HttpClientConfig;
+
 class HttpRequest {
   private httpClient: HttpClient;
-  constructor(config: HttpClientConfig) {
+  constructor(config: HttpRequestConfig) {
     this.httpClient = new HttpClient(config);
   }
 
@@ -126,8 +128,11 @@ class HttpRequest {
   }
 
   // 获取章节图片
-  async fetchComicEpisodePages(comicId: string, order: number, page: number){
-    const result = await this.httpClient.get<ComicEpisodePagesResponse>(`comics/${comicId}/order/${order}/pages`, { page });
+  async fetchComicEpisodePages(comicId: string, order: number, page: number) {
+    const result = await this.httpClient.get<ComicEpisodePagesResponse>(
+      `comics/${comicId}/order/${order}/pages`,
+      { page }
+    );
     if (result.code !== 200) {
       throw new Error(result.message);
     }

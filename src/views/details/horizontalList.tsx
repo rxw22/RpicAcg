@@ -6,15 +6,19 @@ import {
   NativeScrollEvent,
   Dimensions,
 } from "react-native";
-import React, { useState } from "react";
+import React, { useMemo, useState } from "react";
 import { Card, Text } from "react-native-paper";
 import { Comic } from "@/network/types";
 import Image from "@/components/image";
 import { NativeStackNavigationProp } from "@react-navigation/native-stack";
 import { RootStackParamList } from "@/navigations/mainStacks/types";
+import { Image as ExpoImage } from 'expo-image';
 
-type Navigation = NativeStackNavigationProp<RootStackParamList, "details", undefined>
-
+type Navigation = NativeStackNavigationProp<
+  RootStackParamList,
+  "details",
+  undefined
+>;
 
 interface Props {
   dataSource: Comic[];
@@ -41,6 +45,28 @@ const HorizontalList: React.FC<Props> = ({ dataSource, navigation }) => {
     }
   };
 
+  const ListEmptyComponent = useMemo(() => {
+    const styles = StyleSheet.create({
+      warpper: {
+        width: screenWidth,
+        height: "100%",
+        alignItems: "center",
+        justifyContent: "center",
+      },
+      img: {
+        width: 80,
+        height: 80,
+        marginBottom: 8
+      }
+    });
+    return (
+      <View style={styles.warpper}>
+        <ExpoImage source={require("@/assets/imgs/empty.png")} style={styles.img} contentFit="cover"/>
+        <Text variant="bodyLarge">暂无推荐</Text>
+      </View>
+    );
+  }, []);
+
   return (
     <View style={{ height: 260 }}>
       <FlatList
@@ -54,6 +80,7 @@ const HorizontalList: React.FC<Props> = ({ dataSource, navigation }) => {
           index,
         })}
         onScroll={_onScroll}
+        ListEmptyComponent={ListEmptyComponent}
         renderItem={({ item, index }) => {
           const shouldLoad = index + 1 <= currentRenderIndex;
           return (

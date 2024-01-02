@@ -8,23 +8,31 @@ import { StyleSheet, View } from "react-native";
 import React, { useState } from "react";
 import { ActivityIndicator, useTheme } from "react-native-paper";
 import Icon from "@expo/vector-icons/MaterialCommunityIcons";
+import * as Progress from "react-native-progress";
 
 interface Props extends ImageProps {
   size?: number;
   pageLoading?: boolean;
+  showLoading?: boolean;
 }
 
 const ExpoImage: React.FC<Props> = ({
   size = 40,
   pageLoading,
+  showLoading = true,
   source,
   ...props
 }) => {
   const [loading, setLoading] = useState(false);
   const [error, setError] = useState("");
+  const [progress, setProgress] = useState(0);
   const theme = useTheme();
 
-  const _onProgress = (event: ImageProgressEventData) => {};
+  const _onProgress = (event: ImageProgressEventData) => {
+    const { loaded, total } = event;
+    const progress = Number((loaded / total).toFixed(1));
+    setProgress(progress);
+  };
 
   const _onLoadStart = () => {
     setError("");
@@ -43,9 +51,13 @@ const ExpoImage: React.FC<Props> = ({
 
   return (
     <View style={styles.container}>
-      {loading && (
+      {loading && showLoading && (
         <View style={styles.progressView}>
-          <ActivityIndicator animating={true} size={size} />
+          <Progress.Pie
+            progress={progress}
+            size={size}
+            color={theme.colors.primary}
+          />
         </View>
       )}
       {!loading && error && (
@@ -64,6 +76,7 @@ const ExpoImage: React.FC<Props> = ({
         onError={_onError}
         onLoadEnd={_onLoadEnd}
         onLoadStart={_onLoadStart}
+        onProgress={_onProgress}
         cachePolicy="disk"
       />
     </View>

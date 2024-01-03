@@ -61,7 +61,6 @@ const ComicDetails: React.FC<Props> = ({ route, navigation }) => {
   });
 
   const { data: response } = data || {};
-  const { eps } = comicEpisodes?.data || {};
   const { comics } = comicRecommend?.data || {};
   return (
     <BgBox
@@ -139,8 +138,8 @@ const ComicDetails: React.FC<Props> = ({ route, navigation }) => {
               onPress={() => {
                 navigation.navigate("reader", {
                   comicId,
-                  order: eps?.docs[0].order || 1,
-                  page: 1,
+                  order: comicEpisodes?.at(-1)?.order || 1,
+                  title: response?.comic.title || ""
                 });
               }}
             >
@@ -262,14 +261,14 @@ const ComicDetails: React.FC<Props> = ({ route, navigation }) => {
             </View>
             <View>
               {Array.from({
-                length: Math.ceil((eps?.docs.length || 0) / 2),
+                length: Math.ceil((comicEpisodes?.length || 0) / 2),
               }).map((_, index) => {
                 return (
                   <View
                     style={{ flexDirection: "row", flex: 1 }}
-                    key={eps?.docs[index * 2]._id}
+                    key={comicEpisodes?.[index * 2]._id}
                   >
-                    {eps?.docs[index * 2] ? (
+                    {comicEpisodes?.[index * 2] ? (
                       <Button
                         style={styles.epsBtn}
                         contentStyle={styles.epsCard}
@@ -277,12 +276,12 @@ const ComicDetails: React.FC<Props> = ({ route, navigation }) => {
                         onPress={() => {
                           navigation.navigate("reader", {
                             comicId,
-                            order: eps?.docs[index * 2].order,
-                            page: 1,
+                            order: comicEpisodes?.[index * 2].order,
+                            title: response?.comic.title || ""
                           });
                         }}
                       >
-                        {eps?.docs[index * 2].title}
+                        {comicEpisodes?.[index * 2].title}
                       </Button>
                     ) : (
                       <Button
@@ -293,7 +292,7 @@ const ComicDetails: React.FC<Props> = ({ route, navigation }) => {
                         {null}
                       </Button>
                     )}
-                    {eps?.docs[index * 2 + 1] ? (
+                    {comicEpisodes?.[index * 2 + 1] ? (
                       <Button
                         style={styles.epsBtn}
                         contentStyle={styles.epsCard}
@@ -301,12 +300,12 @@ const ComicDetails: React.FC<Props> = ({ route, navigation }) => {
                         onPress={() => {
                           navigation.navigate("reader", {
                             comicId,
-                            order: eps?.docs[index * 2 + 1].order,
-                            page: 1,
+                            order: comicEpisodes?.[index * 2 + 1].order,
+                            title: response?.comic.title || ""
                           });
                         }}
                       >
-                        {eps?.docs[index * 2 + 1].title}
+                        {comicEpisodes?.[index * 2 + 1].title}
                       </Button>
                     ) : (
                       <Button

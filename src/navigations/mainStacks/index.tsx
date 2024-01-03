@@ -62,7 +62,7 @@ export default function MainStacks() {
         component={Reader}
         options={{
           title: "阅读器",
-          headerShown: false,
+          // headerShown: false,
           headerTransparent: true,
         }}
       />

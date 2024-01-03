@@ -1,5 +1,5 @@
 import { StyleSheet, ViewToken, FlatList, View } from "react-native";
-import React, { useMemo, useRef } from "react";
+import React, { forwardRef, useMemo, useRef, useImperativeHandle } from "react";
 import Image from "./Image";
 import { ComicEpisodePage } from "@/network/types";
 import { useUpdate } from "ahooks";
@@ -7,13 +7,17 @@ import { ActivityIndicator, Text } from "react-native-paper";
 
 interface Props {
   dataSource: ComicEpisodePage[];
-  loadMore(): void;
   loading: boolean;
 }
 
+export interface Ref {
+  scrollToIndex(index: number): void;
+}
+
 let lastIndex = 0;
-const VerticalView: React.FC<Props> = ({ dataSource, loadMore, loading }) => {
+const VerticalView = forwardRef<Ref, Props>(({ dataSource, loading }, ref) => {
   const update = useUpdate();
+  const listRef = useRef<FlatList<any>>(null);
   const _onViewableItemsChanged = ({
     viewableItems,
   }: {
@@ -44,17 +48,36 @@ const VerticalView: React.FC<Props> = ({ dataSource, loadMore, loading }) => {
     );
   }, [loading]);
 
+  const scrollToIndex = (index: number) => {
+    listRef.current?.scrollToIndex({
+      index,
+      animated: true,
+      viewPosition: 0.5
+    });
+  };
+
+  useImperativeHandle(ref, () => {
+    return {
+      scrollToIndex,
+    };
+  });
+
   return (
     <FlatList
+      ref={listRef}
       showsVerticalScrollIndicator={false}
       data={dataSource}
       keyExtractor={(item) => item._id}
       onViewableItemsChanged={onViewRef.current}
       viewabilityConfig={onViewConfig.current}
-      onEndReachedThreshold={3}
-      onEndReached={loadMore}
       initialNumToRender={8}
       ListFooterComponent={renderFooterComponent}
+      onScrollToIndexFailed={info => {
+        const wait = new Promise(resolve => setTimeout(resolve, 700));
+        wait.then(() => {
+          listRef.current?.scrollToIndex({ index: info.index, animated: true });
+        });
+      }}
       renderItem={({ item, index }) => {
         const mount = index <= lastIndex + 2 && index >= lastIndex - 3;
         const { media } = item;
@@ -69,7 +92,7 @@ const VerticalView: React.FC<Props> = ({ dataSource, loadMore, loading }) => {
       }}
     />
   );
-};
+});
 
 export default React.memo(VerticalView);
 

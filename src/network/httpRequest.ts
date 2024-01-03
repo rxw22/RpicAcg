@@ -2,6 +2,7 @@ import {
   CategoriesResponse,
   ComicDetailResponse,
   ComicEpisode,
+  ComicEpisodePage,
   ComicEpisodePagesResponse,
   ComicEpisodesResponse,
   ComicRecommendResponse,
@@ -84,7 +85,7 @@ class HttpRequest {
   async fetchComicEpisodes(comicId: string) {
     let page = 0;
     let pages = 1;
-    let results = [];
+    let results: ComicEpisode[] = [];
     while (page < pages) {
       page++;
       const result = await this.httpClient.get<ComicEpisodesResponse>(
@@ -94,26 +95,11 @@ class HttpRequest {
       if (result.code !== 200) {
         throw new Error(result.message);
       }
-      const { pages: realPages } = result.data.eps;
+      const { pages: realPages, docs } = result.data.eps;
       pages = realPages;
-      results.push(result);
+      results.push(...docs);
     }
-    const initEps = results[0].data.eps;
-    const result = results.reduce(
-      (pre, current) => {
-        const eps = current.data.eps.docs;
-        pre.data.eps.docs.push(...eps);
-        return pre;
-      },
-      {
-        data: {
-          eps: { ...initEps, docs: <ComicEpisode[]>[] },
-          code: results[0].code,
-          message: results[0].message,
-        },
-      }
-    );
-    return result;
+    return results;
   }
 
   // 相关推荐
@@ -128,15 +114,24 @@ class HttpRequest {
   }
 
   // 获取章节图片
-  async fetchComicEpisodePages(comicId: string, order: number, page: number) {
-    const result = await this.httpClient.get<ComicEpisodePagesResponse>(
-      `comics/${comicId}/order/${order}/pages`,
-      { page }
-    );
-    if (result.code !== 200) {
-      throw new Error(result.message);
+  async fetchComicEpisodePages(comicId: string, order: number) {
+    let currentPage = 0;
+    let totalPage = 1;
+    let results: ComicEpisodePage[] = [];
+    while (currentPage < totalPage) {
+      currentPage++;
+      const result = await this.httpClient.get<ComicEpisodePagesResponse>(
+        `comics/${comicId}/order/${order}/pages`,
+        { page: currentPage }
+      );
+      if (result.code !== 200) {
+        throw new Error(result.message);
+      }
+      const { docs, pages, total, page, limit } = result.data.pages;
+      totalPage = pages;
+      results.push(...docs);
     }
-    return result;
+    return results;
   }
 }
 

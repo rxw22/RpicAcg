@@ -13,6 +13,7 @@ import ComicDetails from "@/views/details";
 import Reader from "@/views/reader";
 
 import type { RootStackParamList } from "./types";
+import Collect from "@/views/collect";
 
 const Stack = createNativeStackNavigator<RootStackParamList>();
 
@@ -64,6 +65,13 @@ export default function MainStacks() {
           title: "阅读器",
           // headerShown: false,
           headerTransparent: true,
+        }}
+      />
+      <Stack.Screen
+        name="collect"
+        component={Collect}
+        options={{
+          title: "收藏夹"
         }}
       />
     </Stack.Navigator>

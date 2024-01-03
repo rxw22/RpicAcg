@@ -47,15 +47,9 @@ const Reader: React.FC<Props> = ({ route, navigation }) => {
 
   // 手势处理
   const gesture = Gesture.Tap().onEnd(() => {
-    console.log("点击了屏幕enbd");
     headerPosition.value = withTiming(headerPosition.value === 0 ? -64 : 0);
     bottomPosition.value = withTiming(bottomPosition.value === 0 ? -90 : 0);
   });
-
-  // 滑块回调
-  const onSlidingComplete = (value: number) => {
-    // listRef.current?.scrollToIndex(value);
-  }
 
   return (
     <GestureDetector gesture={gesture}>
@@ -64,7 +58,7 @@ const Reader: React.FC<Props> = ({ route, navigation }) => {
         <View style={{ height: "100%", width: "100%" }}>
           <VerticalView dataSource={data || []} loading={loading} ref={listRef}/>
         </View>
-        <Bottom position={bottomPosition} onSlidingComplete={onSlidingComplete} maximumValue={data?.length || 0}/>
+        <Bottom position={bottomPosition} />
       </View>
     </GestureDetector>
   );

@@ -52,7 +52,9 @@ const HorizontalList: React.FC<Props> = ({ dataSource, title, navigation }) => {
         <Text variant="headlineSmall" style={{ lineHeight: 40 }}>
           {title}
         </Text>
-        <Button icon="unfold-more-vertical" onPress={() => {}}>
+        <Button icon="unfold-more-vertical" onPress={() => {
+          navigation.navigate("collect");
+        }}>
           更多 ({dataSource?.data.comics.total || 0})
         </Button>
       </View>

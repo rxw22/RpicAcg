@@ -48,17 +48,15 @@ const VerticalView = forwardRef<Ref, Props>(({ dataSource, loading }, ref) => {
     );
   }, [loading]);
 
-  const scrollToIndex = (index: number) => {
-    listRef.current?.scrollToIndex({
-      index,
-      animated: true,
-      viewPosition: 0.5
-    });
-  };
-
   useImperativeHandle(ref, () => {
     return {
-      scrollToIndex,
+      scrollToIndex(index: number) {
+        listRef.current?.scrollToIndex({
+          index,
+          animated: true,
+          viewPosition: 0.5,
+        });
+      },
     };
   });
 
@@ -72,8 +70,8 @@ const VerticalView = forwardRef<Ref, Props>(({ dataSource, loading }, ref) => {
       viewabilityConfig={onViewConfig.current}
       initialNumToRender={8}
       ListFooterComponent={renderFooterComponent}
-      onScrollToIndexFailed={info => {
-        const wait = new Promise(resolve => setTimeout(resolve, 700));
+      onScrollToIndexFailed={(info) => {
+        const wait = new Promise((resolve) => setTimeout(resolve, 700));
         wait.then(() => {
           listRef.current?.scrollToIndex({ index: info.index, animated: true });
         });

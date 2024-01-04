@@ -1,5 +1,5 @@
 import { View, useWindowDimensions } from "react-native";
-import React, { useState } from "react";
+import React, { useState, useRef } from "react";
 import {
   TabBar,
   TabView,
@@ -9,36 +9,67 @@ import {
 import { useTheme, Text } from "react-native-paper";
 import { useNetworkProvider } from "@/network/networkProvider";
 import { useRequest } from "ahooks";
-import { ComicSort } from "@/network/types";
+import { Comic, ComicSort } from "@/network/types";
 import CommonList from "./CommonList";
 import BgBox from "@/components/bgBox";
+import {
+  NativeStackNavigationProp,
+  NativeStackScreenProps,
+} from "@react-navigation/native-stack";
+import { RootStackParamList } from "@/navigations/mainStacks/types";
 
 type SceneProps = {
   route: {
     key: string;
     title: string;
+    navigation: NativeStackNavigationProp<
+      RootStackParamList,
+      "collect",
+      undefined
+    >;
   };
 } & Omit<SceneRendererProps, "layout">;
 
 const NetCollect: React.FC<SceneProps> = ({ route }) => {
   const { httpRequest } = useNetworkProvider();
-  const [page, setPage] = useState(1);
+  const [dataSource, setDataSource] = useState<Comic[]>([]);
+  const pageRef = useRef({
+    page: 0,
+    pages: 1,
+    s: ComicSort.NewToOld,
+  });
 
-  const { data, loading } = useRequest(
+  const { loading, run } = useRequest(
     httpRequest.fetchUserFavourite.bind(httpRequest),
     {
-      defaultParams: [{ page: page, s: ComicSort.NewToOld }],
+      manual: true,
       onError(e) {
         console.log(e);
+      },
+      onSuccess(data, params) {
+        const { docs, pages } = data?.data.comics || {};
+        setDataSource([...dataSource, ...docs]);
+        pageRef.current.page = params[0].page || 1;
+        pageRef.current.pages = pages;
+        pageRef.current.s = params[0].s || ComicSort.NewToOld;
       },
     }
   );
 
-  const { docs } = data?.data.comics || {};
+  const loadMore = () => {
+    if (pageRef.current.page < pageRef.current.pages) {
+      run({ page: pageRef.current.page + 1, s: pageRef.current.s });
+    }
+  };
 
   return (
-    <BgBox style={{ flex: 1 }}>
-      <CommonList dataSource={docs || []} />
+    <BgBox style={{ flex: 1, paddingHorizontal: 5 }}>
+      <CommonList
+        dataSource={dataSource}
+        navigation={route.navigation}
+        loadMore={loadMore}
+        loading={loading}
+      />
     </BgBox>
   );
 };
@@ -55,14 +86,16 @@ const renderScene = SceneMap({
   three: ThreeRoute,
 });
 
-export default function Collect() {
+type Props = NativeStackScreenProps<RootStackParamList, "collect">;
+
+export default function Collect({ navigation }: Props) {
   const layout = useWindowDimensions();
   const theme = useTheme();
   const [index, setIndex] = React.useState(0);
   const [routes] = React.useState([
-    { key: "first", title: "网络收藏" },
-    { key: "second", title: "浏览记录" },
-    { key: "three", title: "本地收藏" },
+    { key: "first", title: "网络收藏", navigation },
+    { key: "second", title: "浏览记录", navigation },
+    { key: "three", title: "本地收藏", navigation },
   ]);
 
   return (

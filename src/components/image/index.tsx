@@ -6,7 +6,7 @@ import {
 } from "expo-image";
 import { StyleSheet, View } from "react-native";
 import React, { useState } from "react";
-import { ActivityIndicator, useTheme } from "react-native-paper";
+import { useTheme } from "react-native-paper";
 import Icon from "@expo/vector-icons/MaterialCommunityIcons";
 import * as Progress from "react-native-progress";
 

@@ -1,24 +1,30 @@
+/**
+ * FlatList实现的阅读页，功能比较欠缺，废弃了
+ */
 import {
   StyleSheet,
   ViewToken,
+  FlatList,
   View,
   NativeSyntheticEvent,
   NativeScrollEvent,
-  useWindowDimensions,
 } from "react-native";
-import React, { forwardRef, useMemo, useRef, useImperativeHandle } from "react";
+import React, {
+  forwardRef,
+  useMemo,
+  useRef,
+  useImperativeHandle,
+} from "react";
+import Image from "./Image-copy";
 import { ComicEpisodePage } from "@/network/types";
+import { useUpdate } from "ahooks";
 import { Text } from "react-native-paper";
-import { FlashList } from "@shopify/flash-list";
-import VerticalImage from "./VerticalImage";
-import { LayoutItem } from "./cacheLayout";
 
 interface Props {
   dataSource: ComicEpisodePage[];
   loading: boolean;
   onPageChange: (page: number) => void;
   onScrollYChange: (y: number) => void;
-  layout: Record<number, LayoutItem> | undefined;
 }
 
 export interface Ref {
@@ -26,24 +32,29 @@ export interface Ref {
   scrollToOffset(y: number): void;
 }
 
-interface ViewableParams {
-  viewableItems: ViewToken[];
-  changed: ViewToken[];
-}
-
+let lastIndex = 0;
 const VerticalView = forwardRef<Ref, Props>(
-  ({ dataSource, loading, onPageChange, onScrollYChange, layout: ImageLayout }, ref) => {
-    const listRef = useRef<FlashList<any>>(null);
-    const layout = useWindowDimensions();
+  ({ dataSource, loading, onPageChange, onScrollYChange }, ref) => {
+    const update = useUpdate();
+    const listRef = useRef<FlatList<any>>(null);
 
-    const _onViewableItemsChanged = ({ viewableItems }: ViewableParams) => {
+    const _onViewableItemsChanged = ({
+      viewableItems,
+    }: {
+      viewableItems: ViewToken[];
+      changed: ViewToken[];
+    }) => {
       if (viewableItems.length <= 0) {
         return;
       }
       const last = viewableItems.at(-1);
       const index = last?.index || 0;
+      lastIndex = index;
       onPageChange(index);
+      update();
     };
+    const onViewRef = useRef(_onViewableItemsChanged);
+    const onViewConfig = useRef({ itemVisiblePercentThreshold: 50 });
 
     const renderFooterComponent = useMemo(() => {
       return (
@@ -82,19 +93,28 @@ const VerticalView = forwardRef<Ref, Props>(
     };
 
     return (
-      <FlashList
+      <FlatList
         ref={listRef}
         showsVerticalScrollIndicator={false}
         data={dataSource}
         keyExtractor={(item) => item._id}
-        onViewableItemsChanged={_onViewableItemsChanged}
-        viewabilityConfig={{ itemVisiblePercentThreshold: 50 }}
-        estimatedItemSize={(layout.height * 3) / 5}
-        estimatedListSize={{ height: layout.height, width: layout.width }}
+        onViewableItemsChanged={onViewRef.current}
+        viewabilityConfig={onViewConfig.current}
+        initialNumToRender={8}
+        // initialScrollIndex={page} 没有给getItemLayout无法实现这个功能
         ListFooterComponent={renderFooterComponent}
         onScroll={_onScroll}
         renderItem={({ item, index }) => {
-          return <VerticalImage item={item} index={index} imageLayout={ImageLayout}/>;
+          const mount = index <= lastIndex + 2 && index >= lastIndex - 3;
+          const { media } = item;
+          return (
+            <Image
+              index={index}
+              shouldLoad={mount}
+              uri={`${media.fileServer}/static/${media.path}`}
+              contentFit="cover"
+            />
+          );
         }}
       />
     );

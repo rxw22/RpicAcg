@@ -17,7 +17,7 @@ type Props = {
 
 const Item: React.FC<Props> = ({ item, navigation }) => {
   const theme = useTheme();
-  const { thumb, author, title, totalLikes, totalViews, categories } = item;
+  const { thumb, author, title, totalLikes, totalViews, categories, pagesCount } = item;
   const [update, setUpdate] = useState(false);
   const lastUri = useRef(`${thumb.fileServer}/static/${thumb.path}`);
   const uri = `${thumb.fileServer}/static/${thumb.path}`;
@@ -71,9 +71,11 @@ const Item: React.FC<Props> = ({ item, navigation }) => {
         <View style={styles.itemDescription}>
           <View>
             <Text variant="titleMedium" numberOfLines={2}>
-              {title}
+              [{pagesCount}P]{title}
             </Text>
-            <Text variant="labelSmall">{author}</Text>
+            <Text variant="labelSmall" numberOfLines={1}>
+              {author}
+            </Text>
           </View>
           <View
             style={{
@@ -88,39 +90,40 @@ const Item: React.FC<Props> = ({ item, navigation }) => {
               <View
                 key={item}
                 style={{
-                  padding: 6,
+                  padding: 4,
                   backgroundColor: theme.colors.secondaryContainer,
                   borderRadius: 6,
                   marginRight: 8,
                   marginBottom: 8,
                 }}
               >
-                <Text variant="labelMedium">{item}</Text>
+                <Text variant="labelSmall">{item}</Text>
               </View>
             ))}
           </View>
-          <View>
+          <View style={{ flexDirection: "row" }}>
             <View
               style={{
                 flexDirection: "row",
                 alignItems: "center",
-                width: 80,
                 justifyContent: "space-between",
               }}
             >
-              <Text variant="labelSmall">{totalLikes} </Text>
               <Icon source="heart" size={12} />
+              <View style={{ width: 5 }} />
+              <Text variant="labelSmall">{totalLikes} </Text>
             </View>
+            <View style={{ width: 15 }} />
             <View
               style={{
                 flexDirection: "row",
                 alignItems: "center",
-                width: 80,
                 justifyContent: "space-between",
               }}
             >
-              <Text variant="labelSmall">{totalViews} </Text>
               <Icon source="eye" size={12} />
+              <View style={{ width: 5 }} />
+              <Text variant="labelSmall">{totalViews} </Text>
             </View>
           </View>
         </View>
@@ -134,15 +137,15 @@ export default React.memo(Item);
 const styles = StyleSheet.create({
   itemContainer: {
     width: "100%",
-    height: 210,
+    height: 180,
     marginVertical: 5,
     borderRadius: 10,
     overflow: "hidden",
     padding: 5,
   },
   itemWarpper: {
-    width: 142,
-    height: 200,
+    width: 120,
+    height: 170,
     overflow: "hidden",
     position: "relative",
   },

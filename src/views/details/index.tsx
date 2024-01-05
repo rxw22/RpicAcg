@@ -9,6 +9,7 @@ import {
   useTheme,
   Chip,
   Divider,
+  Icon,
 } from "react-native-paper";
 import { useRequest } from "ahooks";
 import dayjs from "dayjs";
@@ -19,6 +20,7 @@ import { useNetworkProvider } from "@/network/networkProvider";
 import Image from "@/components/image";
 import PressableButton from "@/components/button";
 import HorizontalList from "./horizontalList";
+import { useReadStore } from "@/store/readStore";
 
 type Props = NativeStackScreenProps<RootStackParamList, "details">;
 
@@ -26,6 +28,12 @@ const ComicDetails: React.FC<Props> = ({ route, navigation }) => {
   const { httpRequest } = useNetworkProvider();
   const { comicId } = route.params;
   const theme = useTheme();
+  // 保存浏览记录
+  const { addRecord } = useReadStore();
+  // 继续阅读
+  const { comicRecord } = useReadStore();
+  const record = comicRecord[comicId];
+
   const { loading, data, error, refresh } = useRequest(
     httpRequest.fetchComicDetail.bind(httpRequest),
     {
@@ -59,6 +67,15 @@ const ComicDetails: React.FC<Props> = ({ route, navigation }) => {
       console.log(e.message);
     },
   });
+
+  const startReader = (order: number, y: number) => {
+    navigation.navigate("reader", {
+      comicId,
+      order,
+      title: response?.comic.title || "",
+      y,
+    });
+  };
 
   const { data: response } = data || {};
   const { comics } = comicRecommend?.data || {};
@@ -128,6 +145,36 @@ const ComicDetails: React.FC<Props> = ({ route, navigation }) => {
               textProps={{ variant: "bodyLarge" }}
             />
           </Surface>
+          {record && (
+            <View
+              style={[
+                styles.operates,
+                {
+                  backgroundColor: theme.colors.secondaryContainer,
+                  width: "100%",
+                  borderRadius: 12,
+                  alignItems: "center",
+                  paddingHorizontal: 16,
+                  justifyContent: "space-between",
+                },
+              ]}
+            >
+              <View style={{ flexDirection: "row", alignItems: "center" }}>
+                <Icon source="clipboard-clock-outline" size={20} />
+                <View style={{ width: 12 }} />
+                <Text variant="bodyMedium">
+                  上次阅读到第 {record.order} 章第 {record.page} 页
+                </Text>
+              </View>
+              <Button
+                onPress={() => {
+                  startReader(record.order, record.y);
+                }}
+              >
+                继续阅读
+              </Button>
+            </View>
+          )}
           <View style={styles.operates}>
             <Button mode="contained" style={styles.operatesItem}>
               下载
@@ -136,11 +183,8 @@ const ComicDetails: React.FC<Props> = ({ route, navigation }) => {
               mode="contained"
               style={styles.operatesItem}
               onPress={() => {
-                navigation.navigate("reader", {
-                  comicId,
-                  order: comicEpisodes?.at(-1)?.order || 1,
-                  title: response?.comic.title || ""
-                });
+                addRecord(response?.comic, "browses");
+                startReader(comicEpisodes?.at(-1)?.order || 1, 0);
               }}
             >
               从头开始
@@ -274,11 +318,7 @@ const ComicDetails: React.FC<Props> = ({ route, navigation }) => {
                         contentStyle={styles.epsCard}
                         mode="contained-tonal"
                         onPress={() => {
-                          navigation.navigate("reader", {
-                            comicId,
-                            order: comicEpisodes?.[index * 2].order,
-                            title: response?.comic.title || ""
-                          });
+                          startReader(comicEpisodes?.[index * 2].order, 0);
                         }}
                       >
                         {comicEpisodes?.[index * 2].title}
@@ -298,11 +338,7 @@ const ComicDetails: React.FC<Props> = ({ route, navigation }) => {
                         contentStyle={styles.epsCard}
                         mode="contained-tonal"
                         onPress={() => {
-                          navigation.navigate("reader", {
-                            comicId,
-                            order: comicEpisodes?.[index * 2 + 1].order,
-                            title: response?.comic.title || ""
-                          });
+                          startReader(comicEpisodes?.[index * 2 + 1].order, 0);
                         }}
                       >
                         {comicEpisodes?.[index * 2 + 1].title}

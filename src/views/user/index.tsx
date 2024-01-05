@@ -9,7 +9,7 @@ import {
 import { Text } from "react-native-paper";
 import { useRequest } from "ahooks";
 import { ImageBackground } from "expo-image";
-import { useLayoutEffect } from "react";
+import { useLayoutEffect, useState } from "react";
 import Image from "@/components/image";
 
 import BgBox from "@/components/bgBox";
@@ -23,6 +23,7 @@ import type { NativeStackScreenProps } from "@react-navigation/native-stack";
 import { RootStackParamList } from "@/navigations/mainStacks/types";
 import HorizontalList from "./horizontalList";
 import { ComicSort } from "@/network/types";
+import { useReadStore } from "@/store/readStore";
 
 type Props = CompositeScreenProps<
   BottomTabScreenProps<RootBottomTabsParamList, "user">,
@@ -32,6 +33,8 @@ type Props = CompositeScreenProps<
 const User: React.FC<Props> = (props) => {
   const { httpRequest } = useNetworkProvider();
   const statusBarHeight = StatusBar.currentHeight ? StatusBar.currentHeight : 0;
+  const { localCollect, browses } = useReadStore();
+  const [flag, setFlag] = useState(true);
 
   const { data, loading, refresh, error } = useRequest(
     httpRequest.fetchUserProfile.bind(httpRequest),
@@ -54,22 +57,22 @@ const User: React.FC<Props> = (props) => {
     },
   });
 
+  const { user } = data?.data || {};
+  const uri = user ? `${user?.avatar?.fileServer}/static/${user?.avatar?.path}` : "";
+  const name = user?.name || "";
+
   useLayoutEffect(() => {
     props.navigation.setOptions({
       headerTransparent: true,
-      header: () => <AppBar flag={true} />,
+      header: () => <AppBar flag={flag} uri={uri} name={name}/>,
     });
-  }, []);
+  }, [flag]);
 
   const _onScroll = (e: NativeSyntheticEvent<NativeScrollEvent>) => {
     const { contentOffset } = e.nativeEvent;
     const { y } = contentOffset;
-    props.navigation.setOptions({
-      header: () => <AppBar flag={y <= 20} />,
-    });
+    setFlag(y <= 70);
   };
-
-  const { user } = data?.data || {};
 
   return (
     <BgBox
@@ -137,20 +140,23 @@ const User: React.FC<Props> = (props) => {
           <BgBox style={styles.content}>
             <HorizontalList
               title="网络收藏"
-              dataSource={favourites}
+              dataSource={favourites?.data.comics.docs || []}
               navigation={props.navigation}
-            />
-            <View style={styles.sizeBox} />
-            <HorizontalList
-              title="浏览记录"
-              dataSource={favourites}
-              navigation={props.navigation}
+              total={favourites?.data.comics.total || 0}
             />
             <View style={styles.sizeBox} />
             <HorizontalList
               title="本地收藏"
-              dataSource={favourites}
+              dataSource={localCollect}
               navigation={props.navigation}
+              total={localCollect.length}
+            />
+            <View style={styles.sizeBox} />
+            <HorizontalList
+              title="浏览记录"
+              dataSource={browses}
+              navigation={props.navigation}
+              total={browses.length}
             />
           </BgBox>
         </ScrollView>

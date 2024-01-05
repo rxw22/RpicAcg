@@ -2,7 +2,7 @@ import { View, StyleSheet } from "react-native";
 import React, { useState } from "react";
 import { ComicEpisodePage } from "@/network/types";
 import PagerView from "react-native-pager-view";
-import Image from "./Image";
+import Image from "./VerticalImage";
 
 interface Props {
   dataSource: ComicEpisodePage[];

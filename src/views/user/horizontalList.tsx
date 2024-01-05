@@ -6,27 +6,34 @@ import {
   NativeScrollEvent,
   Dimensions,
 } from "react-native";
-import React, { useState } from "react";
+import React, { useCallback, useState } from "react";
 import { Button, Card, Text } from "react-native-paper";
-import { Comic, UserFavouriteResponse } from "@/network/types";
+import { Comic } from "@/network/types";
 import Image from "@/components/image";
 import { CompositeNavigationProp } from "@react-navigation/native";
 import { BottomTabNavigationProp } from "@react-navigation/bottom-tabs";
 import { RootBottomTabsParamList } from "@/navigations/bottomTabs/types";
 import { NativeStackNavigationProp } from "@react-navigation/native-stack";
 import { RootStackParamList } from "@/navigations/mainStacks/types";
+import { Image as ExpoImage } from "expo-image";
 
 type Navigation = CompositeNavigationProp<
   BottomTabNavigationProp<RootBottomTabsParamList, "user", undefined>,
   NativeStackNavigationProp<RootStackParamList, "main", undefined>
 >;
 interface Props {
-  dataSource: UserFavouriteResponse | undefined;
+  total: number;
+  dataSource: Comic[];
   title: string;
   navigation: Navigation; // navigation传递了三层，后续修改
 }
 
-const HorizontalList: React.FC<Props> = ({ dataSource, title, navigation }) => {
+const HorizontalList: React.FC<Props> = ({
+  dataSource,
+  title,
+  navigation,
+  total,
+}) => {
   const screenWidth = Dimensions.get("window").width;
   // 记录当前应该请求几张图片
   const [currentRenderIndex, setCurrentRenderIndex] = useState(
@@ -46,23 +53,38 @@ const HorizontalList: React.FC<Props> = ({ dataSource, title, navigation }) => {
     }
   };
 
+  const renderEmptyComponent = useCallback(() => {
+    return (
+      <View style={[styles.emptyWarpper, { width: screenWidth - 28 }]}>
+        <ExpoImage
+          source={require("@/assets/imgs/暂无内容.svg")}
+          style={{ height: 150, width: 150 }}
+        />
+      </View>
+    );
+  }, []);
+
   return (
     <View style={{ height: 300 }}>
       <View style={styles.title}>
         <Text variant="headlineSmall" style={{ lineHeight: 40 }}>
           {title}
         </Text>
-        <Button icon="unfold-more-vertical" onPress={() => {
-          navigation.navigate("collect");
-        }}>
-          更多 ({dataSource?.data.comics.total || 0})
+        <Button
+          icon="unfold-more-vertical"
+          onPress={() => {
+            navigation.navigate("collect");
+          }}
+        >
+          更多 ({total || 0})
         </Button>
       </View>
       <FlatList
         showsHorizontalScrollIndicator={false}
         horizontal={true}
-        data={dataSource?.data.comics.docs || []}
+        data={dataSource || []}
         keyExtractor={(item) => item._id}
+        ListEmptyComponent={renderEmptyComponent}
         getItemLayout={(_, index) => ({
           length: 136,
           offset: 136 * index,
@@ -152,6 +174,12 @@ const styles = StyleSheet.create({
     height: 90,
     alignItems: "center",
     marginTop: 5,
+  },
+  emptyWarpper: {
+    marginHorizontal: 8,
+    height: "100%",
+    alignItems: "center",
+    justifyContent: "center",
   },
 });
 

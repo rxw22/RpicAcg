@@ -13,14 +13,21 @@ import VerticalView, { Ref } from "./verticalView";
 import cacheLayout from "./cacheLayout";
 import Header from "./header";
 import Bottom from "./bottom";
+import { useReadStore } from "@/store/readStore";
 
 type Props = NativeStackScreenProps<RootStackParamList, "reader">;
 
 const Reader: React.FC<Props> = ({ route, navigation }) => {
-  const { comicId, order, title } = route.params;
+  const { comicId, order, title, y } = route.params;
   const { httpRequest } = useNetworkProvider();
   const headerPosition = useSharedValue(-64);
   const bottomPosition = useSharedValue(-90);
+  const { saveComicRecord, comicRecord } = useReadStore();
+  const recordRef = useRef({
+    page: 0,
+    y,
+  });
+
   const { data, loading, refresh, run } = useRequest(
     httpRequest.fetchComicEpisodePages.bind(httpRequest),
     {
@@ -30,20 +37,45 @@ const Reader: React.FC<Props> = ({ route, navigation }) => {
       },
     }
   );
-  const listRef = useRef<Ref>(null)
+  const listRef = useRef<Ref>(null);
 
   useLayoutEffect(() => {
     navigation.setOptions({
-      header: () => <Header position={headerPosition} navigation={navigation} title={title}/>
-    })
+      header: () => (
+        <Header
+          position={headerPosition}
+          navigation={navigation}
+          title={title}
+        />
+      ),
+    });
   }, []);
 
-  // 退出阅读界面 清除图片宽高缓存
   useEffect(() => {
     return () => {
+      // 保存阅读记录
+      saveComicRecord(comicId, {
+        order,
+        page: recordRef.current.page,
+        y: recordRef.current.y,
+        layout: {
+          ...comicRecord[comicId]?.layout,
+          ...cacheLayout.getAllLayout(),
+        },
+      });
+      // 清除图片宽高缓存
       cacheLayout.clear();
     };
   }, []);
+
+  // 跳转到指定offset
+  useEffect(() => {
+    if (!loading && y) {
+      setTimeout(() => {
+        listRef.current?.scrollToOffset(y);
+      }, 180);
+    }
+  }, [loading]);
 
   // 手势处理
   const gesture = Gesture.Tap().onEnd(() => {
@@ -51,12 +83,27 @@ const Reader: React.FC<Props> = ({ route, navigation }) => {
     bottomPosition.value = withTiming(bottomPosition.value === 0 ? -90 : 0);
   });
 
+  const onPageChange = (page: number) => {
+    recordRef.current.page = page;
+  };
+
+  const onScrollYChange = (y: number) => {
+    recordRef.current.y = y;
+  };
+
   return (
     <GestureDetector gesture={gesture}>
       <View style={styles.container}>
-        <StatusBar style="light" animated hidden/>
+        <StatusBar style="light" animated hidden />
         <View style={{ height: "100%", width: "100%" }}>
-          <VerticalView dataSource={data || []} loading={loading} ref={listRef}/>
+          <VerticalView
+            dataSource={data || []}
+            loading={loading}
+            ref={listRef}
+            onPageChange={onPageChange}
+            onScrollYChange={onScrollYChange}
+            layout={comicRecord[comicId]?.layout}
+          />
         </View>
         <Bottom position={bottomPosition} />
       </View>
@@ -70,7 +117,7 @@ const styles = StyleSheet.create({
   container: {
     backgroundColor: "#000",
     flex: 1,
-    position: "relative"
+    position: "relative",
   },
   loadingContainer: {
     backgroundColor: "#000",

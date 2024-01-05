@@ -1,8 +1,9 @@
-import { View, StyleSheet, useWindowDimensions } from "react-native";
-import React from "react";
+import { StyleSheet, View, useWindowDimensions } from "react-native";
+import React, { useCallback } from "react";
 import { Comic } from "@/network/types";
 import { Text, ActivityIndicator } from "react-native-paper";
 import { FlashList, ListRenderItem } from "@shopify/flash-list";
+import { Image as ExpoImage } from "expo-image";
 
 import { NativeStackNavigationProp } from "@react-navigation/native-stack";
 import { RootStackParamList } from "@/navigations/mainStacks/types";
@@ -49,6 +50,26 @@ const CommonList: React.FC<Props> = ({
     return <Item item={item} navigation={navigation} />;
   };
 
+  const renderEmptyComponent = useCallback(() => {
+    const styles = StyleSheet.create({
+      emptyWarpper: {
+        marginHorizontal: 8,
+        height: "100%",
+        alignItems: "center",
+        justifyContent: "center",
+        width: "100%",
+      },
+    });
+    return (
+      <View style={[styles.emptyWarpper]}>
+        <ExpoImage
+          source={require("@/assets/imgs/暂无内容.svg")}
+          style={{ height: 200, width: 200 }}
+        />
+      </View>
+    );
+  }, []);
+
   return (
     <FlashList
       keyExtractor={(item) => item._id}
@@ -57,7 +78,8 @@ const CommonList: React.FC<Props> = ({
       onEndReachedThreshold={1}
       onEndReached={loadMore}
       ListFooterComponent={renderFooterComponent}
-      estimatedItemSize={220}
+      estimatedItemSize={190}
+      ListEmptyComponent={renderEmptyComponent}
       estimatedListSize={{ width: layout.width - 10, height: layout.height }}
       renderItem={renderItem}
     />

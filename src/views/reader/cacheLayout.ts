@@ -1,4 +1,4 @@
-type LayoutItem = {
+export type LayoutItem = {
   width: number;
   height: number;
 };
@@ -14,6 +14,9 @@ class CacheLayout {
   }
   getLayout(index: number): LayoutItem {
     return this.layoutMap[index];
+  }
+  getAllLayout() {
+    return this.layoutMap;
   }
   clear() {
     this.layoutMap = {};

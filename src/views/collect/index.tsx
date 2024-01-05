@@ -17,6 +17,7 @@ import {
   NativeStackScreenProps,
 } from "@react-navigation/native-stack";
 import { RootStackParamList } from "@/navigations/mainStacks/types";
+import { useReadStore } from "@/store/readStore";
 
 type SceneProps = {
   route: {
@@ -74,16 +75,44 @@ const NetCollect: React.FC<SceneProps> = ({ route }) => {
   );
 };
 
-const SecondRoute = ({ route }: any) => (
-  <View style={{ flex: 1, backgroundColor: "#673ab7" }} />
-);
+const LocalCollect: React.FC<SceneProps> = ({ route }) => {
+  const { localCollect } = useReadStore();
 
-const ThreeRoute = () => <View style={{ flex: 1, backgroundColor: "black" }} />;
+  const loadMore = () => {};
+
+  return (
+    <BgBox style={{ flex: 1, paddingHorizontal: 5 }}>
+      <CommonList
+        dataSource={localCollect}
+        navigation={route.navigation}
+        loadMore={loadMore}
+        loading={false}
+      />
+    </BgBox>
+  );
+};
+
+const BrowsingHistory: React.FC<SceneProps> = ({ route }) => {
+  const { browses } = useReadStore();
+
+  const loadMore = () => {};
+
+  return (
+    <BgBox style={{ flex: 1, paddingHorizontal: 5 }}>
+      <CommonList
+        dataSource={browses}
+        navigation={route.navigation}
+        loadMore={loadMore}
+        loading={false}
+      />
+    </BgBox>
+  );
+};
 
 const renderScene = SceneMap({
   first: NetCollect,
-  second: SecondRoute,
-  three: ThreeRoute,
+  second: LocalCollect,
+  three: BrowsingHistory,
 });
 
 type Props = NativeStackScreenProps<RootStackParamList, "collect">;
@@ -94,8 +123,8 @@ export default function Collect({ navigation }: Props) {
   const [index, setIndex] = React.useState(0);
   const [routes] = React.useState([
     { key: "first", title: "网络收藏", navigation },
-    { key: "second", title: "浏览记录", navigation },
-    { key: "three", title: "本地收藏", navigation },
+    { key: "second", title: "本地收藏", navigation },
+    { key: "three", title: "浏览记录", navigation },
   ]);
 
   return (

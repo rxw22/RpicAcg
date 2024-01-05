@@ -1,3 +1,7 @@
+/**
+ * 为Flatlist阅读页定制的懒加载图片，废弃
+ */
+
 import { View, Dimensions, StyleSheet } from "react-native";
 import React, { useState } from "react";
 import {

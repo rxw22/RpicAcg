@@ -18,7 +18,6 @@ interface Props {
   loading: boolean;
   onPageChange: (page: number) => void;
   onScrollYChange: (y: number) => void;
-  layout: Record<number, LayoutItem> | undefined;
 }
 
 export interface Ref {
@@ -32,7 +31,7 @@ interface ViewableParams {
 }
 
 const VerticalView = forwardRef<Ref, Props>(
-  ({ dataSource, loading, onPageChange, onScrollYChange, layout: ImageLayout }, ref) => {
+  ({ dataSource, loading, onPageChange, onScrollYChange }, ref) => {
     const listRef = useRef<FlashList<any>>(null);
     const layout = useWindowDimensions();
 
@@ -70,7 +69,7 @@ const VerticalView = forwardRef<Ref, Props>(
         scrollToOffset(scrollY: number) {
           listRef.current?.scrollToOffset({
             offset: scrollY,
-            animated: false,
+            animated: true,
           });
         },
       };
@@ -94,7 +93,7 @@ const VerticalView = forwardRef<Ref, Props>(
         ListFooterComponent={renderFooterComponent}
         onScroll={_onScroll}
         renderItem={({ item, index }) => {
-          return <VerticalImage item={item} index={index} imageLayout={ImageLayout}/>;
+          return <VerticalImage item={item} index={index} />;
         }}
       />
     );

@@ -33,7 +33,7 @@ const Reader: React.FC<Props> = ({ route, navigation }) => {
     {
       defaultParams: [comicId, order],
       onError(e) {
-        console.log(e);
+        console.log("Reader Error", e);
       },
     }
   );
@@ -52,16 +52,17 @@ const Reader: React.FC<Props> = ({ route, navigation }) => {
   }, []);
 
   useEffect(() => {
+    // 初始化赋值之前保存的各别图片的宽高, 如果是继续阅读才初始化
+    // if (y) {
+    //   cacheLayout.initLayout(comicRecord[comicId]?.layout || {});
+    // }
     return () => {
       // 保存阅读记录
       saveComicRecord(comicId, {
         order,
         page: recordRef.current.page,
         y: recordRef.current.y,
-        layout: {
-          ...comicRecord[comicId]?.layout,
-          ...cacheLayout.getAllLayout(),
-        },
+        layout: cacheLayout.getAllLayout(),
       });
       // 清除图片宽高缓存
       cacheLayout.clear();
@@ -69,13 +70,13 @@ const Reader: React.FC<Props> = ({ route, navigation }) => {
   }, []);
 
   // 跳转到指定offset
-  useEffect(() => {
-    if (!loading && y) {
-      setTimeout(() => {
-        listRef.current?.scrollToOffset(y);
-      }, 180);
-    }
-  }, [loading]);
+  // useEffect(() => {
+  //   if (!loading && y) {
+  //     setTimeout(() => {
+  //       listRef.current?.scrollToOffset(y);
+  //     }, 180);
+  //   }
+  // }, [loading]);
 
   // 手势处理
   const gesture = Gesture.Tap().onEnd(() => {
@@ -102,7 +103,6 @@ const Reader: React.FC<Props> = ({ route, navigation }) => {
             ref={listRef}
             onPageChange={onPageChange}
             onScrollYChange={onScrollYChange}
-            layout={comicRecord[comicId]?.layout}
           />
         </View>
         <Bottom position={bottomPosition} />

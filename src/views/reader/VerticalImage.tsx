@@ -7,34 +7,27 @@ import {
   ImageProgressEventData,
 } from "expo-image";
 import { Text, useTheme } from "react-native-paper";
-import Animated, { useSharedValue, withTiming } from "react-native-reanimated";
-import cacheLayout, { LayoutItem } from "./cacheLayout";
+import cacheLayout from "./cacheLayout";
 import * as Progress from "react-native-progress";
 import { ComicEpisodePage } from "@/network/types";
 
 interface Props {
   item: ComicEpisodePage;
   index: number;
-  imageLayout: Record<number, LayoutItem> | undefined;
 }
 
-const ReaderImage: React.FC<Props> = ({ item, index, imageLayout }) => {
+const ReaderImage: React.FC<Props> = ({ item, index }) => {
   const { width: screenWidth, height: screenHeight } = Dimensions.get("window");
   const theme = useTheme();
   const [loading, setLoading] = useState(true);
   const [progress, setProgress] = useState(0);
   const [error, setError] = useState("");
   // 图片宽高有缓存使用缓存数据，可以避免抖动
-  const initLayout = cacheLayout.getLayout(index) || imageLayout?.[index];
-  const [layout, setLayout] = useState(
-    initLayout
-      ? initLayout
-      : {
-          width: screenWidth,
-          height: (screenHeight * 3) / 5,
-        }
-  );
-  const imageOpacity = useSharedValue(0);
+  const initLayout = cacheLayout.getLayout(index) || {
+    width: screenWidth,
+    height: (screenHeight * 3) / 5,
+  };
+  const [layout, setLayout] = useState(initLayout);
 
   const { media } = item;
   const lastUri = useRef(`${media.fileServer}/static/${media.path}`);
@@ -45,15 +38,7 @@ const ReaderImage: React.FC<Props> = ({ item, index, imageLayout }) => {
     setLoading(true);
     setProgress(0);
     setError("");
-    setLayout(
-      initLayout
-        ? initLayout
-        : {
-            width: screenWidth,
-            height: (screenHeight * 3) / 5,
-          }
-    );
-    imageOpacity.value = 0;
+    setLayout(initLayout);
   }
 
   const _onLoad = (event: ImageLoadEventData) => {
@@ -63,7 +48,6 @@ const ReaderImage: React.FC<Props> = ({ item, index, imageLayout }) => {
       ...layout,
       height: (screenWidth * height) / width,
     });
-    imageOpacity.value = withTiming(imageOpacity.value + 1, { duration: 400 });
   };
 
   const _onLoadStart = () => {
@@ -87,12 +71,19 @@ const ReaderImage: React.FC<Props> = ({ item, index, imageLayout }) => {
     setProgress(progress);
   };
 
+  // 加载错误
+  if (!loading && error) {
+    <View style={[styles.center, layout]}>
+      <Text variant="bodyLarge">{error}</Text>
+    </View>;
+  }
+
   // 加载状态
   if (loading) {
     return (
       <View
         style={[
-          styles.loadingWarpper,
+          styles.center,
           {
             ...layout,
             position: "relative",
@@ -119,16 +110,10 @@ const ReaderImage: React.FC<Props> = ({ item, index, imageLayout }) => {
           onLoad={_onLoad}
           onProgress={_onProgress}
           cachePolicy="disk"
+          recyclingKey={uri}
         />
       </View>
     );
-  }
-
-  // 加载错误
-  if (!loading && error) {
-    <View style={[styles.loadingWarpper, layout]}>
-      <Text variant="bodyLarge">{error}</Text>
-    </View>;
   }
 
   return (
@@ -138,21 +123,13 @@ const ReaderImage: React.FC<Props> = ({ item, index, imageLayout }) => {
         position: "relative",
       }}
     >
-      <Animated.View
-        style={{
-          width: "100%",
-          height: "100%",
-          opacity: imageOpacity,
-          alignItems: "center",
-          justifyContent: "center",
-        }}
-      >
-        <Image
-          style={{ width: "100%", height: "100%" }}
-          source={{ uri }}
-          cachePolicy="disk"
-        />
-      </Animated.View>
+      <Image
+        style={{ width: "100%", height: "100%" }}
+        source={{ uri }}
+        cachePolicy="disk"
+        recyclingKey={uri}
+        transition={350}
+      />
     </View>
   );
 };
@@ -161,6 +138,19 @@ export default React.memo(ReaderImage);
 
 const styles = StyleSheet.create({
   loadingWarpper: {
+    width: "100%",
+    height: "100%",
+    alignItems: "center",
+    justifyContent: "center",
+    position: "absolute",
+    top: 0,
+    left: 0,
+    right: 0,
+    bottom: 0,
+    zIndex: 1,
+    backgroundColor: "pink",
+  },
+  center: {
     alignItems: "center",
     justifyContent: "center",
   },

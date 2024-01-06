@@ -57,8 +57,9 @@ const HorizontalList: React.FC<Props> = ({
     return (
       <View style={[styles.emptyWarpper, { width: screenWidth - 28 }]}>
         <ExpoImage
-          source={require("@/assets/imgs/暂无内容.svg")}
+          source={require("@/assets/imgs/empty.svg")}
           style={{ height: 150, width: 150 }}
+          placeholder={require("@/assets/imgs/empty.svg")}
         />
       </View>
     );

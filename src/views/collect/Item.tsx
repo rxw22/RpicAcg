@@ -1,5 +1,5 @@
 import { View, StyleSheet, Pressable } from "react-native";
-import React, { useRef, useState } from "react";
+import React from "react";
 import { Comic } from "@/network/types";
 import { NativeStackNavigationProp } from "@react-navigation/native-stack";
 import { RootStackParamList } from "@/navigations/mainStacks/types";
@@ -17,15 +17,16 @@ type Props = {
 
 const Item: React.FC<Props> = ({ item, navigation }) => {
   const theme = useTheme();
-  const { thumb, author, title, totalLikes, totalViews, categories, pagesCount } = item;
-  const [update, setUpdate] = useState(false);
-  const lastUri = useRef(`${thumb.fileServer}/static/${thumb.path}`);
+  const {
+    thumb,
+    author,
+    title,
+    totalLikes,
+    totalViews,
+    categories,
+    pagesCount,
+  } = item;
   const uri = `${thumb.fileServer}/static/${thumb.path}`;
-  if (uri !== lastUri.current) {
-    lastUri.current = uri;
-    setUpdate(true);
-  }
-
   return (
     <Pressable
       style={({ pressed }) => [
@@ -50,23 +51,12 @@ const Item: React.FC<Props> = ({ item, navigation }) => {
         ]}
       >
         <Card style={styles.itemWarpper} mode="contained">
-          {update && (
-            <Image
-              style={[
-                styles.full,
-                { position: "absolute", top: 0, right: 0, opacity: 0 },
-              ]}
-              source={{ uri }}
-              onLoad={() => {
-                setUpdate(false);
-              }}
-            />
-          )}
-          {update ? (
-            <Image style={styles.full} source={{}} />
-          ) : (
-            <Image style={styles.full} source={{ uri }} />
-          )}
+          <Image
+            style={styles.full}
+            source={{ uri }}
+            recyclingKey={uri}
+            transition={150}
+          />
         </Card>
         <View style={styles.itemDescription}>
           <View>

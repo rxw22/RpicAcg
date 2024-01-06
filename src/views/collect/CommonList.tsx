@@ -63,8 +63,9 @@ const CommonList: React.FC<Props> = ({
     return (
       <View style={[styles.emptyWarpper]}>
         <ExpoImage
-          source={require("@/assets/imgs/暂无内容.svg")}
+          source={require("@/assets/imgs/empty.svg")}
           style={{ height: 200, width: 200 }}
+          placeholder={require("@/assets/imgs/empty.svg")}
         />
       </View>
     );

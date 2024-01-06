@@ -8,7 +8,7 @@ type ComicRecord = {
   order: number;
   page: number;
   y: number;
-  layout: Record<number, LayoutItem>
+  layout: Record<number, LayoutItem>;
 };
 
 export type readRecord = {
@@ -18,6 +18,19 @@ export type readRecord = {
   comicRecord: Record<string, ComicRecord | undefined>;
   saveComicRecord(id: string, record: ComicRecord): void;
 };
+
+// 限制一下comicRecord的储存大小,最多储存maxPropertiesLength条历史记录
+function limitProperties(
+  obj: Record<string, ComicRecord | undefined>,
+  maxPropertiesLength: number = 500
+) {
+  let keys = Object.keys(obj);
+  if (keys.length > maxPropertiesLength) {
+    let oldestKey = keys[0];
+    delete obj[oldestKey];
+  }
+  return obj;
+}
 
 export const useReadStore = create(
   persist<readRecord>(
@@ -36,8 +49,10 @@ export const useReadStore = create(
       comicRecord: {},
       saveComicRecord(id, record) {
         return set((state) => {
+          const obj = { ...state.comicRecord, [id]: record };
+          const limitObj = limitProperties(obj);
           return {
-            comicRecord: { ...state.comicRecord, [id]: record },
+            comicRecord: limitObj,
           };
         });
       },

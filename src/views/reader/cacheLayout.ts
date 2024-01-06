@@ -9,6 +9,9 @@ class CacheLayout {
   constructor() {
     this.layoutMap = {};
   }
+  initLayout(layouts: Record<number, LayoutItem>) {
+    this.layoutMap = layouts;
+  }
   setLayout(index: number, layout: LayoutItem) {
     this.layoutMap[index] = layout;
   }

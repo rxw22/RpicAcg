@@ -162,7 +162,9 @@ const ComicDetails: React.FC<Props> = ({ route, navigation }) => {
               <View style={{ flexDirection: "row", alignItems: "center" }}>
                 <Icon source="clipboard-clock-outline" size={20} />
                 <View style={{ width: 12 }} />
-                <Text variant="bodyMedium">上次阅读到第 {record.order} 章</Text>
+                <Text variant="bodyMedium">
+                  上次阅读到第 {record.order} 章第 {record.page + 1} 页
+                </Text>
               </View>
               <Button
                 onPress={() => {

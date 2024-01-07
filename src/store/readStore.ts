@@ -2,13 +2,11 @@ import { create } from "zustand";
 import { persist, createJSONStorage } from "zustand/middleware";
 import AsyncStorage from "@react-native-async-storage/async-storage";
 import { Comic } from "@/network/types";
-import { LayoutItem } from "@/views/reader/cacheLayout";
 
 type ComicRecord = {
   order: number;
   page: number;
   y: number;
-  layout: Record<number, LayoutItem>;
 };
 
 export type readRecord = {

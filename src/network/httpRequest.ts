@@ -6,6 +6,8 @@ import {
   ComicEpisodePagesResponse,
   ComicEpisodesResponse,
   ComicRecommendResponse,
+  ComicsPayload,
+  ComicsResponse,
   PunchInResponse,
   SignInPayload,
   SignInResponse,
@@ -132,6 +134,26 @@ class HttpRequest {
       results.push(...docs);
     }
     return results;
+  }
+
+  // 获取分类
+  async fetchCategories() {
+    const result = await this.httpClient.get<CategoriesResponse>(`categories`);
+    if (result.code !== 200) {
+      throw new Error(result.message);
+    }
+    const { categories } = result.data;
+    return categories;
+  }
+
+  // 获取分区漫画
+  async fetchComics(payload: ComicsPayload) {
+    const result = await this.httpClient.get<ComicsResponse>("comics", payload);
+    if (result.code !== 200) {
+      throw new Error(result.message);
+    }
+    const { comics } = result.data;
+    return comics;
   }
 }
 

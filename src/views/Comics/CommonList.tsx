@@ -77,7 +77,10 @@ const CommonList: React.FC<Props> = ({
       ListFooterComponent={renderFooterComponent}
       estimatedItemSize={190}
       ListEmptyComponent={renderEmptyComponent}
-      estimatedListSize={{ width: layout.width - 10, height: layout.height }}
+      estimatedListSize={{
+        width: layout.width - 16,
+        height: layout.height - 16,
+      }}
       renderItem={renderItem}
     />
   );

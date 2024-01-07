@@ -52,17 +52,12 @@ const Reader: React.FC<Props> = ({ route, navigation }) => {
   }, []);
 
   useEffect(() => {
-    // 初始化赋值之前保存的各别图片的宽高, 如果是继续阅读才初始化
-    // if (y) {
-    //   cacheLayout.initLayout(comicRecord[comicId]?.layout || {});
-    // }
     return () => {
       // 保存阅读记录
       saveComicRecord(comicId, {
         order,
         page: recordRef.current.page,
         y: recordRef.current.y,
-        layout: cacheLayout.getAllLayout(),
       });
       // 清除图片宽高缓存
       cacheLayout.clear();
@@ -70,13 +65,15 @@ const Reader: React.FC<Props> = ({ route, navigation }) => {
   }, []);
 
   // 跳转到指定offset
-  // useEffect(() => {
-  //   if (!loading && y) {
-  //     setTimeout(() => {
-  //       listRef.current?.scrollToOffset(y);
-  //     }, 180);
-  //   }
-  // }, [loading]);
+  useEffect(() => {
+    const page = comicRecord[comicId]?.page || 0;
+    if (!loading && y) {
+      setTimeout(() => {
+        // listRef.current?.scrollToOffset(y);
+        listRef.current?.scrollToIndex(page);
+      }, 180);
+    }
+  }, [loading]);
 
   // 手势处理
   const gesture = Gesture.Tap().onEnd(() => {

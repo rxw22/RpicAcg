@@ -72,9 +72,9 @@ const ReaderImage: React.FC<Props> = ({ item, index }) => {
   };
 
   // 加载错误
-  if (!loading && error) {
+  if (error) {
     <View style={[styles.center, layout]}>
-      <Text variant="bodyLarge">{error}</Text>
+      <Text variant="bodyLarge">{error}-Image Load Error</Text>
     </View>;
   }
 

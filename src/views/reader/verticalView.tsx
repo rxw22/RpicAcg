@@ -11,7 +11,6 @@ import { ComicEpisodePage } from "@/network/types";
 import { Text } from "react-native-paper";
 import { FlashList } from "@shopify/flash-list";
 import VerticalImage from "./VerticalImage";
-import { LayoutItem } from "./cacheLayout";
 
 interface Props {
   dataSource: ComicEpisodePage[];
@@ -40,7 +39,8 @@ const VerticalView = forwardRef<Ref, Props>(
         return;
       }
       const last = viewableItems.at(-1);
-      const index = last?.index || 0;
+      const second = viewableItems.at(-2);
+      const index = last?.index || second?.index || 0;
       onPageChange(index);
     };
 
@@ -90,6 +90,7 @@ const VerticalView = forwardRef<Ref, Props>(
         viewabilityConfig={{ itemVisiblePercentThreshold: 50 }}
         estimatedItemSize={(layout.height * 3) / 5}
         estimatedListSize={{ height: layout.height, width: layout.width }}
+        estimatedFirstItemOffset={0}
         ListFooterComponent={renderFooterComponent}
         onScroll={_onScroll}
         renderItem={({ item, index }) => {

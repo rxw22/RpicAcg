@@ -14,6 +14,8 @@ import Reader from "@/views/reader";
 
 import type { RootStackParamList } from "./types";
 import Collect from "@/views/collect";
+import ComicsAppBar from "@/views/Comics/AppBar";
+import Comics from "@/views/Comics";
 
 const Stack = createNativeStackNavigator<RootStackParamList>();
 
@@ -71,7 +73,15 @@ export default function MainStacks() {
         name="collect"
         component={Collect}
         options={{
-          title: "收藏夹"
+          title: "收藏夹",
+        }}
+      />
+      <Stack.Screen
+        name="comics"
+        component={Comics}
+        options={{
+          title: "分区",
+          header: (props) => <ComicsAppBar {...props} />,
         }}
       />
     </Stack.Navigator>

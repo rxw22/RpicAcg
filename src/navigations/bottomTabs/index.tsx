@@ -8,6 +8,7 @@ import User from "@/views/user";
 import Category from "@/views/category";
 import Ranking from "@/views/ranking";
 import { RootBottomTabsParamList } from "./types";
+import CategoryAppBar from "@/views/category/AppBar";
 
 const Tab = createBottomTabNavigator<RootBottomTabsParamList>();
 
@@ -74,7 +75,8 @@ export default function BottomTabs() {
         name="category"
         options={{
           tabBarLabel: "分类",
-          headerShown: false,
+          title: "分类",
+          header: (props) => <CategoryAppBar {...props} />,
           tabBarIcon: ({ color, size, focused }) => {
             const name = focused ? "shape" : "shape-outline";
             return <Icon name={name} size={size} color={color} />;

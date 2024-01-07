@@ -6,4 +6,5 @@ export type RootStackParamList = {
   details: { comicId: string };
   reader: { comicId: string; order: number; title: string; y: number };
   collect: undefined;
+  comics: { c: string };
 };

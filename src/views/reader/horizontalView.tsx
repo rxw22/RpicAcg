@@ -1,37 +1,60 @@
-import { View, StyleSheet } from "react-native";
+import { View, StyleSheet, useWindowDimensions } from "react-native";
 import React, { useState } from "react";
 import { ComicEpisodePage } from "@/network/types";
-import PagerView from "react-native-pager-view";
-import Image from "./VerticalImage";
+// import PagerView from "react-native-pager-view";
+// import Image from "./VerticalImage";
+import { Image } from "expo-image";
+import { FlashList } from "@shopify/flash-list";
 
 interface Props {
   dataSource: ComicEpisodePage[];
+  page?: number;
+  onPageChange: (page: number) => void;
 }
 
-const HorizontalView: React.FC<Props> = ({ dataSource }) => {
-  const [currentPage, setCurrentPage] = useState(0);
+const HorizontalView: React.FC<Props> = ({
+  dataSource,
+  page = 0,
+  onPageChange,
+}) => {
+  const { width: screenWidth, height: screenHeight } = useWindowDimensions();
+
+  const [layout, setLayout] = useState({
+    width: screenWidth,
+    height: (screenHeight * 3) / 5,
+  });
+
   return (
-    <PagerView
-      style={styles.viewPager}
-      initialPage={0}
-      onPageScroll={(e) => {
-        if (currentPage < e.nativeEvent.position + 2) {
-          setCurrentPage(e.nativeEvent.position + 2);
-        }
-      }}
-    >
-      {dataSource.map((item, index) => {
+    <FlashList
+      showsVerticalScrollIndicator={false}
+      data={dataSource}
+      horizontal
+      pagingEnabled
+      keyExtractor={(item) => item._id}
+      viewabilityConfig={{ itemVisiblePercentThreshold: 50 }}
+      estimatedItemSize={(layout.height * 3) / 5}
+      estimatedListSize={{ height: layout.height, width: layout.width }}
+      estimatedFirstItemOffset={0}
+      renderItem={({ item, index }) => {
+        const uri = `${item.media.fileServer}/static/${item.media.path}`;
         return (
-          <View style={styles.pageItem} key={item._id}>
+          <View style={{ width: screenWidth, height: "100%", alignItems: "center", justifyContent: "center" }}>
             <Image
-              shouldLoad={currentPage >= index}
-              uri={`${item.media.fileServer}/static/${item.media.path}`}
-              contentFit="cover"
+              style={{ ...layout }}
+              source={uri}
+              recyclingKey={uri}
+              onLoad={(e) => {
+                const { width, height } = e.source;
+                setLayout({
+                  width: screenWidth,
+                  height: (screenWidth * height) / width,
+                });
+              }}
             />
           </View>
         );
-      })}
-    </PagerView>
+      }}
+    />
   );
 };
 

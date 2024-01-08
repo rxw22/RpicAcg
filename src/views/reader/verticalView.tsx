@@ -35,7 +35,7 @@ const VerticalView = forwardRef<Ref, Props>(
     const layout = useWindowDimensions();
 
     const _onViewableItemsChanged = ({ viewableItems }: ViewableParams) => {
-      if (viewableItems.length <= 0) {
+      if (viewableItems.length <= 0 || !viewableItems) {
         return;
       }
       const last = viewableItems.at(-1);
@@ -43,19 +43,6 @@ const VerticalView = forwardRef<Ref, Props>(
       const index = last?.index || second?.index || 0;
       onPageChange(index);
     };
-
-    const renderFooterComponent = useMemo(() => {
-      return (
-        <View style={styles.listFooter}>
-          <Text
-            variant="bodyLarge"
-            style={{ color: "#fff", textAlign: "center" }}
-          >
-            {loading ? "加载中..." : "到底了..."}
-          </Text>
-        </View>
-      );
-    }, [loading]);
 
     useImperativeHandle(ref, () => {
       return {
@@ -91,7 +78,6 @@ const VerticalView = forwardRef<Ref, Props>(
         estimatedItemSize={(layout.height * 3) / 5}
         estimatedListSize={{ height: layout.height, width: layout.width }}
         estimatedFirstItemOffset={0}
-        ListFooterComponent={renderFooterComponent}
         onScroll={_onScroll}
         renderItem={({ item, index }) => {
           return <VerticalImage item={item} index={index} />;

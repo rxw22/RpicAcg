@@ -1,6 +1,6 @@
-import { StyleSheet, View, useWindowDimensions } from "react-native";
+import { StyleSheet, View } from "react-native";
 import React, { useCallback } from "react";
-import { Comic } from "@/network/types";
+import { Comic, SearchedComic } from "@/network/types";
 import { Text, ActivityIndicator } from "react-native-paper";
 import { FlashList, ListRenderItem } from "@shopify/flash-list";
 import { Image as ExpoImage } from "expo-image";
@@ -10,7 +10,7 @@ import { RootStackParamList } from "@/navigations/mainStacks/types";
 import Item from "./Item";
 
 interface Props {
-  dataSource: Comic[];
+  dataSource: SearchedComic[];
   navigation: NativeStackNavigationProp<RootStackParamList>;
   loadMore(): void;
   loading: boolean;
@@ -22,7 +22,21 @@ const CommonList: React.FC<Props> = ({
   loadMore,
   loading,
 }) => {
-  const renderItem: ListRenderItem<Comic> = ({ item }) => {
+  const renderFooter = () => {
+    return loading ? (
+      <View
+        style={{
+          alignItems: "center",
+          justifyContent: "center",
+          paddingVertical: 10,
+        }}
+      >
+        <ActivityIndicator size="small" animating />
+      </View>
+    ) : null;
+  };
+
+  const renderItem: ListRenderItem<SearchedComic> = ({ item }) => {
     return <Item item={item} navigation={navigation} />;
   };
 
@@ -46,20 +60,6 @@ const CommonList: React.FC<Props> = ({
       </View>
     );
   }, []);
-
-  const renderFooter = () => {
-    return loading ? (
-      <View
-        style={{
-          alignItems: "center",
-          justifyContent: "center",
-          paddingVertical: 10,
-        }}
-      >
-        <ActivityIndicator size="small" animating />
-      </View>
-    ) : null;
-  };
 
   return (
     <FlashList

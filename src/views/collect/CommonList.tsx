@@ -1,7 +1,7 @@
-import { StyleSheet, View, useWindowDimensions } from "react-native";
+import { StyleSheet, View } from "react-native";
 import React, { useCallback } from "react";
 import { Comic } from "@/network/types";
-import { Text, ActivityIndicator } from "react-native-paper";
+import { ActivityIndicator } from "react-native-paper";
 import { FlashList, ListRenderItem } from "@shopify/flash-list";
 import { Image as ExpoImage } from "expo-image";
 
@@ -22,24 +22,18 @@ const CommonList: React.FC<Props> = ({
   loadMore,
   loading,
 }) => {
-  const layout = useWindowDimensions();
-
-  const renderFooterComponent = () => {
-    return (
+  const renderFooter = () => {
+    return loading ? (
       <View
         style={{
           alignItems: "center",
           justifyContent: "center",
-          padding: 8,
+          paddingVertical: 10,
         }}
       >
-        {loading ? (
-          <ActivityIndicator animating={loading} size={26} hidesWhenStopped />
-        ) : (
-          <Text variant="bodyMedium">到底了...</Text>
-        )}
+        <ActivityIndicator size="small" animating />
       </View>
-    );
+    ) : null;
   };
 
   const renderItem: ListRenderItem<Comic> = ({ item }) => {
@@ -74,10 +68,9 @@ const CommonList: React.FC<Props> = ({
       showsVerticalScrollIndicator={false}
       onEndReachedThreshold={1}
       onEndReached={loadMore}
-      ListFooterComponent={renderFooterComponent}
+      ListFooterComponent={renderFooter}
       estimatedItemSize={190}
       ListEmptyComponent={renderEmptyComponent}
-      estimatedListSize={{ width: layout.width - 10, height: layout.height }}
       renderItem={renderItem}
     />
   );

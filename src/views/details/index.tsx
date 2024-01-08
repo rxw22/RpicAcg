@@ -1,5 +1,5 @@
 import { ScrollView, StyleSheet, View } from "react-native";
-import React from "react";
+import React, { useState } from "react";
 import { NativeStackScreenProps } from "@react-navigation/native-stack";
 import {
   Text,
@@ -33,7 +33,12 @@ const ComicDetails: React.FC<Props> = ({ route, navigation }) => {
   // 继续阅读
   const { comicRecord } = useReadStore();
   const record = comicRecord[comicId];
+  // 记录是否点赞
+  const [like, setLike] = useState(false);
+  // 记录是否收藏
+  const [collect, setCollect] = useState(false);
 
+  // 获取comic详情
   const { loading, data, error, refresh } = useRequest(
     httpRequest.fetchComicDetail.bind(httpRequest),
     {
@@ -41,9 +46,14 @@ const ComicDetails: React.FC<Props> = ({ route, navigation }) => {
       onError(e) {
         console.log(e.message);
       },
+      onSuccess(result) {
+        setLike(result.data.comic.isLiked);
+        setCollect(result.data.comic.isFavourite);
+      },
     }
   );
 
+  // 获取章节
   const {
     loading: comicEpisodesLoading,
     data: comicEpisodes,
@@ -66,6 +76,23 @@ const ComicDetails: React.FC<Props> = ({ route, navigation }) => {
     onError(e) {
       console.log(e.message);
     },
+  });
+
+  const { run: likeRun } = useRequest(httpRequest.likeOrUnlikeComic.bind(httpRequest), {
+    manual: true,
+    onError(e) {
+      console.log(e);
+    }
+  });
+
+  const { run: collectRun } = useRequest(httpRequest.collectOrUncollectComic.bind(httpRequest), {
+    manual: true,
+    onError(e) {
+      console.log(e);
+    },
+    onSuccess(result){
+      console.log(result);
+    }
   });
 
   const startReader = (order: number, y: number) => {
@@ -110,32 +137,41 @@ const ComicDetails: React.FC<Props> = ({ route, navigation }) => {
               />
             </Card>
           </View>
-          <Surface style={styles.comicInfo}>
-            {/* cards-heart-outline */}
+          <Surface style={styles.comicInfo} mode="flat">
             <PressableButton
-              onPress={() => console.log("Pressed")}
+              onPress={() => {
+                likeRun(comicId);
+                setLike(!like);
+              }}
               rippleColor="rgba(0, 0, 0, .1)"
               style={styles.infoItem}
               title={response?.comic.likesCount}
-              icon="cards-heart"
+              icon={like ? "cards-heart" : "cards-heart-outline"}
               iconSize={26}
               iconColor={theme.colors.primary}
               textProps={{ variant: "bodyLarge" }}
             />
             <PressableButton
-              onPress={() => console.log("Pressed")}
+              onPress={() => {
+                collectRun(comicId);
+                setCollect(!collect);
+              }}
               rippleColor="rgba(0, 0, 0, .12)"
               style={styles.infoItem}
-              title={response?.comic.isFavourite ? "已收藏" : "未收藏"}
+              title={collect ? "已收藏" : "未收藏"}
               icon={
-                response?.comic.isFavourite ? "tag-heart" : "tag-heart-outline"
+                collect ? "tag-heart" : "tag-heart-outline"
               }
               iconSize={26}
               iconColor={theme.colors.primary}
               textProps={{ variant: "bodyLarge" }}
             />
             <PressableButton
-              onPress={() => console.log("Pressed")}
+              onPress={() => {
+                navigation.navigate("comment", {
+                  comicId,
+                });
+              }}
               rippleColor="rgba(0, 0, 0, .12)"
               style={styles.infoItem}
               title={response?.comic.totalComments}

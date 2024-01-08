@@ -23,11 +23,7 @@ type SceneProps = {
   route: {
     key: string;
     title: string;
-    navigation: NativeStackNavigationProp<
-      RootStackParamList,
-      "collect",
-      undefined
-    >;
+    navigation: NativeStackNavigationProp<RootStackParamList>;
   };
 } & Omit<SceneRendererProps, "layout">;
 

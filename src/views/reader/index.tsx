@@ -4,6 +4,7 @@ import { StatusBar } from "expo-status-bar";
 import { useRequest } from "ahooks";
 import { GestureDetector, Gesture } from "react-native-gesture-handler";
 import { useSharedValue, withTiming } from "react-native-reanimated";
+import { ActivityIndicator } from "react-native-paper";
 
 import { NativeStackScreenProps } from "@react-navigation/native-stack";
 import { RootStackParamList } from "@/navigations/mainStacks/types";
@@ -94,14 +95,37 @@ const Reader: React.FC<Props> = ({ route, navigation }) => {
     <GestureDetector gesture={gesture}>
       <View style={styles.container}>
         <StatusBar style="light" animated hidden />
-        <View style={{ height: "100%", width: "100%" }}>
-          <VerticalView
-            dataSource={data || []}
-            loading={loading}
-            ref={listRef}
-            onPageChange={onPageChange}
-            onScrollYChange={onScrollYChange}
-          />
+        <View
+          style={{
+            height: "100%",
+            width: "100%",
+          }}
+        >
+          {loading ? (
+            <View
+              style={{
+                height: "100%",
+                width: "100%",
+                alignItems: "center",
+                justifyContent: "center",
+              }}
+            >
+              <ActivityIndicator animating size="large" />
+            </View>
+          ) : (
+            <VerticalView
+              dataSource={data || []}
+              loading={loading}
+              ref={listRef}
+              onPageChange={onPageChange}
+              onScrollYChange={onScrollYChange}
+            />
+            // <HorizontalView
+            //   dataSource={data || []}
+            //   page={y ? comicRecord[comicId]?.page || 0 : 0}
+            //   onPageChange={onPageChange}
+            // />
+          )}
         </View>
         <Bottom position={bottomPosition} />
       </View>

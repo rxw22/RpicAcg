@@ -15,7 +15,7 @@ type Props = React.ComponentProps<typeof View> & {
   refresh?(): void;
 };
 
-const BgBox: React.FC<Props> = ({loading, error, refresh, ...props}) => {
+const BgBox: React.FC<Props> = ({ loading, error, refresh, ...props }) => {
   const theme = useTheme();
 
   const bgStyle = StyleSheet.create({
@@ -39,7 +39,7 @@ const BgBox: React.FC<Props> = ({loading, error, refresh, ...props}) => {
       height: "100%",
       width: "100%",
       zIndex: 1,
-      backgroundColor: "#00000010",
+      backgroundColor: theme.colors.background,
       alignItems: "center",
       justifyContent: "center",
     },
@@ -49,7 +49,7 @@ const BgBox: React.FC<Props> = ({loading, error, refresh, ...props}) => {
   const errorStyle = props.style
     ? [props.style, bgStyle.bg, bgStyle.center]
     : [bgStyle.bg, bgStyle.center];
-    
+
   if (error && !loading) {
     return (
       <View style={errorStyle}>

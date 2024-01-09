@@ -13,6 +13,12 @@ const CategoryAppBar: React.FC<BottomTabHeaderProps> = ({
     <Appbar.Header>
       <Appbar.Content title={title} />
       <Appbar.Action
+        icon="magnify"
+        onPress={() => {
+          navigation.navigate("search");
+        }}
+      />
+      <Appbar.Action
         icon="cog-outline"
         onPress={() => {
           navigation.navigate("settings");

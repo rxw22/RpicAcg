@@ -75,7 +75,7 @@ function UserAppBar({ flag, uri, name }: Props) {
                 borderRadius: 18,
                 marginRight: 8,
               }}
-              placeholder={require("@/assets/imgs/猫爪.png")}
+              placeholder={require("@/assets/imgs/user.png")}
             />
             <Text variant="labelMedium" numberOfLines={1}>
               {name}

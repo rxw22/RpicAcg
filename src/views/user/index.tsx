@@ -6,7 +6,7 @@ import {
   NativeScrollEvent,
   NativeSyntheticEvent,
 } from "react-native";
-import { Text } from "react-native-paper";
+import { FAB, Text } from "react-native-paper";
 import { useRequest } from "ahooks";
 import { ImageBackground } from "expo-image";
 import { useLayoutEffect, useState } from "react";
@@ -88,7 +88,7 @@ const User: React.FC<Props> = (props) => {
         style={[styles.background, { paddingTop: statusBarHeight + 64 }]}
         source={
           loading
-            ? require("@/assets/imgs/placeholder1.png")
+            ? require("@/assets/imgs/placeholder.png")
             : {
                 uri: `${user?.avatar?.fileServer}/static/${user?.avatar?.path}`,
               }
@@ -108,7 +108,7 @@ const User: React.FC<Props> = (props) => {
             <Image
               source={
                 loading
-                  ? require("@/assets/imgs/猫爪.png")
+                  ? require("@/assets/imgs/user.png")
                   : {
                       uri: `${user?.avatar?.fileServer}/static/${user?.avatar?.path}`,
                     }
@@ -160,6 +160,15 @@ const User: React.FC<Props> = (props) => {
             />
           </BgBox>
         </ScrollView>
+        <FAB
+          icon="restore"
+          style={styles.fab}
+          onPress={() => {
+            refresh();
+            favouriteRefresh();
+          }}
+          size="medium"
+        />
       </ImageBackground>
     </BgBox>
   );
@@ -216,5 +225,10 @@ const styles = StyleSheet.create({
   sizeBox: {
     width: "100%",
     height: 15,
+  },
+  fab: {
+    position: "absolute",
+    bottom: 15,
+    right: 15,
   },
 });

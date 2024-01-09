@@ -1,5 +1,6 @@
 import {
   CategoriesResponse,
+  CollectResponse,
   ComicDetailResponse,
   ComicEpisode,
   ComicEpisodePage,
@@ -8,7 +9,17 @@ import {
   ComicRecommendResponse,
   ComicsPayload,
   ComicsResponse,
+  CommentChildrenPayload,
+  CommentChildrenResponse,
+  CommentPayload,
+  CommentResponse,
+  KeywordsResponse,
+  LikeOrUnLikeComicResponse,
   PunchInResponse,
+  RankingPayload,
+  RankingResponse,
+  SearchComicsPayload,
+  SearchComicsResponse,
   SignInPayload,
   SignInResponse,
   UserFavouritePayload,
@@ -152,6 +163,95 @@ class HttpRequest {
     if (result.code !== 200) {
       throw new Error(result.message);
     }
+    const { comics } = result.data;
+    return comics;
+  }
+
+  // 获取漫画排行
+  async fetchComicsRanking(payload: RankingPayload) {
+    const result = await this.httpClient.get<RankingResponse>(
+      "comics/leaderboard",
+      payload
+    );
+    if (result.code !== 200) {
+      throw new Error(result.message);
+    }
+    const { comics } = result.data;
+    return comics;
+  }
+
+  // 获取漫画评论
+  async fetchComicComment(payload: CommentPayload) {
+    const { page, comicId } = payload;
+    const result = await this.httpClient.get<CommentResponse>(
+      `comics/${comicId}/comments`,
+      { page }
+    );
+    if (result.code !== 200) {
+      throw new Error(result.message);
+    }
+    return result.data;
+  }
+
+  // 获取漫画评论的子评论
+  async fetchCommentChildren(payload: CommentChildrenPayload) {
+    const { page, commentId } = payload;
+    const result = await this.httpClient.get<CommentChildrenResponse>(
+      `comments/${commentId}/childrens`,
+      { page }
+    );
+    if (result.code !== 200) {
+      throw new Error(result.message);
+    }
+    return result.data;
+  }
+
+  // 点赞或取消点赞本子
+  async likeOrUnlikeComic(comicId: string) {
+    const result = await this.httpClient.post<LikeOrUnLikeComicResponse>(
+      `comics/${comicId}/like`
+    );
+    if (result.code !== 200) {
+      throw new Error(result.message);
+    }
+    const { action } = result.data;
+    return action;
+  }
+
+  // 收藏或取消收藏本子
+  async collectOrUncollectComic(comicId: string) {
+    const result = await this.httpClient.post<CollectResponse>(
+      `comics/${comicId}/favourite`
+    );
+    if (result.code !== 200) {
+      throw new Error(result.message);
+    }
+    const { action } = result.data;
+    return action;
+  }
+
+  // 大家都在搜
+  async fetchKeywords() {
+    const result = await this.httpClient.get<KeywordsResponse>(`keywords`);
+    if (result.code !== 200) {
+      throw new Error(result.message);
+    }
+    const { keywords } = result.data;
+    return keywords;
+  }
+
+  // 漫画搜索
+  async searchComics(payload: SearchComicsPayload) {
+    const { page, keyword, sort } = payload;
+    const result = await this.httpClient.post<SearchComicsResponse>(
+      `comics/advanced-search?page=${page}`,
+      { keyword, sort }
+    );
+    if (result.code !== 200) {
+      throw new Error(result.message);
+    }
+    console.log(result);
+    
     const { comics } = result.data;
     return comics;
   }

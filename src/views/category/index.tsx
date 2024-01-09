@@ -50,9 +50,8 @@ const Category: React.FC<Props> = ({ navigation }) => {
           numColumns={3}
           estimatedItemSize={200}
           showsVerticalScrollIndicator={false}
-          estimatedListSize={{ height: layout.height, width: layout.width }}
-          renderItem={({ item, index }) => {
-            const { thumb, title, _id } = item;
+          renderItem={({ item }) => {
+            const { thumb, title } = item;
             const uri = thumb.fileServer.includes("static")
               ? `${thumb.fileServer}${thumb.path}`
               : `${thumb.fileServer}/static/${thumb.path}`;

@@ -1,25 +1,33 @@
-import { StyleSheet, View, useWindowDimensions } from "react-native";
+import { StyleSheet, View } from "react-native";
 import React, { useCallback } from "react";
 import { Comic } from "@/network/types";
 import { Text, ActivityIndicator } from "react-native-paper";
 import { FlashList, ListRenderItem } from "@shopify/flash-list";
 import { Image as ExpoImage } from "expo-image";
 
+import Item from "./Item";
+import { BottomTabNavigationProp } from "@react-navigation/bottom-tabs";
+import { RootBottomTabsParamList } from "@/navigations/bottomTabs/types";
+import { CompositeNavigationProp } from "@react-navigation/native";
 import { NativeStackNavigationProp } from "@react-navigation/native-stack";
 import { RootStackParamList } from "@/navigations/mainStacks/types";
-import Item from "./Item";
 
 interface Props {
   dataSource: Comic[];
-  navigation: NativeStackNavigationProp<RootStackParamList>;
-  loadMore(): void;
+  navigation: CompositeNavigationProp<
+  BottomTabNavigationProp<RootBottomTabsParamList, "ranking", undefined>,
+  NativeStackNavigationProp<
+    RootStackParamList,
+    keyof RootStackParamList,
+    undefined
+  >
+>;
   loading: boolean;
 }
 
 const CommonList: React.FC<Props> = ({
   dataSource,
   navigation,
-  loadMore,
   loading,
 }) => {
   const renderItem: ListRenderItem<Comic> = ({ item }) => {
@@ -47,28 +55,12 @@ const CommonList: React.FC<Props> = ({
     );
   }, []);
 
-  const renderFooter = () => {
-    return loading ? (
-      <View
-        style={{
-          alignItems: "center",
-          justifyContent: "center",
-          paddingVertical: 10,
-        }}
-      >
-        <ActivityIndicator size="small" animating />
-      </View>
-    ) : null;
-  };
-
   return (
     <FlashList
       keyExtractor={(item) => item._id}
       data={dataSource}
       showsVerticalScrollIndicator={false}
       onEndReachedThreshold={1}
-      onEndReached={loadMore}
-      ListFooterComponent={renderFooter}
       estimatedItemSize={190}
       ListEmptyComponent={renderEmptyComponent}
       renderItem={renderItem}

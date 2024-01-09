@@ -67,6 +67,12 @@ export enum ComicSort {
   View = "vd", // 绅士指数最多
 }
 
+export enum LeaderQuery {
+  Day = "H24",
+  Week = "D7",
+  Month = "D30",
+}
+
 export interface UserFavouritePayload {
   page?: number;
   s?: ComicSort;
@@ -190,3 +196,126 @@ export interface ComicsPayload {
   page?: number;
   s?: ComicSort;
 }
+
+export interface RankingPayload {
+  tt: LeaderQuery;
+  ct: "VC"; // 暂不明确，固定
+}
+
+export type RankingResponse = BaseResponse<{
+  comics: Comic[];
+}>;
+
+export interface CommentPayload {
+  comicId: string;
+  page: number;
+}
+
+export interface SimpleUser {
+  _id: string;
+  gender: "m" | "f" | "bot";
+  name: string;
+  title: string;
+  verified: false;
+  exp: 550;
+  level: 2;
+  characters: string[];
+  role: string;
+  avatar: {
+    originalName: string;
+    path: string;
+    fileServer: string;
+  };
+  slogan: string;
+}
+
+export interface Comment {
+  _id: string;
+  content: string;
+  _user: SimpleUser;
+  _comic: string;
+  totalComments: 0;
+  isTop: boolean;
+  hide: boolean;
+  created_at: string;
+  id: string;
+  likesCount: number;
+  commentsCount: number;
+  isLiked: boolean;
+}
+
+export type CommentResponse = BaseResponse<{
+  comments: {
+    docs: Comment[];
+    total: number;
+    limit: number;
+    page: number;
+    pages: number;
+  };
+  topComments: Comment[];
+}>;
+
+
+export interface CommentChildrenPayload{
+  page: number;
+  commentId: string;
+}
+
+export type CommentChildrenResponse = BaseResponse<{
+  comments: {
+    docs: Comment[];
+    total: number;
+    limit: number;
+    page: number;
+    pages: number;
+  };
+}>;
+
+export type LikeOrUnLikeComicResponse = BaseResponse<{
+  action: "like" | "unlike"
+}>;
+
+export type CollectResponse = BaseResponse<{
+  action: "un_favourite" | "favourite"
+}>
+
+export type KeywordsResponse = BaseResponse<{
+  keywords: string[];
+}>
+
+export interface SearchComicsPayload {
+  keyword: string
+  categories?: string[]
+  page?: number
+  sort?: ComicSort
+}
+
+export type SearchComicsResponse = BaseResponse<{
+  comics: {
+    docs: SearchedComic[]
+    total: number
+    limit: number
+    page: number
+    pages: number
+  }
+}>
+
+
+export interface SearchedComic {
+  _id: string
+  title: string
+  author?: string
+  totalViews?: number
+  totalLikes?: number
+  likesCount: number
+  finished: boolean
+  categories: string[]
+  thumb: ImageMedia
+  chineseTeam?: string
+  description?: string
+  tags: string[]
+  updated_at: string
+  created_at: string
+}
+
+

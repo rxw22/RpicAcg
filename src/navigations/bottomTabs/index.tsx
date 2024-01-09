@@ -9,13 +9,14 @@ import Category from "@/views/category";
 import Ranking from "@/views/ranking";
 import { RootBottomTabsParamList } from "./types";
 import CategoryAppBar from "@/views/category/AppBar";
+import RankingAppBar from "@/views/ranking/AppBar";
 
 const Tab = createBottomTabNavigator<RootBottomTabsParamList>();
 
 export default function BottomTabs() {
   return (
     <Tab.Navigator
-      initialRouteName="user"
+      initialRouteName="category"
       tabBar={({ navigation, state, descriptors, insets }) => {
         return (
           <BottomNavigation.Bar
@@ -60,18 +61,6 @@ export default function BottomTabs() {
       }}
     >
       <Tab.Screen
-        name="home"
-        options={{
-          tabBarLabel: "首页",
-          headerShown: false,
-          tabBarIcon: ({ color, size, focused }) => {
-            const name = focused ? "home" : "home-outline";
-            return <Icon name={name} size={size} color={color} />;
-          },
-        }}
-        component={Home}
-      />
-      <Tab.Screen
         name="category"
         options={{
           tabBarLabel: "分类",
@@ -88,13 +77,25 @@ export default function BottomTabs() {
         name="ranking"
         options={{
           tabBarLabel: "排行",
-          headerShown: false,
+          header: (props) => <RankingAppBar {...props} />,
           tabBarIcon: ({ color, size, focused }) => {
             const name = focused ? "equalizer" : "equalizer-outline";
             return <Icon name={name} size={size} color={color} />;
           },
         }}
         component={Ranking}
+      />
+      <Tab.Screen
+        name="home"
+        options={{
+          tabBarLabel: "游戏",
+          headerShown: false,
+          tabBarIcon: ({ color, size, focused }) => {
+            const name = focused ? "gamepad" : "gamepad-outline";
+            return <Icon name={name} size={size} color={color} />;
+          },
+        }}
+        component={Home}
       />
       <Tab.Screen
         name="user"

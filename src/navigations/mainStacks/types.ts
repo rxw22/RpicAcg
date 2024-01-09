@@ -1,4 +1,8 @@
+<<<<<<< HEAD
 import { ComicRecord } from "@/store/readStore";
+=======
+import { Comment } from "@/network/types";
+>>>>>>> 2126990c587c242cce3361a6ff6885c104195b89
 
 export type RootStackParamList = {
   login: undefined;
@@ -14,4 +18,9 @@ export type RootStackParamList = {
   };
   collect: undefined;
   comics: { c: string };
+  comment: { comicId: string };
+  comchildren: { comment: Comment };
+  searchcomics: {
+    keyword: string;
+  };
 };

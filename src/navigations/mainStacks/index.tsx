@@ -16,6 +16,11 @@ import type { RootStackParamList } from "./types";
 import Collect from "@/views/collect";
 import ComicsAppBar from "@/views/Comics/AppBar";
 import Comics from "@/views/Comics";
+import Comment from '@/views/comment';
+import CommentAppBar from '@/views/comment/AppBar';
+import ComChildren from "@/views/ComChildren";
+import SearchComics from "@/views/SearchComics";
+import SearchComicsAppBar from '@/views/SearchComics/AppBar';
 
 const Stack = createNativeStackNavigator<RootStackParamList>();
 
@@ -82,6 +87,30 @@ export default function MainStacks() {
         options={{
           title: "分区",
           header: (props) => <ComicsAppBar {...props} />,
+        }}
+      />
+      <Stack.Screen
+        name="searchcomics"
+        component={SearchComics}
+        options={{
+          title: "搜索",
+          header: (props) => <SearchComicsAppBar {...props} />,
+        }}
+      />
+      <Stack.Screen
+        name="comment"
+        component={Comment}
+        options={{
+          title: "评论",
+          header: (props) => <CommentAppBar {...props} />,
+        }}
+      />
+      <Stack.Screen
+        name="comchildren"
+        component={ComChildren}
+        options={{
+          title: "回复",
+          header: (props) => <CommentAppBar {...props} />,
         }}
       />
     </Stack.Navigator>

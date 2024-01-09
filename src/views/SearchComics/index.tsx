@@ -6,41 +6,43 @@ import { useNetworkProvider } from "@/network/networkProvider";
 import { useRequest } from "ahooks";
 import { NativeStackScreenProps } from "@react-navigation/native-stack";
 import { RootStackParamList } from "@/navigations/mainStacks/types";
-import { Comic, ComicSort } from "@/network/types";
-import CommonList from "../collect/CommonList";
+import { ComicSort, SearchedComic } from "@/network/types";
+import CommonList from "./CommonList";
 import { useGlobalStore } from "@/store/globalStore";
 
-type Props = NativeStackScreenProps<RootStackParamList, "comics">;
+type Props = NativeStackScreenProps<RootStackParamList, "searchcomics">;
 
-const Comics: React.FC<Props> = ({ route, navigation }) => {
-  const { c } = route.params;
+const SearchComics: React.FC<Props> = ({ route, navigation }) => {
+  const { keyword } = route.params;
   const { httpRequest } = useNetworkProvider();
   const pageRef = useRef({
     currerntPage: 1,
     totalPage: 0,
-    s: ComicSort.Default,
+    sort: ComicSort.NewToOld,
   });
-  const [dataSource, setDataSource] = useState<Comic[]>([]);
-  const { comicSort } = useGlobalStore();
+  const [dataSource, setDataSource] = useState<SearchedComic[]>([]);
+  const { searchSort } = useGlobalStore();
 
   useEffect(() => {
     pageRef.current = {
       currerntPage: 1,
       totalPage: 0,
-      s: comicSort,
+      sort: searchSort,
     };
     setDataSource([]);
-    run({ c: encodeURIComponent(c), page: 1, s: comicSort });
-  }, [comicSort]);
+    run({ keyword: keyword, page: 1, sort: searchSort });
+  }, [searchSort]);
 
   const { error, refresh, run, loading } = useRequest(
-    httpRequest.fetchComics.bind(httpRequest),
+    httpRequest.searchComics.bind(httpRequest),
     {
       manual: true,
       onError(e) {
         console.log(e);
       },
       onSuccess(data) {
+        console.log(data);
+        
         const { pages, docs } = data;
         pageRef.current.totalPage = pages;
         setDataSource([...dataSource, ...docs]);
@@ -53,8 +55,8 @@ const Comics: React.FC<Props> = ({ route, navigation }) => {
       pageRef.current.currerntPage++;
       run({
         page: pageRef.current.currerntPage,
-        s: pageRef.current.s,
-        c: encodeURIComponent(c),
+        sort: pageRef.current.sort,
+        keyword: keyword,
       });
     }
   };
@@ -73,7 +75,7 @@ const Comics: React.FC<Props> = ({ route, navigation }) => {
   );
 };
 
-export default React.memo(Comics);
+export default React.memo(SearchComics);
 
 const styles = StyleSheet.create({
   container: {

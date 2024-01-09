@@ -68,12 +68,12 @@ const ComicDetails: React.FC<Props> = ({ route, navigation }) => {
     },
   });
 
-  const startReader = (order: number, y: number) => {
+  const startReader = (order: number) => {
     navigation.navigate("reader", {
       comicId,
       order,
       title: response?.comic.title || "",
-      y,
+      record,
     });
   };
 
@@ -168,7 +168,7 @@ const ComicDetails: React.FC<Props> = ({ route, navigation }) => {
               </View>
               <Button
                 onPress={() => {
-                  startReader(record.order, record.y);
+                  startReader(record.order);
                 }}
               >
                 继续阅读
@@ -184,7 +184,7 @@ const ComicDetails: React.FC<Props> = ({ route, navigation }) => {
               style={styles.operatesItem}
               onPress={() => {
                 addRecord(response?.comic, "browses");
-                startReader(comicEpisodes?.at(-1)?.order || 1, 0);
+                startReader(comicEpisodes?.at(-1)?.order || 1);
               }}
             >
               从头开始
@@ -318,7 +318,7 @@ const ComicDetails: React.FC<Props> = ({ route, navigation }) => {
                         contentStyle={styles.epsCard}
                         mode="contained-tonal"
                         onPress={() => {
-                          startReader(comicEpisodes?.[index * 2].order, 0);
+                          startReader(comicEpisodes?.[index * 2].order);
                         }}
                       >
                         {comicEpisodes?.[index * 2].title}
@@ -338,7 +338,7 @@ const ComicDetails: React.FC<Props> = ({ route, navigation }) => {
                         contentStyle={styles.epsCard}
                         mode="contained-tonal"
                         onPress={() => {
-                          startReader(comicEpisodes?.[index * 2 + 1].order, 0);
+                          startReader(comicEpisodes?.[index * 2 + 1].order);
                         }}
                       >
                         {comicEpisodes?.[index * 2 + 1].title}

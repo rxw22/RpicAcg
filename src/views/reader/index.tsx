@@ -18,14 +18,14 @@ import { useReadStore } from "@/store/readStore";
 type Props = NativeStackScreenProps<RootStackParamList, "reader">;
 
 const Reader: React.FC<Props> = ({ route, navigation }) => {
-  const { comicId, order, title, y } = route.params;
+  const { comicId, order, title, record } = route.params;
   const { httpRequest } = useNetworkProvider();
   const headerPosition = useSharedValue(-64);
   const bottomPosition = useSharedValue(-90);
   const { saveComicRecord, comicRecord } = useReadStore();
   const recordRef = useRef({
     page: 0,
-    y,
+    y: record?.y,
   });
 
   const { data, loading, refresh, run } = useRequest(
@@ -58,6 +58,7 @@ const Reader: React.FC<Props> = ({ route, navigation }) => {
         order,
         page: recordRef.current.page,
         y: recordRef.current.y,
+        layout: {},
       });
       // 清除图片宽高缓存
       cacheLayout.clear();
@@ -67,7 +68,7 @@ const Reader: React.FC<Props> = ({ route, navigation }) => {
   // 跳转到指定offset
   useEffect(() => {
     const page = comicRecord[comicId]?.page || 0;
-    if (!loading && y) {
+    if (!loading && record?.y) {
       setTimeout(() => {
         // listRef.current?.scrollToOffset(y);
         listRef.current?.scrollToIndex(page);

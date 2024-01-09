@@ -3,10 +3,11 @@ import { persist, createJSONStorage } from "zustand/middleware";
 import AsyncStorage from "@react-native-async-storage/async-storage";
 import { Comic } from "@/network/types";
 
-type ComicRecord = {
+export type ComicRecord = {
   order: number;
   page: number;
-  y: number;
+  y: number | undefined;
+  layout: Record<string, number>;
 };
 
 export type readRecord = {

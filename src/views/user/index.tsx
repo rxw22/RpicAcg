@@ -24,6 +24,7 @@ import { RootStackParamList } from "@/navigations/mainStacks/types";
 import HorizontalList from "./horizontalList";
 import { ComicSort } from "@/network/types";
 import { useReadStore } from "@/store/readStore";
+import React from "react";
 
 type Props = CompositeScreenProps<
   BottomTabScreenProps<RootBottomTabsParamList, "user">,
@@ -64,7 +65,7 @@ const User: React.FC<Props> = (props) => {
   useLayoutEffect(() => {
     props.navigation.setOptions({
       headerTransparent: true,
-      header: () => <AppBar flag={flag} uri={uri} name={name}/>,
+      header: () => <AppBar flag={flag} uri={uri} name={name} navigation={props.navigation}/>,
     });
   }, [flag]);
 
@@ -174,7 +175,7 @@ const User: React.FC<Props> = (props) => {
   );
 };
 
-export default User;
+export default React.memo(User);
 
 const styles = StyleSheet.create({
   container: {

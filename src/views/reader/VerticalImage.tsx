@@ -7,31 +7,35 @@ import {
   ImageProgressEventData,
 } from "expo-image";
 import { Text, useTheme } from "react-native-paper";
-import cacheLayout from "./cacheLayout";
+import cacheMap from "./cacheMap";
 import * as Progress from "react-native-progress";
 import { ComicEpisodePage } from "@/network/types";
 
 interface Props {
   item: ComicEpisodePage;
-  index: number;
 }
 
-const ReaderImage: React.FC<Props> = ({ item, index }) => {
+const ReaderImage: React.FC<Props> = ({ item }) => {
   const { width: screenWidth, height: screenHeight } = Dimensions.get("window");
+  const { media } = item;
+  const lastUri = useRef(`${media.fileServer}/static/${media.path}`);
+  const uri = `${media.fileServer}/static/${media.path}`;
+
   const theme = useTheme();
   const [loading, setLoading] = useState(true);
   const [progress, setProgress] = useState(0);
   const [error, setError] = useState("");
+
+  const height = cacheMap.getHeight(media.path) || (screenHeight * 3) / 5;
+
   // 图片宽高有缓存使用缓存数据，可以避免抖动
-  const initLayout = cacheLayout.getLayout(index) || {
+  const initLayout = {
     width: screenWidth,
-    height: (screenHeight * 3) / 5,
+    height,
   };
+
   const [layout, setLayout] = useState(initLayout);
 
-  const { media } = item;
-  const lastUri = useRef(`${media.fileServer}/static/${media.path}`);
-  const uri = `${media.fileServer}/static/${media.path}`;
   // 重置一些状态
   if (uri !== lastUri.current) {
     lastUri.current = uri;
@@ -44,10 +48,7 @@ const ReaderImage: React.FC<Props> = ({ item, index }) => {
   const _onLoad = (event: ImageLoadEventData) => {
     const { height, width } = event.source;
     setLayout({ ...layout, height: (screenWidth * height) / width });
-    cacheLayout.setLayout(index, {
-      ...layout,
-      height: (screenWidth * height) / width,
-    });
+    cacheMap.setHeight(media.path, (screenWidth * height) / width);
   };
 
   const _onLoadStart = () => {
@@ -85,7 +86,7 @@ const ReaderImage: React.FC<Props> = ({ item, index }) => {
         style={[
           styles.center,
           {
-            ...layout,
+            ...initLayout,
             position: "relative",
           },
         ]}

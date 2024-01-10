@@ -18,6 +18,7 @@ import type { NativeStackScreenProps } from "@react-navigation/native-stack";
 import type { SignInPayload } from "@/network/types";
 import { useNetworkProvider } from "@/network/networkProvider";
 import { useUserStore } from "@/store/userStore";
+import React from "react";
 
 type Props = NativeStackScreenProps<RootStackParamList, "login">;
 
@@ -112,6 +113,7 @@ const Login: React.FC<Props> = ({ navigation }) => {
               onChangeText={onChange}
               value={value}
               secureTextEntry={isPwd}
+              onSubmitEditing={handleSubmit(onSubmit)}
               left={<TextInput.Icon icon="lock" forceTextInputFocus={false} />}
               right={
                 value ? (
@@ -138,7 +140,34 @@ const Login: React.FC<Props> = ({ navigation }) => {
           onPress={handleSubmit(onSubmit)}
           mode="contained"
           loading={loading}
-          icon="login-variant"
+          icon="login"
+        >
+          登录
+        </Button>
+      </View>
+      <View style={styles.opts}>
+        <Button
+          onPress={() => {
+            navigation.navigate("webview", {
+              source: "注册",
+              uri: "https://manhuabika.com/pregister/",
+            });
+          }}
+          icon="web-plus"
+        >
+          注册
+        </Button>
+        <Button
+          onPress={() => {
+            navigation.navigate("webview", {
+              source: "登录",
+              uri: "https://manhuabika.com/plogin/",
+              injectedJavaScript: `(function() {
+                window.ReactNativeWebView.postMessage(JSON.stringify({ token: JSON.parse(window.localStorage.getItem('token')).value }));
+              })();`,
+            });
+          }}
+          icon="web-check"
         >
           登录
         </Button>
@@ -156,7 +185,7 @@ const Login: React.FC<Props> = ({ navigation }) => {
   );
 };
 
-export default Login;
+export default React.memo(Login);
 
 const styles = StyleSheet.create({
   container: {
@@ -172,5 +201,12 @@ const styles = StyleSheet.create({
     width: "100%",
     paddingHorizontal: 25,
     paddingTop: 30,
+  },
+  opts: {
+    paddingTop: 15,
+    paddingHorizontal: 25,
+    width: "100%",
+    justifyContent: "space-between",
+    flexDirection: "row",
   },
 });

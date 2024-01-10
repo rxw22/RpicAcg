@@ -1,8 +1,5 @@
-<<<<<<< HEAD
 import { ComicRecord } from "@/store/readStore";
-=======
 import { Comment } from "@/network/types";
->>>>>>> 2126990c587c242cce3361a6ff6885c104195b89
 
 export type RootStackParamList = {
   login: undefined;
@@ -15,6 +12,7 @@ export type RootStackParamList = {
     order: number;
     title: string;
     record: ComicRecord | undefined;
+    isScratch: boolean;
   };
   collect: undefined;
   comics: { c: string };
@@ -23,4 +21,5 @@ export type RootStackParamList = {
   searchcomics: {
     keyword: string;
   };
+  webview: { uri: string; source?: string; userAgent?: string; injectedJavaScript?: string };
 };

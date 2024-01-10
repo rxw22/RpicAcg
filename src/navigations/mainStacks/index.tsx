@@ -21,12 +21,13 @@ import CommentAppBar from '@/views/comment/AppBar';
 import ComChildren from "@/views/ComChildren";
 import SearchComics from "@/views/SearchComics";
 import SearchComicsAppBar from '@/views/SearchComics/AppBar';
+import WebViewPage from '@/views/WebView';
 
 const Stack = createNativeStackNavigator<RootStackParamList>();
 
 export default function MainStacks() {
-  const { email, token, password } = useUserStore();
-  const isLogin = email && token && password ? "main" : "login";
+  const { token } = useUserStore();
+  const isLogin = token ? "main" : "login";
   return (
     <Stack.Navigator
       initialRouteName={isLogin}
@@ -110,6 +111,14 @@ export default function MainStacks() {
         component={ComChildren}
         options={{
           title: "回复",
+          header: (props) => <CommentAppBar {...props} />,
+        }}
+      />
+      <Stack.Screen
+        name="webview"
+        component={WebViewPage}
+        options={{
+          title: "webview",
           header: (props) => <CommentAppBar {...props} />,
         }}
       />

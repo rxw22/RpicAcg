@@ -9,6 +9,7 @@ import { GestureHandlerRootView } from "react-native-gesture-handler";
 import MainStacks from "@/navigations/mainStacks";
 import useCustomTheme from "@/hooks/useCustomTheme";
 import NetworkProvider from "@/network/networkProvider";
+import { navigationRef } from '@/navigations/RootNavigation';
 
 export default function App() {
   const { paperTheme, navTheme } = useCustomTheme();
@@ -40,7 +41,7 @@ export default function App() {
   return (
     <GestureHandlerRootView style={{ flex: 1 }}>
       <PaperProvider theme={paperTheme}>
-        <NavigationContainer theme={navTheme} onReady={onLayoutRootView}>
+        <NavigationContainer theme={navTheme} onReady={onLayoutRootView} ref={navigationRef}>
           <NetworkProvider>
             <MainStacks />
             <StatusBar style="auto" translucent={true}/>

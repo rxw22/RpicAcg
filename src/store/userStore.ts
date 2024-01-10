@@ -10,6 +10,7 @@ export type UserInfo = {
 
 export type UserStore = UserInfo & {
   saveUserInfo(userInfo: Partial<UserInfo>): void;
+  clearToken(): void;
 };
 
 export const useUserStore = create(
@@ -19,6 +20,7 @@ export const useUserStore = create(
       password: "",
       token: "",
       saveUserInfo: (userinfo) => set(userinfo),
+      clearToken: () => set({ token: "" })
     }),
     {
       name: "user-storage", // name of the item in the storage (must be unique)

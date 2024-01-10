@@ -1,22 +1,38 @@
 import { useAppConfigStore } from "@/store/appConfigStore";
 import React, { useEffect } from "react";
 import { StyleSheet, StatusBar, View } from "react-native";
-import { Appbar, Text } from "react-native-paper";
+import { Appbar, Dialog, Portal, Text, Button } from "react-native-paper";
 import Animated, { useSharedValue, withTiming } from "react-native-reanimated";
 import { Image } from "expo-image";
+import { CompositeNavigationProp } from "@react-navigation/native";
+import { BottomTabNavigationProp } from "@react-navigation/bottom-tabs";
+import { RootBottomTabsParamList } from "@/navigations/bottomTabs/types";
+import { NativeStackNavigationProp } from "@react-navigation/native-stack";
+import { RootStackParamList } from "@/navigations/mainStacks/types";
+import { useUserStore } from "@/store/userStore";
 
 interface Props {
   flag: boolean;
   uri: string;
   name: string;
+  navigation: CompositeNavigationProp<
+    BottomTabNavigationProp<RootBottomTabsParamList, "user", undefined>,
+    NativeStackNavigationProp<RootStackParamList>
+  >;
 }
 
-function UserAppBar({ flag, uri, name }: Props) {
+function UserAppBar({ flag, uri, name, navigation }: Props) {
   const { setMode } = useAppConfigStore();
+  const { clearToken } = useUserStore();
   const statusBarHeight = StatusBar.currentHeight || 0;
   const le = (statusBarHeight + 64) * -1;
   const common = useSharedValue(le);
   const transparent = useSharedValue(0);
+  const [visible, setVisible] = React.useState(false);
+
+  const showDialog = () => setVisible(true);
+
+  const hideDialog = () => setVisible(false);
 
   useEffect(() => {
     if (flag) {
@@ -36,6 +52,15 @@ function UserAppBar({ flag, uri, name }: Props) {
     }
   }, [flag]);
 
+  const logout = () => {
+    showDialog();
+  };
+
+  const clearCache = () => {
+    clearToken();
+    navigation.replace("login");
+  };
+
   return (
     <>
       <Animated.View
@@ -50,6 +75,7 @@ function UserAppBar({ flag, uri, name }: Props) {
             }}
             color="#fff"
           />
+          <Appbar.Action icon="logout" onPress={logout} color="#fff" />
         </Appbar.Header>
       </Animated.View>
       <Animated.View
@@ -87,8 +113,38 @@ function UserAppBar({ flag, uri, name }: Props) {
               setMode("light");
             }}
           />
+          <Appbar.Action
+            icon="logout"
+            onPress={() => {
+              setMode("light");
+            }}
+          />
         </Appbar.Header>
       </Animated.View>
+      <Portal>
+        <Dialog visible={visible} onDismiss={hideDialog}>
+          <Dialog.Title>提示</Dialog.Title>
+          <Dialog.Content>
+            <Text variant="bodyMedium">确定要退出登录吗？</Text>
+          </Dialog.Content>
+          <Dialog.Actions>
+            <Button
+              onPress={() => {
+                hideDialog();
+              }}
+            >
+              取消
+            </Button>
+            <Button
+              onPress={() => {
+                clearCache();
+              }}
+            >
+              确定
+            </Button>
+          </Dialog.Actions>
+        </Dialog>
+      </Portal>
     </>
   );
 }

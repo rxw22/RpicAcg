@@ -125,7 +125,7 @@ type Props = CompositeScreenProps<
   NativeStackScreenProps<RootStackParamList>
 >;
 
-export default function Ranking({ navigation }: Props) {
+function Ranking({ navigation }: Props) {
   const layout = useWindowDimensions();
   const theme = useTheme();
   const [index, setIndex] = React.useState(0);
@@ -163,3 +163,5 @@ export default function Ranking({ navigation }: Props) {
     />
   );
 }
+
+export default React.memo(Ranking);

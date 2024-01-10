@@ -11,7 +11,7 @@ import { RootStackParamList } from "@/navigations/mainStacks/types";
 import { useNetworkProvider } from "@/network/networkProvider";
 // import HorizontalView from "./horizontalView";
 import VerticalView, { Ref } from "./verticalView";
-import cacheLayout from "./cacheLayout";
+import cacheMap from "./cacheMap";
 import Header from "./header";
 import Bottom from "./bottom";
 import { useReadStore } from "@/store/readStore";
@@ -19,7 +19,7 @@ import { useReadStore } from "@/store/readStore";
 type Props = NativeStackScreenProps<RootStackParamList, "reader">;
 
 const Reader: React.FC<Props> = ({ route, navigation }) => {
-  const { comicId, order, title, record } = route.params;
+  const { comicId, order, title, record, isScratch } = route.params;
   const { httpRequest } = useNetworkProvider();
   const headerPosition = useSharedValue(-64);
   const bottomPosition = useSharedValue(-90);
@@ -52,24 +52,28 @@ const Reader: React.FC<Props> = ({ route, navigation }) => {
     });
   }, []);
 
+  // 可以大幅降低上滑抖动
   useEffect(() => {
+    if (!isScratch) {
+      cacheMap.initCacheMap(record?.layout);
+    }
     return () => {
       // 保存阅读记录
       saveComicRecord(comicId, {
         order,
         page: recordRef.current.page,
         y: recordRef.current.y,
-        layout: {},
+        layout: cacheMap.getCacheMap(),
       });
       // 清除图片宽高缓存
-      cacheLayout.clear();
+      cacheMap.clear();
     };
   }, []);
 
   // 跳转到指定offset
   useEffect(() => {
     const page = comicRecord[comicId]?.page || 0;
-    if (!loading && record?.y) {
+    if (!loading && !isScratch) {
       setTimeout(() => {
         // listRef.current?.scrollToOffset(y);
         listRef.current?.scrollToIndex(page);

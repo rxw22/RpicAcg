@@ -46,8 +46,8 @@ class HttpClient {
         : { method, headers };
     let response = await fetch(this.baseUrl + url + urlParams, options);
     if (response.status === 401) {
-      await this.refreshToken();
-      response = await fetch(this.baseUrl + url + urlParams, options);
+      this.refreshToken();
+      // response = await fetch(this.baseUrl + url + urlParams, options);
     }
     return response;
   }

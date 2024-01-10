@@ -74,13 +74,13 @@ const VerticalView = forwardRef<Ref, Props>(
         data={dataSource}
         keyExtractor={(item) => item._id}
         onViewableItemsChanged={_onViewableItemsChanged}
-        viewabilityConfig={{ itemVisiblePercentThreshold: 50 }}
+        viewabilityConfig={{ itemVisiblePercentThreshold: 30 }}
         estimatedItemSize={(layout.height * 3) / 5}
         estimatedListSize={{ height: layout.height, width: layout.width }}
         estimatedFirstItemOffset={0}
         onScroll={_onScroll}
-        renderItem={({ item, index }) => {
-          return <VerticalImage item={item} index={index} />;
+        renderItem={({ item }) => {
+          return <VerticalImage item={item} />;
         }}
       />
     );

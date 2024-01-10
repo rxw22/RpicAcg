@@ -78,9 +78,6 @@ const ComicDetails: React.FC<Props> = ({ route, navigation }) => {
     },
   });
 
-<<<<<<< HEAD
-  const startReader = (order: number) => {
-=======
   const { run: likeRun } = useRequest(httpRequest.likeOrUnlikeComic.bind(httpRequest), {
     manual: true,
     onError(e) {
@@ -92,19 +89,16 @@ const ComicDetails: React.FC<Props> = ({ route, navigation }) => {
     manual: true,
     onError(e) {
       console.log(e);
-    },
-    onSuccess(result){
-      console.log(result);
     }
   });
 
-  const startReader = (order: number, y: number) => {
->>>>>>> 2126990c587c242cce3361a6ff6885c104195b89
+  const startReader = (order: number, isScratch: boolean = true) => {
     navigation.navigate("reader", {
       comicId,
       order,
       title: response?.comic.title || "",
       record,
+      isScratch
     });
   };
 
@@ -208,7 +202,7 @@ const ComicDetails: React.FC<Props> = ({ route, navigation }) => {
               </View>
               <Button
                 onPress={() => {
-                  startReader(record.order);
+                  startReader(record.order, false);
                 }}
               >
                 继续阅读
@@ -421,7 +415,7 @@ const ComicDetails: React.FC<Props> = ({ route, navigation }) => {
   );
 };
 
-export default ComicDetails;
+export default React.memo(ComicDetails);
 
 const styles = StyleSheet.create({
   container: {

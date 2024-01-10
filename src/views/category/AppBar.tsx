@@ -1,6 +1,7 @@
 import { BottomTabHeaderProps } from "@react-navigation/bottom-tabs";
 import { Appbar } from "react-native-paper";
 import { getHeaderTitle } from "@react-navigation/elements";
+import React from "react";
 
 const CategoryAppBar: React.FC<BottomTabHeaderProps> = ({
   navigation,
@@ -8,7 +9,6 @@ const CategoryAppBar: React.FC<BottomTabHeaderProps> = ({
   options,
 }) => {
   const title = getHeaderTitle(options, route.name);
-
   return (
     <Appbar.Header>
       <Appbar.Content title={title} />
@@ -28,4 +28,4 @@ const CategoryAppBar: React.FC<BottomTabHeaderProps> = ({
   );
 };
 
-export default CategoryAppBar;
+export default React.memo(CategoryAppBar);

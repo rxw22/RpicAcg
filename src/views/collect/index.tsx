@@ -113,7 +113,7 @@ const renderScene = SceneMap({
 
 type Props = NativeStackScreenProps<RootStackParamList, "collect">;
 
-export default function Collect({ navigation }: Props) {
+function Collect({ navigation }: Props) {
   const layout = useWindowDimensions();
   const theme = useTheme();
   const [index, setIndex] = React.useState(0);
@@ -151,3 +151,5 @@ export default function Collect({ navigation }: Props) {
     />
   );
 }
+
+export default React.memo(Collect);

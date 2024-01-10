@@ -113,12 +113,7 @@ function UserAppBar({ flag, uri, name, navigation }: Props) {
               setMode("light");
             }}
           />
-          <Appbar.Action
-            icon="logout"
-            onPress={() => {
-              setMode("light");
-            }}
-          />
+          <Appbar.Action icon="logout" onPress={logout} />
         </Appbar.Header>
       </Animated.View>
       <Portal>

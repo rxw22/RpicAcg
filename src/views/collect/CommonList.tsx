@@ -1,4 +1,4 @@
-import { StyleSheet, View } from "react-native";
+import { StyleSheet, View, useWindowDimensions } from "react-native";
 import React, { useCallback } from "react";
 import { Comic } from "@/network/types";
 import { ActivityIndicator } from "react-native-paper";
@@ -22,6 +22,7 @@ const CommonList: React.FC<Props> = ({
   loadMore,
   loading,
 }) => {
+  const layout = useWindowDimensions();
   const renderFooter = () => {
     return loading ? (
       <View
@@ -43,8 +44,7 @@ const CommonList: React.FC<Props> = ({
   const renderEmptyComponent = useCallback(() => {
     const styles = StyleSheet.create({
       emptyWarpper: {
-        marginHorizontal: 8,
-        height: "100%",
+        height: layout.height * 0.7,
         alignItems: "center",
         justifyContent: "center",
         width: "100%",

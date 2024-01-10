@@ -59,13 +59,22 @@ const User: React.FC<Props> = (props) => {
   });
 
   const { user } = data?.data || {};
-  const uri = user ? `${user?.avatar?.fileServer}/static/${user?.avatar?.path}` : "";
+  const uri = user
+    ? `${user?.avatar?.fileServer}/static/${user?.avatar?.path}`
+    : "";
   const name = user?.name || "";
 
   useLayoutEffect(() => {
     props.navigation.setOptions({
       headerTransparent: true,
-      header: () => <AppBar flag={flag} uri={uri} name={name} navigation={props.navigation}/>,
+      header: () => (
+        <AppBar
+          flag={flag}
+          uri={uri}
+          name={name}
+          navigation={props.navigation}
+        />
+      ),
     });
   }, [flag]);
 

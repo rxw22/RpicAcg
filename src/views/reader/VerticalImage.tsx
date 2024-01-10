@@ -93,7 +93,7 @@ const ReaderImage: React.FC<Props> = ({ item }) => {
       >
         <Progress.Pie
           progress={progress}
-          size={50}
+          size={44}
           color={theme.colors.primary}
         />
         <Image

@@ -37,12 +37,7 @@ const Category: React.FC<Props> = ({ navigation }) => {
   );
 
   return (
-    <BgBox
-      style={styles.container}
-      loading={loading}
-      error={error?.message}
-      refresh={refresh}
-    >
+    <BgBox style={styles.container} error={error?.message} refresh={refresh}>
       <View style={{ height: "100%", width: "100%" }}>
         <FlashList
           data={(data || categories).filter((item) => !item.active)}
@@ -50,6 +45,8 @@ const Category: React.FC<Props> = ({ navigation }) => {
           numColumns={3}
           estimatedItemSize={200}
           showsVerticalScrollIndicator={false}
+          refreshing={loading}
+          onRefresh={refresh}
           renderItem={({ item }) => {
             const { thumb, title } = item;
             const uri = thumb.fileServer.includes("static")

@@ -1,13 +1,8 @@
 import { View, StyleSheet } from "react-native";
 import React from "react";
-import {
-  useTheme,
-  Text,
-  FAB,
-  Button,
-  ActivityIndicator,
-} from "react-native-paper";
+import { useTheme, Text, FAB, Button } from "react-native-paper";
 import Icon from "@expo/vector-icons/MaterialCommunityIcons";
+import LottieView from "lottie-react-native";
 
 type Props = React.ComponentProps<typeof View> & {
   loading?: boolean;
@@ -73,7 +68,14 @@ const BgBox: React.FC<Props> = ({ loading, error, refresh, ...props }) => {
       {props.children}
       {loading && (
         <View style={bgStyle.loadingWarpper}>
-          <ActivityIndicator animating={true} size="large" />
+          <LottieView
+            autoPlay
+            style={{
+              width: 200,
+              height: 200,
+            }}
+            source={require("@/assets/imgs/loading.json")}
+          />
         </View>
       )}
     </View>

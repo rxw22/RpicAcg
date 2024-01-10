@@ -25,7 +25,7 @@ import { useReadStore } from "@/store/readStore";
 type Props = NativeStackScreenProps<RootStackParamList, "details">;
 
 const ComicDetails: React.FC<Props> = ({ route, navigation }) => {
-  const { httpRequest } = useNetworkProvider();
+  const { httpRequest, Toast } = useNetworkProvider();
   const { comicId } = route.params;
   const theme = useTheme();
   // 保存浏览记录
@@ -78,19 +78,31 @@ const ComicDetails: React.FC<Props> = ({ route, navigation }) => {
     },
   });
 
-  const { run: likeRun } = useRequest(httpRequest.likeOrUnlikeComic.bind(httpRequest), {
-    manual: true,
-    onError(e) {
-      console.log(e);
+  const { run: likeRun } = useRequest(
+    httpRequest.likeOrUnlikeComic.bind(httpRequest),
+    {
+      manual: true,
+      onError(e) {
+        console.log(e);
+      },
+      onSuccess() {
+        Toast.show("操作成功！", "success");
+      },
     }
-  });
+  );
 
-  const { run: collectRun } = useRequest(httpRequest.collectOrUncollectComic.bind(httpRequest), {
-    manual: true,
-    onError(e) {
-      console.log(e);
+  const { run: collectRun } = useRequest(
+    httpRequest.collectOrUncollectComic.bind(httpRequest),
+    {
+      manual: true,
+      onError(e) {
+        console.log(e);
+      },
+      onSuccess() {
+        Toast.show("操作成功！", "success");
+      },
     }
-  });
+  );
 
   const startReader = (order: number, isScratch: boolean = true) => {
     navigation.navigate("reader", {
@@ -98,7 +110,7 @@ const ComicDetails: React.FC<Props> = ({ route, navigation }) => {
       order,
       title: response?.comic.title || "",
       record,
-      isScratch
+      isScratch,
     });
   };
 
@@ -157,9 +169,7 @@ const ComicDetails: React.FC<Props> = ({ route, navigation }) => {
               rippleColor="rgba(0, 0, 0, .12)"
               style={styles.infoItem}
               title={collect ? "已收藏" : "未收藏"}
-              icon={
-                collect ? "tag-heart" : "tag-heart-outline"
-              }
+              icon={collect ? "tag-heart" : "tag-heart-outline"}
               iconSize={26}
               iconColor={theme.colors.primary}
               textProps={{ variant: "bodyLarge" }}

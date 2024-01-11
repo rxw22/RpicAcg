@@ -41,7 +41,6 @@ const ReaderImage: React.FC<Props> = ({ item }) => {
     lastUri.current = uri;
     setLoading(true);
     setProgress(0);
-    setError("");
     setLayout(initLayout);
   }
 
@@ -71,13 +70,6 @@ const ReaderImage: React.FC<Props> = ({ item }) => {
     const progress = Number((loaded / total).toFixed(1));
     setProgress(progress);
   };
-
-  // 加载错误
-  if (error) {
-    <View style={[styles.center, layout]}>
-      <Text variant="bodyLarge">{error}-Image Load Error</Text>
-    </View>;
-  }
 
   // 加载状态
   if (loading) {
@@ -124,12 +116,25 @@ const ReaderImage: React.FC<Props> = ({ item }) => {
         position: "relative",
       }}
     >
+      {error && (
+        <View
+          style={[
+            styles.center,
+            layout,
+            { position: "absolute", top: 0, left: 0, zIndex: 9 },
+          ]}
+        >
+          <Text variant="bodyLarge" style={{ color: "#fff" }}>
+            {error}
+          </Text>
+        </View>
+      )}
       <Image
         style={{ width: "100%", height: "100%" }}
         source={{ uri }}
         cachePolicy="disk"
         recyclingKey={uri}
-        transition={350}
+        transition={150}
       />
     </View>
   );

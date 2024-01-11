@@ -8,7 +8,7 @@ import { ActivityIndicator } from "react-native-paper";
 
 import { NativeStackScreenProps } from "@react-navigation/native-stack";
 import { RootStackParamList } from "@/navigations/mainStacks/types";
-import { useNetworkProvider } from "@/network/networkProvider";
+import { useUtilsProvider } from "@/network/utilsProvider";
 // import HorizontalView from "./horizontalView";
 import VerticalView, { Ref } from "./verticalView";
 import cacheMap from "./cacheMap";
@@ -20,7 +20,7 @@ type Props = NativeStackScreenProps<RootStackParamList, "reader">;
 
 const Reader: React.FC<Props> = ({ route, navigation }) => {
   const { comicId, order, title, record, isScratch } = route.params;
-  const { httpRequest } = useNetworkProvider();
+  const { httpRequest } = useUtilsProvider();
   const headerPosition = useSharedValue(-64);
   const bottomPosition = useSharedValue(-90);
   const { saveComicRecord, comicRecord } = useReadStore();

@@ -1,13 +1,11 @@
 import { View, StyleSheet, Pressable } from "react-native";
 import React from "react";
-import { SearchedComic } from "@/network/types";
-import { NativeStackNavigationProp } from "@react-navigation/native-stack";
-import { RootStackParamList } from "@/navigations/mainStacks/types";
+import { Comic } from "@/network/types";
 import { Card, Icon, Text, useTheme } from "react-native-paper";
 import { Image } from "expo-image";
 
 type Props = {
-  item: SearchedComic;
+  item: Comic;
   navigate: (name: string, params: any) => void;
 };
 
@@ -17,8 +15,10 @@ const Item: React.FC<Props> = ({ item, navigate }) => {
     thumb,
     author,
     title,
-    likesCount,
+    totalLikes,
+    totalViews,
     categories,
+    pagesCount,
   } = item;
   const uri = `${thumb.fileServer}/static/${thumb.path}`;
   return (
@@ -55,7 +55,7 @@ const Item: React.FC<Props> = ({ item, navigate }) => {
         <View style={styles.itemDescription}>
           <View>
             <Text variant="titleMedium" numberOfLines={2}>
-              {title}
+              [{pagesCount}P]{title}
             </Text>
             <Text variant="labelSmall" numberOfLines={1}>
               {author}
@@ -95,9 +95,20 @@ const Item: React.FC<Props> = ({ item, navigate }) => {
             >
               <Icon source="heart" size={12} />
               <View style={{ width: 5 }} />
-              <Text variant="labelSmall">{likesCount} </Text>
+              <Text variant="labelSmall">{totalLikes} </Text>
             </View>
             <View style={{ width: 15 }} />
+            <View
+              style={{
+                flexDirection: "row",
+                alignItems: "center",
+                justifyContent: "space-between",
+              }}
+            >
+              <Icon source="eye" size={12} />
+              <View style={{ width: 5 }} />
+              <Text variant="labelSmall">{totalViews} </Text>
+            </View>
           </View>
         </View>
       </View>

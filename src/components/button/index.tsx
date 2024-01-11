@@ -1,6 +1,6 @@
 import { Pressable, StyleSheet, View } from "react-native";
 import React from "react";
-import { Text } from "react-native-paper";
+import { Text, ActivityIndicator } from "react-native-paper";
 import Icon from "@expo/vector-icons/MaterialCommunityIcons";
 
 interface Props extends React.ComponentProps<typeof Pressable> {
@@ -10,6 +10,7 @@ interface Props extends React.ComponentProps<typeof Pressable> {
   iconColor?: string;
   title: string | number | undefined;
   textProps?: Omit<React.ComponentProps<typeof Text>, "children">;
+  loading?: boolean;
 }
 
 const PressableButton: React.FC<Props> = ({
@@ -20,6 +21,7 @@ const PressableButton: React.FC<Props> = ({
   iconColor,
   title,
   textProps = { variant: "bodyMedium" },
+  loading,
   ...rest
 }) => {
   return (
@@ -36,7 +38,11 @@ const PressableButton: React.FC<Props> = ({
       ]}
       {...rest}
     >
-      {icon && <Icon name={icon} size={iconSize} color={iconColor} />}
+      {!loading ? (
+        icon && <Icon name={icon} size={iconSize} color={iconColor} />
+      ) : (
+        <ActivityIndicator animating size={22} />
+      )}
       <View style={{ marginLeft: 8 }}>
         <Text {...textProps}>{title}</Text>
       </View>

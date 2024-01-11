@@ -250,8 +250,6 @@ class HttpRequest {
     if (result.code !== 200) {
       throw new Error(result.message);
     }
-    console.log(result);
-    
     const { comics } = result.data;
     return comics;
   }

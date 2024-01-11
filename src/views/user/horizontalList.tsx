@@ -15,7 +15,7 @@ import { BottomTabNavigationProp } from "@react-navigation/bottom-tabs";
 import { RootBottomTabsParamList } from "@/navigations/bottomTabs/types";
 import { NativeStackNavigationProp } from "@react-navigation/native-stack";
 import { RootStackParamList } from "@/navigations/mainStacks/types";
-import { Image as ExpoImage } from "expo-image";
+import LottieView from "lottie-react-native";
 
 type Navigation = CompositeNavigationProp<
   BottomTabNavigationProp<RootBottomTabsParamList, "user", undefined>,
@@ -56,10 +56,13 @@ const HorizontalList: React.FC<Props> = ({
   const renderEmptyComponent = useCallback(() => {
     return (
       <View style={[styles.emptyWarpper, { width: screenWidth - 28 }]}>
-        <ExpoImage
-          source={require("@/assets/imgs/empty.svg")}
-          style={{ height: 150, width: 150 }}
-          placeholder={require("@/assets/imgs/empty.svg")}
+        <LottieView
+          autoPlay
+          style={{
+            width: 150,
+            height: 150,
+          }}
+          source={require("@/assets/lottie/empty.json")}
         />
       </View>
     );

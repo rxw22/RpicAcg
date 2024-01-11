@@ -1,5 +1,5 @@
 import { useWindowDimensions } from "react-native";
-import React from "react";
+import React, { useCallback } from "react";
 import {
   TabBar,
   TabView,
@@ -7,10 +7,11 @@ import {
   SceneRendererProps,
 } from "react-native-tab-view";
 import { useTheme, Text } from "react-native-paper";
-import { useNetworkProvider } from "@/network/networkProvider";
+import { useUtilsProvider } from "@/network/utilsProvider";
 import { useRequest } from "ahooks";
 import { LeaderQuery } from "@/network/types";
-import CommonList from "./CommonList";
+// import CommonList from "./CommonList";
+import List from '@/components/ComicsList';
 import BgBox from "@/components/bgBox";
 import {
   NativeStackNavigationProp,
@@ -26,6 +27,7 @@ import {
   BottomTabNavigationProp,
 } from "@react-navigation/bottom-tabs";
 import { RootBottomTabsParamList } from "@/navigations/bottomTabs/types";
+import LoadingMask from "@/components/LoadingMask";
 
 type SceneProps = {
   route: {
@@ -43,7 +45,7 @@ type SceneProps = {
 } & Omit<SceneRendererProps, "layout">;
 
 const DayRanking: React.FC<SceneProps> = ({ route }) => {
-  const { httpRequest } = useNetworkProvider();
+  const { httpRequest } = useUtilsProvider();
 
   const { loading, data } = useRequest(
     httpRequest.fetchComicsRanking.bind(httpRequest),
@@ -55,19 +57,26 @@ const DayRanking: React.FC<SceneProps> = ({ route }) => {
     }
   );
 
+  const navigate = useCallback((name: string, params: any) => {
+    // @ts-ignore
+    route.navigation.navigate(name, params);
+  }, []);
+
   return (
-    <BgBox style={{ flex: 1, paddingHorizontal: 5 }}>
-      <CommonList
+    <BgBox style={{ flex: 1, paddingHorizontal: 5, position: "relative" }}>
+      <LoadingMask once={true} loading={loading} />
+      <List
         dataSource={data || []}
-        navigation={route.navigation}
+        navigate={navigate}
         loading={loading}
+        loadMore={() => {}}
       />
     </BgBox>
   );
 };
 
 const WeekRanking: React.FC<SceneProps> = ({ route }) => {
-  const { httpRequest } = useNetworkProvider();
+  const { httpRequest } = useUtilsProvider();
 
   const { loading, data } = useRequest(
     httpRequest.fetchComicsRanking.bind(httpRequest),
@@ -79,19 +88,26 @@ const WeekRanking: React.FC<SceneProps> = ({ route }) => {
     }
   );
 
+  const navigate = useCallback((name: string, params: any) => {
+    // @ts-ignore
+    route.navigation.navigate(name, params);
+  }, []);
+
   return (
-    <BgBox style={{ flex: 1, paddingHorizontal: 5 }}>
-      <CommonList
+    <BgBox style={{ flex: 1, paddingHorizontal: 5, position: "relative" }}>
+      <LoadingMask once={true} loading={loading} />
+      <List
         dataSource={data || []}
-        navigation={route.navigation}
+        navigate={navigate}
         loading={loading}
+        loadMore={() => {}}
       />
     </BgBox>
   );
 };
 
 const MonthRanking: React.FC<SceneProps> = ({ route }) => {
-  const { httpRequest } = useNetworkProvider();
+  const { httpRequest } = useUtilsProvider();
 
   const { loading, data } = useRequest(
     httpRequest.fetchComicsRanking.bind(httpRequest),
@@ -103,12 +119,19 @@ const MonthRanking: React.FC<SceneProps> = ({ route }) => {
     }
   );
 
+  const navigate = useCallback((name: string, params: any) => {
+    // @ts-ignore
+    route.navigation.navigate(name, params);
+  }, []);
+
   return (
-    <BgBox style={{ flex: 1, paddingHorizontal: 5 }}>
-      <CommonList
+    <BgBox style={{ flex: 1, paddingHorizontal: 5, position: "relative" }}>
+      <LoadingMask once={true} loading={loading} />
+      <List
         dataSource={data || []}
-        navigation={route.navigation}
+        navigate={navigate}
         loading={loading}
+        loadMore={() => {}}
       />
     </BgBox>
   );

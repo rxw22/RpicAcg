@@ -1,20 +1,22 @@
 import { View, StyleSheet } from "react-native";
-import React, { useEffect, useRef, useState } from "react";
+import React, { useCallback, useEffect, useRef, useState } from "react";
 
 import BgBox from "@/components/bgBox";
-import { useNetworkProvider } from "@/network/networkProvider";
+import { useUtilsProvider } from "@/network/utilsProvider";
 import { useRequest } from "ahooks";
 import { NativeStackScreenProps } from "@react-navigation/native-stack";
 import { RootStackParamList } from "@/navigations/mainStacks/types";
-import { ComicSort, SearchedComic } from "@/network/types";
-import CommonList from "./CommonList";
+import { Comic, ComicSort, SearchedComic } from "@/network/types";
+import List from '@/components/ComicsList';
+import Item from './Item'
 import { useGlobalStore } from "@/store/globalStore";
+import LoadingMask from "@/components/LoadingMask";
 
 type Props = NativeStackScreenProps<RootStackParamList, "searchcomics">;
 
 const SearchComics: React.FC<Props> = ({ route, navigation }) => {
   const { keyword } = route.params;
-  const { httpRequest } = useNetworkProvider();
+  const { httpRequest } = useUtilsProvider();
   const pageRef = useRef({
     currerntPage: 1,
     totalPage: 0,
@@ -41,8 +43,6 @@ const SearchComics: React.FC<Props> = ({ route, navigation }) => {
         console.log(e);
       },
       onSuccess(data) {
-        console.log(data);
-        
         const { pages, docs } = data;
         pageRef.current.totalPage = pages;
         setDataSource([...dataSource, ...docs]);
@@ -61,14 +61,21 @@ const SearchComics: React.FC<Props> = ({ route, navigation }) => {
     }
   };
 
+  const navigate = useCallback((name: string, params: any) => {
+    // @ts-ignore
+    navigation.navigate(name, params);
+  }, [navigation]);
+
   return (
     <BgBox style={styles.container} error={error?.message} refresh={refresh}>
-      <View style={[styles.full, { paddingHorizontal: 8 }]}>
-        <CommonList
-          dataSource={dataSource || []}
+      <View style={[styles.full, { paddingHorizontal: 5, position: "relative" }]}>
+        <LoadingMask once={true} loading={loading} />
+        <List
+          dataSource={(dataSource || []) as unknown as Comic[]}
           loading={loading}
           loadMore={loadMore}
-          navigation={navigation}
+          navigate={navigate}
+          CustomItem={Item}
         />
       </View>
     </BgBox>

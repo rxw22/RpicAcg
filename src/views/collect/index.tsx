@@ -1,5 +1,5 @@
 import { View, useWindowDimensions } from "react-native";
-import React, { useState, useRef } from "react";
+import React, { useState, useRef, useCallback } from "react";
 import {
   TabBar,
   TabView,
@@ -7,10 +7,10 @@ import {
   SceneRendererProps,
 } from "react-native-tab-view";
 import { useTheme, Text } from "react-native-paper";
-import { useNetworkProvider } from "@/network/networkProvider";
+import { useUtilsProvider } from "@/network/utilsProvider";
 import { useRequest } from "ahooks";
 import { Comic, ComicSort } from "@/network/types";
-import CommonList from "./CommonList";
+import List from "@/components/ComicsList/";
 import BgBox from "@/components/bgBox";
 import {
   NativeStackNavigationProp,
@@ -18,6 +18,7 @@ import {
 } from "@react-navigation/native-stack";
 import { RootStackParamList } from "@/navigations/mainStacks/types";
 import { useReadStore } from "@/store/readStore";
+import LoadingMask from "@/components/LoadingMask";
 
 type SceneProps = {
   route: {
@@ -28,7 +29,7 @@ type SceneProps = {
 } & Omit<SceneRendererProps, "layout">;
 
 const NetCollect: React.FC<SceneProps> = ({ route }) => {
-  const { httpRequest } = useNetworkProvider();
+  const { httpRequest } = useUtilsProvider();
   const [dataSource, setDataSource] = useState<Comic[]>([]);
   const pageRef = useRef({
     page: 0,
@@ -59,11 +60,17 @@ const NetCollect: React.FC<SceneProps> = ({ route }) => {
     }
   };
 
+  const navigate = useCallback((name: string, params: any) => {
+    // @ts-ignore
+    route.navigation.navigate(name, params);
+  }, []);
+
   return (
-    <BgBox style={{ flex: 1, paddingHorizontal: 5 }}>
-      <CommonList
+    <BgBox style={{ flex: 1, paddingHorizontal: 5, position: "relative" }}>
+      <LoadingMask once={true} loading={loading} />
+      <List
         dataSource={dataSource}
-        navigation={route.navigation}
+        navigate={navigate}
         loadMore={loadMore}
         loading={loading}
       />
@@ -76,11 +83,16 @@ const LocalCollect: React.FC<SceneProps> = ({ route }) => {
 
   const loadMore = () => {};
 
+  const navigate = useCallback((name: string, params: any) => {
+    // @ts-ignore
+    route.navigation.navigate(name, params);
+  }, []);
+
   return (
     <BgBox style={{ flex: 1, paddingHorizontal: 5 }}>
-      <CommonList
+      <List
         dataSource={localCollect}
-        navigation={route.navigation}
+        navigate={navigate}
         loadMore={loadMore}
         loading={false}
       />
@@ -93,11 +105,16 @@ const BrowsingHistory: React.FC<SceneProps> = ({ route }) => {
 
   const loadMore = () => {};
 
+  const navigate = useCallback((name: string, params: any) => {
+    // @ts-ignore
+    route.navigation.navigate(name, params);
+  }, []);
+
   return (
     <BgBox style={{ flex: 1, paddingHorizontal: 5 }}>
-      <CommonList
+      <List
         dataSource={browses}
-        navigation={route.navigation}
+        navigate={navigate}
         loadMore={loadMore}
         loading={false}
       />

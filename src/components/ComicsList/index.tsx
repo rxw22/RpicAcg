@@ -1,52 +1,27 @@
 import { StyleSheet, View, useWindowDimensions } from "react-native";
 import React, { useCallback } from "react";
 import { Comic } from "@/network/types";
-import { Text, ActivityIndicator } from "react-native-paper";
+import { ActivityIndicator } from "react-native-paper";
 import { FlashList, ListRenderItem } from "@shopify/flash-list";
-import { Image as ExpoImage } from "expo-image";
-
-import { NativeStackNavigationProp } from "@react-navigation/native-stack";
-import { RootStackParamList } from "@/navigations/mainStacks/types";
+import LottieView from "lottie-react-native";
 import Item from "./Item";
 
 interface Props {
   dataSource: Comic[];
-  navigation: NativeStackNavigationProp<RootStackParamList>;
+  navigate: (name: string, params: any) => void;
   loadMore(): void;
   loading: boolean;
+  CustomItem?: any;
 }
 
 const CommonList: React.FC<Props> = ({
   dataSource,
-  navigation,
+  navigate,
   loadMore,
   loading,
+  CustomItem,
 }) => {
-  const renderItem: ListRenderItem<Comic> = ({ item }) => {
-    return <Item item={item} navigation={navigation} />;
-  };
-
-  const renderEmptyComponent = useCallback(() => {
-    const styles = StyleSheet.create({
-      emptyWarpper: {
-        marginHorizontal: 8,
-        height: "100%",
-        alignItems: "center",
-        justifyContent: "center",
-        width: "100%",
-      },
-    });
-    return (
-      <View style={[styles.emptyWarpper]}>
-        <ExpoImage
-          source={require("@/assets/imgs/empty.svg")}
-          style={{ height: 200, width: 200 }}
-          placeholder={require("@/assets/imgs/empty.svg")}
-        />
-      </View>
-    );
-  }, []);
-
+  const layout = useWindowDimensions();
   const renderFooter = () => {
     return loading ? (
       <View
@@ -60,6 +35,37 @@ const CommonList: React.FC<Props> = ({
       </View>
     ) : null;
   };
+
+  const renderItem: ListRenderItem<Comic> = ({ item }) => {
+    return CustomItem ? (
+      <CustomItem item={item} navigate={navigate} />
+    ) : (
+      <Item item={item} navigate={navigate} />
+    );
+  };
+
+  const renderEmptyComponent = useCallback(() => {
+    const styles = StyleSheet.create({
+      emptyWarpper: {
+        height: layout.height * 0.7,
+        alignItems: "center",
+        justifyContent: "center",
+        width: "100%",
+      },
+    });
+    return (
+      <View style={[styles.emptyWarpper]}>
+        <LottieView
+          autoPlay
+          style={{
+            width: 200,
+            height: 200,
+          }}
+          source={require("@/assets/lottie/empty.json")}
+        />
+      </View>
+    );
+  }, []);
 
   return (
     <FlashList

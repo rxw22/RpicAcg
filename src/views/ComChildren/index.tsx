@@ -16,14 +16,14 @@ import dayjs from "dayjs";
 import BgBox from "@/components/bgBox";
 import { NativeStackScreenProps } from "@react-navigation/native-stack";
 import { RootStackParamList } from "@/navigations/mainStacks/types";
-import { useNetworkProvider } from "@/network/networkProvider";
+import { useUtilsProvider } from "@/network/utilsProvider";
 import { Comment } from "@/network/types";
 
 type Props = NativeStackScreenProps<RootStackParamList, "comchildren">;
 
 const CommentList: React.FC<Props> = ({ navigation, route }) => {
   const { comment } = route.params;
-  const { httpRequest } = useNetworkProvider();
+  const { httpRequest } = useUtilsProvider();
   const pageRef = useRef({
     currerntPage: 1,
     totalPage: 0,

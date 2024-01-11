@@ -74,7 +74,7 @@ const BgBox: React.FC<Props> = ({ loading, error, refresh, ...props }) => {
               width: 200,
               height: 200,
             }}
-            source={require("@/assets/imgs/loading.json")}
+            source={require("@/assets/lottie/loading.json")}
           />
         </View>
       )}

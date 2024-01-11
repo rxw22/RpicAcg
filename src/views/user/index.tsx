@@ -13,7 +13,7 @@ import { useLayoutEffect, useState } from "react";
 import Image from "@/components/image";
 
 import BgBox from "@/components/bgBox";
-import { useNetworkProvider } from "@/network/networkProvider";
+import { useUtilsProvider } from "@/network/utilsProvider";
 import { RootBottomTabsParamList } from "@/navigations/bottomTabs/types";
 import AppBar from "./appBar";
 
@@ -32,7 +32,7 @@ type Props = CompositeScreenProps<
 >;
 
 const User: React.FC<Props> = (props) => {
-  const { httpRequest } = useNetworkProvider();
+  const { httpRequest } = useUtilsProvider();
   const statusBarHeight = StatusBar.currentHeight ? StatusBar.currentHeight : 0;
   const { localCollect, browses } = useReadStore();
   const [flag, setFlag] = useState(true);

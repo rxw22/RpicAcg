@@ -3,7 +3,7 @@ import { Text, Chip, Appbar, Searchbar, FAB } from "react-native-paper";
 import { useRequest } from "ahooks";
 
 import BgBox from "@/components/bgBox";
-import { useNetworkProvider } from "@/network/networkProvider";
+import { useUtilsProvider } from "@/network/utilsProvider";
 import React, { useEffect, useState } from "react";
 import { NativeStackScreenProps } from "@react-navigation/native-stack";
 import { RootStackParamList } from "@/navigations/mainStacks/types";
@@ -11,11 +11,11 @@ import { RootStackParamList } from "@/navigations/mainStacks/types";
 type Props = NativeStackScreenProps<RootStackParamList, "search">;
 
 const Search: React.FC<Props> = ({ navigation }) => {
-  const { httpRequest } = useNetworkProvider();
+  const { httpRequest } = useUtilsProvider();
   const [searchQuery, setSearchQuery] = useState("");
   const onChangeSearch = (query: string) => setSearchQuery(query);
 
-  const { data, refresh, loading } = useRequest(
+  const { data, refresh, loading, error } = useRequest(
     httpRequest.fetchKeywords.bind(httpRequest),
     {
       onError(e) {
@@ -50,7 +50,7 @@ const Search: React.FC<Props> = ({ navigation }) => {
   }, [searchQuery]);
 
   return (
-    <BgBox style={styles.container}>
+    <BgBox style={styles.container} loading={loading} error={error?.message} refresh={refresh}>
       <View style={styles.keyWarpper}>
         <View style={{ paddingBottom: 8 }}>
           <Text variant="titleLarge">大家都在搜</Text>

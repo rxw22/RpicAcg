@@ -5,7 +5,7 @@ import { FlashList } from "@shopify/flash-list";
 import { Image } from "expo-image";
 
 import BgBox from "@/components/bgBox";
-import { useNetworkProvider } from "@/network/networkProvider";
+import { useUtilsProvider } from "@/network/utilsProvider";
 import { CompositeScreenProps } from "@react-navigation/native";
 import { BottomTabScreenProps } from "@react-navigation/bottom-tabs";
 import { RootBottomTabsParamList } from "@/navigations/bottomTabs/types";
@@ -20,7 +20,7 @@ type Props = CompositeScreenProps<
 >;
 
 const Category: React.FC<Props> = ({ navigation }) => {
-  const { httpRequest } = useNetworkProvider();
+  const { httpRequest } = useUtilsProvider();
   const layout = useWindowDimensions();
   const { categories, setCategories } = useRequestStore();
 

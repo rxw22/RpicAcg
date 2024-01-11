@@ -1,20 +1,21 @@
 import { View, StyleSheet } from "react-native";
-import React, { useEffect, useRef, useState } from "react";
+import React, { useCallback, useEffect, useRef, useState } from "react";
 
 import BgBox from "@/components/bgBox";
-import { useNetworkProvider } from "@/network/networkProvider";
+import { useUtilsProvider } from "@/network/utilsProvider";
 import { useRequest } from "ahooks";
 import { NativeStackScreenProps } from "@react-navigation/native-stack";
 import { RootStackParamList } from "@/navigations/mainStacks/types";
 import { Comic, ComicSort } from "@/network/types";
-import CommonList from "../collect/CommonList";
+import List from '@/components/ComicsList';
 import { useGlobalStore } from "@/store/globalStore";
+import LoadingMask from "@/components/LoadingMask";
 
 type Props = NativeStackScreenProps<RootStackParamList, "comics">;
 
 const Comics: React.FC<Props> = ({ route, navigation }) => {
   const { c } = route.params;
-  const { httpRequest } = useNetworkProvider();
+  const { httpRequest } = useUtilsProvider();
   const pageRef = useRef({
     currerntPage: 1,
     totalPage: 0,
@@ -59,14 +60,20 @@ const Comics: React.FC<Props> = ({ route, navigation }) => {
     }
   };
 
+  const navigate = useCallback((name: string, params: any) => {
+    // @ts-ignore
+    navigation.navigate(name, params);
+  }, []);
+
   return (
     <BgBox style={styles.container} error={error?.message} refresh={refresh}>
-      <View style={[styles.full, { paddingHorizontal: 8 }]}>
-        <CommonList
+      <View style={[styles.full, { paddingHorizontal: 5, position: "relative" }]}>
+        <LoadingMask once={true} loading={loading} />
+        <List
           dataSource={dataSource || []}
           loading={loading}
           loadMore={loadMore}
-          navigation={navigation}
+          navigate={navigate}
         />
       </View>
     </BgBox>

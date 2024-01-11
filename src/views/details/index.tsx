@@ -16,7 +16,7 @@ import dayjs from "dayjs";
 
 import { RootStackParamList } from "@/navigations/mainStacks/types";
 import BgBox from "@/components/bgBox";
-import { useNetworkProvider } from "@/network/networkProvider";
+import { useUtilsProvider } from "@/network/utilsProvider";
 import Image from "@/components/image";
 import PressableButton from "@/components/button";
 import HorizontalList from "./horizontalList";
@@ -25,7 +25,7 @@ import { useReadStore } from "@/store/readStore";
 type Props = NativeStackScreenProps<RootStackParamList, "details">;
 
 const ComicDetails: React.FC<Props> = ({ route, navigation }) => {
-  const { httpRequest, Toast } = useNetworkProvider();
+  const { httpRequest } = useUtilsProvider();
   const { comicId } = route.params;
   const theme = useTheme();
   // 保存浏览记录
@@ -78,29 +78,29 @@ const ComicDetails: React.FC<Props> = ({ route, navigation }) => {
     },
   });
 
-  const { run: likeRun } = useRequest(
+  const { run: likeRun, loading: likeLoading } = useRequest(
     httpRequest.likeOrUnlikeComic.bind(httpRequest),
     {
       manual: true,
       onError(e) {
         console.log(e);
       },
-      onSuccess() {
-        Toast.show("操作成功！", "success");
-      },
+      onSuccess(){
+        setLike(!like);
+      }
     }
   );
 
-  const { run: collectRun } = useRequest(
+  const { run: collectRun, loading: collectLoading } = useRequest(
     httpRequest.collectOrUncollectComic.bind(httpRequest),
     {
       manual: true,
       onError(e) {
         console.log(e);
       },
-      onSuccess() {
-        Toast.show("操作成功！", "success");
-      },
+      onSuccess(){
+        setCollect(!collect);
+      }
     }
   );
 
@@ -151,28 +151,28 @@ const ComicDetails: React.FC<Props> = ({ route, navigation }) => {
             <PressableButton
               onPress={() => {
                 likeRun(comicId);
-                setLike(!like);
               }}
-              rippleColor="rgba(0, 0, 0, .1)"
+              rippleColor="rgba(0, 0, 0, .12)"
               style={styles.infoItem}
               title={response?.comic.likesCount}
               icon={like ? "cards-heart" : "cards-heart-outline"}
-              iconSize={26}
+              iconSize={24}
               iconColor={theme.colors.primary}
               textProps={{ variant: "bodyLarge" }}
+              loading={likeLoading}
             />
             <PressableButton
               onPress={() => {
                 collectRun(comicId);
-                setCollect(!collect);
               }}
               rippleColor="rgba(0, 0, 0, .12)"
               style={styles.infoItem}
               title={collect ? "已收藏" : "未收藏"}
               icon={collect ? "tag-heart" : "tag-heart-outline"}
-              iconSize={26}
+              iconSize={24}
               iconColor={theme.colors.primary}
               textProps={{ variant: "bodyLarge" }}
+              loading={collectLoading}
             />
             <PressableButton
               onPress={() => {
@@ -184,7 +184,7 @@ const ComicDetails: React.FC<Props> = ({ route, navigation }) => {
               style={styles.infoItem}
               title={response?.comic.totalComments}
               icon="comment-processing"
-              iconSize={26}
+              iconSize={24}
               iconColor={theme.colors.primary}
               textProps={{ variant: "bodyLarge" }}
             />

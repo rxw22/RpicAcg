@@ -12,7 +12,7 @@ import { Comic } from "@/network/types";
 import Image from "@/components/image";
 import { NativeStackNavigationProp } from "@react-navigation/native-stack";
 import { RootStackParamList } from "@/navigations/mainStacks/types";
-import { Image as ExpoImage } from "expo-image";
+import LottieView from "lottie-react-native";
 
 type Navigation = NativeStackNavigationProp<
   RootStackParamList,
@@ -48,10 +48,13 @@ const HorizontalList: React.FC<Props> = ({ dataSource, navigation }) => {
   const renderEmptyComponent = useCallback(() => {
     return (
       <View style={[styles.emptyWarpper, { width: screenWidth - 32 }]}>
-        <ExpoImage
-          source={require("@/assets/imgs/empty.svg")}
-          style={{ height: 150, width: 150 }}
-          placeholder={require("@/assets/imgs/empty.svg")}
+        <LottieView
+          autoPlay
+          style={{
+            width: 150,
+            height: 150,
+          }}
+          source={require("@/assets/lottie/empty.json")}
         />
       </View>
     );

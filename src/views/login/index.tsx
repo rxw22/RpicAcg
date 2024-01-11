@@ -16,7 +16,7 @@ import BgBox from "@/components/bgBox";
 import type { RootStackParamList } from "@/navigations/mainStacks/types";
 import type { NativeStackScreenProps } from "@react-navigation/native-stack";
 import type { SignInPayload } from "@/network/types";
-import { useNetworkProvider } from "@/network/networkProvider";
+import { useUtilsProvider } from "@/network/utilsProvider";
 import { useUserStore } from "@/store/userStore";
 import React from "react";
 
@@ -25,7 +25,7 @@ type Props = NativeStackScreenProps<RootStackParamList, "login">;
 const Login: React.FC<Props> = ({ navigation }) => {
   const theme = useTheme();
   const { email, password, saveUserInfo } = useUserStore();
-  const { httpRequest } = useNetworkProvider();
+  const { httpRequest } = useUtilsProvider();
   const [isShow, setIsShow] = useState(true);
   const [visible, setVisible] = useState(false);
   const [error, setError] = useState<Error>();

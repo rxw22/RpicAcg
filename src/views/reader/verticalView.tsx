@@ -1,14 +1,12 @@
 import {
   StyleSheet,
   ViewToken,
-  View,
   NativeSyntheticEvent,
   NativeScrollEvent,
   useWindowDimensions,
 } from "react-native";
-import React, { forwardRef, useMemo, useRef, useImperativeHandle } from "react";
+import React, { forwardRef, useRef, useImperativeHandle } from "react";
 import { ComicEpisodePage } from "@/network/types";
-import { Text } from "react-native-paper";
 import { FlashList } from "@shopify/flash-list";
 import VerticalImage from "./VerticalImage";
 

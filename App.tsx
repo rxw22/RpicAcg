@@ -27,7 +27,7 @@ export default function App() {
   useEffect(() => {
     const timer = setTimeout(() => {
       setIsHidden(true);
-    }, 300);
+    }, 400);
     return () => {
       clearTimeout(timer);
     };

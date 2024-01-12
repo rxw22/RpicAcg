@@ -253,6 +253,11 @@ class HttpRequest {
     const { comics } = result.data;
     return comics;
   }
+
+  async getDelay() {
+    const result = await this.httpClient.get("");
+    return result;
+  }
 }
 
 export default HttpRequest;

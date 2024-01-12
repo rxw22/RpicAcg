@@ -85,9 +85,9 @@ const ComicDetails: React.FC<Props> = ({ route, navigation }) => {
       onError(e) {
         console.log(e);
       },
-      onSuccess(){
+      onSuccess() {
         setLike(!like);
-      }
+      },
     }
   );
 
@@ -98,19 +98,24 @@ const ComicDetails: React.FC<Props> = ({ route, navigation }) => {
       onError(e) {
         console.log(e);
       },
-      onSuccess(){
+      onSuccess() {
         setCollect(!collect);
-      }
+      },
     }
   );
 
-  const startReader = (order: number, isScratch: boolean = true) => {
+  const startReader = (
+    order: number,
+    isScratch: boolean = true,
+    hasNext: boolean
+  ) => {
     navigation.navigate("reader", {
       comicId,
       order,
       title: response?.comic.title || "",
       record,
       isScratch,
+      hasNext,
     });
   };
 
@@ -212,7 +217,11 @@ const ComicDetails: React.FC<Props> = ({ route, navigation }) => {
               </View>
               <Button
                 onPress={() => {
-                  startReader(record.order, false);
+                  startReader(
+                    record.order,
+                    false,
+                    (comicEpisodes?.length || 1) > record.order
+                  );
                 }}
               >
                 继续阅读
@@ -228,7 +237,11 @@ const ComicDetails: React.FC<Props> = ({ route, navigation }) => {
               style={styles.operatesItem}
               onPress={() => {
                 addRecord(response?.comic, "browses");
-                startReader(comicEpisodes?.at(-1)?.order || 1);
+                startReader(
+                  comicEpisodes?.at(-1)?.order || 1,
+                  true,
+                  (comicEpisodes?.length || 1) > 1
+                );
               }}
             >
               从头开始
@@ -362,7 +375,12 @@ const ComicDetails: React.FC<Props> = ({ route, navigation }) => {
                         contentStyle={styles.epsCard}
                         mode="contained-tonal"
                         onPress={() => {
-                          startReader(comicEpisodes?.[index * 2].order);
+                          startReader(
+                            comicEpisodes?.[index * 2].order,
+                            true,
+                            (comicEpisodes?.length || 1) >
+                              comicEpisodes?.[index * 2].order
+                          );
                         }}
                       >
                         {comicEpisodes?.[index * 2].title}
@@ -382,7 +400,12 @@ const ComicDetails: React.FC<Props> = ({ route, navigation }) => {
                         contentStyle={styles.epsCard}
                         mode="contained-tonal"
                         onPress={() => {
-                          startReader(comicEpisodes?.[index * 2 + 1].order);
+                          startReader(
+                            comicEpisodes?.[index * 2 + 1].order,
+                            true,
+                            (comicEpisodes?.length || 1) >
+                              comicEpisodes?.[index * 2 + 1].order
+                          );
                         }}
                       >
                         {comicEpisodes?.[index * 2 + 1].title}

@@ -11,7 +11,7 @@ import { BottomTabScreenProps } from "@react-navigation/bottom-tabs";
 import { RootBottomTabsParamList } from "@/navigations/bottomTabs/types";
 import { NativeStackScreenProps } from "@react-navigation/native-stack";
 import { RootStackParamList } from "@/navigations/mainStacks/types";
-import React from "react";
+import React, { useEffect } from "react";
 import { useRequestStore } from "@/store/requestStore";
 
 type Props = CompositeScreenProps<
@@ -24,9 +24,10 @@ const Category: React.FC<Props> = ({ navigation }) => {
   const layout = useWindowDimensions();
   const { categories, setCategories } = useRequestStore();
 
-  const { data, loading, error, refresh } = useRequest(
+  const { data, loading, error, refresh, run } = useRequest(
     httpRequest.fetchCategories.bind(httpRequest),
     {
+      manual: true,
       onError(e) {
         console.log(e);
       },
@@ -35,6 +36,13 @@ const Category: React.FC<Props> = ({ navigation }) => {
       },
     }
   );
+
+  // 这个分类变动不大，有值得话就不请求
+  useEffect(() => {
+    if (!categories.length) {
+      run();
+    }
+  }, []);
 
   return (
     <BgBox style={styles.container} error={error?.message} refresh={refresh}>

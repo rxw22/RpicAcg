@@ -11,8 +11,9 @@ export type RootStackParamList = {
     comicId: string;
     order: number;
     title: string;
-    record: ComicRecord | undefined;
-    isScratch: boolean;
+    record: ComicRecord | undefined; // 阅读记录
+    isScratch: boolean; // 从一章的头开始
+    hasNext: boolean; // 是否还有下一章
   };
   collect: undefined;
   comics: { c: string };

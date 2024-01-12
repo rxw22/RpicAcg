@@ -1,10 +1,10 @@
-import { StyleSheet, View } from "react-native";
+import { StyleSheet, View, useWindowDimensions } from "react-native";
 import React, { useEffect, useLayoutEffect, useRef } from "react";
 import { StatusBar } from "expo-status-bar";
 import { useRequest } from "ahooks";
 import { GestureDetector, Gesture } from "react-native-gesture-handler";
-import { useSharedValue, withTiming } from "react-native-reanimated";
-import { ActivityIndicator } from "react-native-paper";
+import Animated, { useSharedValue, withTiming } from "react-native-reanimated";
+import { ActivityIndicator, FAB } from "react-native-paper";
 
 import { NativeStackScreenProps } from "@react-navigation/native-stack";
 import { RootStackParamList } from "@/navigations/mainStacks/types";
@@ -19,7 +19,7 @@ import { useReadStore } from "@/store/readStore";
 type Props = NativeStackScreenProps<RootStackParamList, "reader">;
 
 const Reader: React.FC<Props> = ({ route, navigation }) => {
-  const { comicId, order, title, record, isScratch } = route.params;
+  const { comicId, order, title, record, isScratch, hasNext } = route.params;
   const { httpRequest } = useUtilsProvider();
   const headerPosition = useSharedValue(-64);
   const bottomPosition = useSharedValue(-90);
@@ -28,6 +28,9 @@ const Reader: React.FC<Props> = ({ route, navigation }) => {
     page: 0,
     y: record?.y,
   });
+  const currentOrder = useRef(order);
+  const fabBottom = useSharedValue(-90);
+  const { width: ScreenWidth } = useWindowDimensions();
 
   const { data, loading, refresh, run } = useRequest(
     httpRequest.fetchComicEpisodePages.bind(httpRequest),
@@ -60,7 +63,7 @@ const Reader: React.FC<Props> = ({ route, navigation }) => {
     return () => {
       // 保存阅读记录
       saveComicRecord(comicId, {
-        order,
+        order: currentOrder.current,
         page: recordRef.current.page,
         y: recordRef.current.y,
         layout: cacheMap.getCacheMap(),
@@ -73,7 +76,7 @@ const Reader: React.FC<Props> = ({ route, navigation }) => {
   // 跳转到指定offset
   useEffect(() => {
     const page = comicRecord[comicId]?.page || 0;
-    if (!loading && !isScratch) {
+    if (!loading && !isScratch && currentOrder.current === order) {
       setTimeout(() => {
         // listRef.current?.scrollToOffset(y);
         listRef.current?.scrollToIndex(page);
@@ -82,17 +85,41 @@ const Reader: React.FC<Props> = ({ route, navigation }) => {
   }, [loading]);
 
   // 手势处理
-  const gesture = Gesture.Tap().onEnd(() => {
-    headerPosition.value = withTiming(headerPosition.value === 0 ? -64 : 0);
-    bottomPosition.value = withTiming(bottomPosition.value === 0 ? -90 : 0);
-  });
+  const gesture = Gesture.Tap()
+    .hitSlop({
+      left: -ScreenWidth * 0.25,
+      width: ScreenWidth * 0.5,
+    })
+    .onEnd(() => {
+      headerPosition.value = withTiming(headerPosition.value === 0 ? -64 : 0);
+      bottomPosition.value = withTiming(bottomPosition.value === 0 ? -90 : 0);
+    });
 
+  // 翻页回调
   const onPageChange = (page: number) => {
     recordRef.current.page = page;
+    if (page >= (data?.length || 1) - 1 && hasNext) {
+      fabBottom.value = withTiming(0, {
+        duration: 300,
+      });
+    } else if (fabBottom.value === 0) {
+      fabBottom.value = withTiming(-90, {
+        duration: 300,
+      });
+    }
   };
 
+  // 滑动回调
   const onScrollYChange = (y: number) => {
     recordRef.current.y = y;
+  };
+
+  // 翻页
+  const flip = () => {
+    if (hasNext) {
+      currentOrder.current++;
+      run(comicId, currentOrder.current);
+    }
   };
 
   return (
@@ -131,6 +158,14 @@ const Reader: React.FC<Props> = ({ route, navigation }) => {
             // />
           )}
         </View>
+        <Animated.View style={[styles.fab, { bottom: fabBottom }]}>
+          <FAB
+            icon="skip-next"
+            onPress={() => {
+              flip();
+            }}
+          />
+        </Animated.View>
         <Bottom position={bottomPosition} />
       </View>
     </GestureDetector>
@@ -150,5 +185,10 @@ const styles = StyleSheet.create({
     flex: 1,
     alignItems: "center",
     justifyContent: "center",
+  },
+  fab: {
+    position: "absolute",
+    margin: 16,
+    right: 0,
   },
 });

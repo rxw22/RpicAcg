@@ -8,17 +8,17 @@ import {
   Snackbar,
 } from "react-native-paper";
 import { useForm, Controller } from "react-hook-form";
-import { useState } from "react";
+import { useState, memo } from "react";
 import { useRequest } from "ahooks";
 
 import BgBox from "@/components/bgBox";
+import Shunt from "./Shunt";
 
 import type { RootStackParamList } from "@/navigations/mainStacks/types";
 import type { NativeStackScreenProps } from "@react-navigation/native-stack";
 import type { SignInPayload } from "@/network/types";
 import { useUtilsProvider } from "@/network/utilsProvider";
 import { useUserStore } from "@/store/userStore";
-import React from "react";
 
 type Props = NativeStackScreenProps<RootStackParamList, "login">;
 
@@ -181,11 +181,12 @@ const Login: React.FC<Props> = ({ navigation }) => {
       >
         {error?.message}
       </Snackbar>
+      <Shunt />
     </BgBox>
   );
 };
 
-export default React.memo(Login);
+export default memo(Login);
 
 const styles = StyleSheet.create({
   container: {

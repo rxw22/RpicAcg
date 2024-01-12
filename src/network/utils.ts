@@ -13,7 +13,7 @@ const defaultHeaders = {
   "Content-Type": "application/json; charset=UTF-8",
   "api-key": "C69BAF41DA5ABD1FFEDC6D2FEA56B",
   "app-build-version": "45",
-  "app-channel": "3",
+  "app-channel": "1",
   "app-platform": "android",
   "app-uuid": "defaultUuid",
   "app-version": "2.2.1.3.3.4",

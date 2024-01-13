@@ -16,11 +16,16 @@ export type RootStackParamList = {
     hasNext: boolean; // 是否还有下一章
   };
   collect: undefined;
-  comics: { c: string };
+  comics: { c?: string; ca?: string; knight?: string };
   comment: { comicId: string };
   comchildren: { comment: Comment };
   searchcomics: {
     keyword: string;
   };
-  webview: { uri: string; source?: string; userAgent?: string; injectedJavaScript?: string };
+  webview: {
+    uri: string;
+    source?: string;
+    userAgent?: string;
+    injectedJavaScript?: string;
+  };
 };

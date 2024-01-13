@@ -7,14 +7,15 @@ import { useRequest } from "ahooks";
 import { NativeStackScreenProps } from "@react-navigation/native-stack";
 import { RootStackParamList } from "@/navigations/mainStacks/types";
 import { Comic, ComicSort } from "@/network/types";
-import List from '@/components/ComicsList';
+import List from "@/components/ComicsList";
 import { useGlobalStore } from "@/store/globalStore";
 import LoadingMask from "@/components/LoadingMask";
+import { fliterEmpty } from "@/utils";
 
 type Props = NativeStackScreenProps<RootStackParamList, "comics">;
 
 const Comics: React.FC<Props> = ({ route, navigation }) => {
-  const { c } = route.params;
+  const { c, ca } = route.params;
   const { httpRequest } = useUtilsProvider();
   const pageRef = useRef({
     currerntPage: 1,
@@ -23,6 +24,7 @@ const Comics: React.FC<Props> = ({ route, navigation }) => {
   });
   const [dataSource, setDataSource] = useState<Comic[]>([]);
   const { comicSort } = useGlobalStore();
+  const params = fliterEmpty({ c: c ? encodeURIComponent(c) : c, ca });
 
   useEffect(() => {
     pageRef.current = {
@@ -31,7 +33,7 @@ const Comics: React.FC<Props> = ({ route, navigation }) => {
       s: comicSort,
     };
     setDataSource([]);
-    run({ c: encodeURIComponent(c), page: 1, s: comicSort });
+    run({ ...params, page: 1, s: comicSort });
   }, [comicSort]);
 
   const { error, refresh, run, loading } = useRequest(
@@ -55,7 +57,7 @@ const Comics: React.FC<Props> = ({ route, navigation }) => {
       run({
         page: pageRef.current.currerntPage,
         s: pageRef.current.s,
-        c: encodeURIComponent(c),
+        ...params,
       });
     }
   };
@@ -67,7 +69,9 @@ const Comics: React.FC<Props> = ({ route, navigation }) => {
 
   return (
     <BgBox style={styles.container} error={error?.message} refresh={refresh}>
-      <View style={[styles.full, { paddingHorizontal: 5, position: "relative" }]}>
+      <View
+        style={[styles.full, { paddingHorizontal: 5, position: "relative" }]}
+      >
         <LoadingMask once={true} loading={loading} />
         <List
           dataSource={dataSource || []}

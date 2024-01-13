@@ -3,13 +3,14 @@ import { createBottomTabNavigator } from "@react-navigation/bottom-tabs";
 import Icon from "@expo/vector-icons/MaterialCommunityIcons";
 import { BottomNavigation } from "react-native-paper";
 
-import Home from "@/views/home";
+import Game from "@/views/game";
 import User from "@/views/user";
 import Category from "@/views/category";
 import Ranking from "@/views/ranking";
 import { RootBottomTabsParamList } from "./types";
 import CategoryAppBar from "@/views/category/AppBar";
 import RankingAppBar from "@/views/ranking/AppBar";
+import GameAppBar from "@/views/game/AppBar";
 
 const Tab = createBottomTabNavigator<RootBottomTabsParamList>();
 
@@ -86,16 +87,16 @@ export default function BottomTabs() {
         component={Ranking}
       />
       <Tab.Screen
-        name="home"
+        name="game"
         options={{
           tabBarLabel: "游戏",
-          headerShown: false,
+          header: (props) => <GameAppBar {...props} />,
           tabBarIcon: ({ color, size, focused }) => {
             const name = focused ? "gamepad" : "gamepad-outline";
             return <Icon name={name} size={size} color={color} />;
           },
         }}
-        component={Home}
+        component={Game}
       />
       <Tab.Screen
         name="user"

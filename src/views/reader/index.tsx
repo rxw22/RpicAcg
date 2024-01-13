@@ -1,10 +1,10 @@
 import { StyleSheet, View, useWindowDimensions } from "react-native";
 import React, { useEffect, useLayoutEffect, useRef } from "react";
 import { StatusBar } from "expo-status-bar";
-import { useRequest } from "ahooks";
+import { useRequest, useUpdate } from "ahooks";
 import { GestureDetector, Gesture } from "react-native-gesture-handler";
 import Animated, { useSharedValue, withTiming } from "react-native-reanimated";
-import { ActivityIndicator, FAB } from "react-native-paper";
+import { ActivityIndicator, FAB, Text } from "react-native-paper";
 
 import { NativeStackScreenProps } from "@react-navigation/native-stack";
 import { RootStackParamList } from "@/navigations/mainStacks/types";
@@ -31,6 +31,7 @@ const Reader: React.FC<Props> = ({ route, navigation }) => {
   const currentOrder = useRef(order);
   const fabBottom = useSharedValue(-90);
   const { width: ScreenWidth } = useWindowDimensions();
+  const update = useUpdate();
 
   const { data, loading, refresh, run } = useRequest(
     httpRequest.fetchComicEpisodePages.bind(httpRequest),
@@ -98,6 +99,7 @@ const Reader: React.FC<Props> = ({ route, navigation }) => {
   // 翻页回调
   const onPageChange = (page: number) => {
     recordRef.current.page = page;
+    update();
     if (page >= (data?.length || 1) - 1 && hasNext) {
       fabBottom.value = withTiming(0, {
         duration: 300,
@@ -157,6 +159,12 @@ const Reader: React.FC<Props> = ({ route, navigation }) => {
             //   onPageChange={onPageChange}
             // />
           )}
+          <View style={styles.countPage}>
+            <Text variant="bodyMedium" style={{ color: "#fff" }}>
+              第 {currentOrder.current} 章: {recordRef.current.page + 1}/
+              {data?.length}
+            </Text>
+          </View>
         </View>
         <Animated.View style={[styles.fab, { bottom: fabBottom }]}>
           <FAB
@@ -190,5 +198,10 @@ const styles = StyleSheet.create({
     position: "absolute",
     margin: 16,
     right: 0,
+  },
+  countPage: {
+    position: "absolute",
+    bottom: 8,
+    left: 20,
   },
 });

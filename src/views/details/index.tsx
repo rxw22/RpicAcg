@@ -10,6 +10,7 @@ import {
   Chip,
   Divider,
   Icon,
+  FAB,
 } from "react-native-paper";
 import { useRequest } from "ahooks";
 import dayjs from "dayjs";
@@ -444,6 +445,14 @@ const ComicDetails: React.FC<Props> = ({ route, navigation }) => {
           </View>
         </View>
       </ScrollView>
+      <FAB
+        icon="restore"
+        style={styles.fab}
+        onPress={() => {
+          refresh();
+        }}
+        size="medium"
+      />
     </BgBox>
   );
 };
@@ -532,5 +541,10 @@ const styles = StyleSheet.create({
   },
   recommend: {
     paddingTop: 15,
+  },
+  fab: {
+    position: "absolute",
+    bottom: 15,
+    right: 15,
   },
 });

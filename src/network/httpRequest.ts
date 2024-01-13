@@ -13,13 +13,20 @@ import {
   CommentChildrenResponse,
   CommentPayload,
   CommentResponse,
+  Doc,
+  GamesResponse,
   KeywordsResponse,
+  KnightResponse,
   LikeOrUnLikeComicResponse,
   PunchInResponse,
   RankingPayload,
   RankingResponse,
   SearchComicsPayload,
   SearchComicsResponse,
+  SendCommentPayload,
+  SendCommentResponse,
+  SendReplyPayload,
+  SendReplyResponse,
   SignInPayload,
   SignInResponse,
   UserFavouritePayload,
@@ -254,9 +261,68 @@ class HttpRequest {
     return comics;
   }
 
+  // 测试延迟
   async getDelay() {
     const result = await this.httpClient.get("");
     return result;
+  }
+
+  // 获取骑士榜
+  async fetchKinghts() {
+    const result = await this.httpClient.get<KnightResponse>(
+      `comics/knight-leaderboard`
+    );
+    if (result.code !== 200) {
+      throw new Error(result.message);
+    }
+    const { users } = result.data;
+    return users;
+  }
+
+  // 发送本子评论
+  async sendComment(payload: SendCommentPayload) {
+    const { comicId, content } = payload;
+    const result = await this.httpClient.post<SendCommentResponse>(
+      `comics/${comicId}/comments`,
+      { content }
+    );
+    if (result.code !== 200) {
+      throw new Error(result.message);
+    }
+    return result;
+  }
+
+  // 回复本子评论
+  async sendReply(payload: SendReplyPayload) {
+    const { commentId, content } = payload;
+    const result = await this.httpClient.post<SendReplyResponse>(
+      `comments/${commentId}`,
+      { content }
+    );
+    if (result.code !== 200) {
+      throw new Error(result.message);
+    }
+    return result;
+  }
+
+  // 获取游戏列表
+  async fecthGames() {
+    let currentPage = 0;
+    let totalPage = 1;
+    let results: Doc[] = [];
+    while (currentPage < totalPage) {
+      currentPage++;
+      const result = await this.httpClient.get<GamesResponse>(`games`, {
+        page: currentPage,
+      });
+      if (result.code !== 200) {
+        throw new Error(result.message);
+      }
+      const { docs, pages, total, page, limit } = result.data.games;
+      totalPage = pages;
+      results.push(...docs);
+    }
+    return results;
   }
 }
 

@@ -1,6 +1,6 @@
 export type RootBottomTabsParamList = {
   user: undefined;
-  home: undefined;
+  game: undefined;
   category: undefined;
   ranking: undefined;
 };

@@ -17,6 +17,7 @@ import { NativeStackScreenProps } from "@react-navigation/native-stack";
 import { RootStackParamList } from "@/navigations/mainStacks/types";
 import { useUtilsProvider } from "@/network/utilsProvider";
 import { Comment } from "@/network/types";
+import SendComment from "./SendComment";
 
 type Props = NativeStackScreenProps<RootStackParamList, "comment">;
 
@@ -107,8 +108,8 @@ const CommentList: React.FC<Props> = ({ navigation, route }) => {
               <TouchableRipple
                 onPress={() => {
                   navigation.navigate("comchildren", {
-                    comment: item
-                  })
+                    comment: item,
+                  });
                 }}
                 rippleColor="rgba(0, 0, 0, .22)"
                 style={{
@@ -133,10 +134,21 @@ const CommentList: React.FC<Props> = ({ navigation, route }) => {
     );
   };
 
+  const initRefresh = () => {
+    pageRef.current.currerntPage = 0;
+    setDataSource([]);
+  };
+
   const renderFooter = () => {
     return loading ? (
-      <View style={{ alignItems: "center", justifyContent: "center", paddingVertical: 10 }}>
-        <ActivityIndicator size="small" animating/>
+      <View
+        style={{
+          alignItems: "center",
+          justifyContent: "center",
+          paddingVertical: 10,
+        }}
+      >
+        <ActivityIndicator size="small" animating />
       </View>
     ) : null;
   };
@@ -154,7 +166,9 @@ const CommentList: React.FC<Props> = ({ navigation, route }) => {
           onEndReachedThreshold={0.3}
           onEndReached={loadMore}
           ListFooterComponent={renderFooter}
+          keyboardDismissMode="on-drag"
         />
+        <SendComment comicId={comicId} refresh={initRefresh} />
       </View>
     </BgBox>
   );
@@ -170,6 +184,7 @@ const styles = StyleSheet.create({
     width: "100%",
     height: "100%",
     paddingHorizontal: 8,
+    position: "relative",
   },
 });
 

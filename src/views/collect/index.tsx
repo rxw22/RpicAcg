@@ -1,5 +1,5 @@
 import { View, useWindowDimensions } from "react-native";
-import React, { useState, useRef, useCallback } from "react";
+import React, { useState, useRef, useCallback, memo } from "react";
 import {
   TabBar,
   TabView,
@@ -123,9 +123,9 @@ const BrowsingHistory: React.FC<SceneProps> = ({ route }) => {
 };
 
 const renderScene = SceneMap({
-  first: NetCollect,
-  second: LocalCollect,
-  three: BrowsingHistory,
+  first: memo(NetCollect),
+  second: memo(LocalCollect),
+  three: memo(BrowsingHistory),
 });
 
 type Props = NativeStackScreenProps<RootStackParamList, "collect">;

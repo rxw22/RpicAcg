@@ -134,6 +134,7 @@ const ReaderImage: React.FC<Props> = ({ item }) => {
         source={{ uri }}
         cachePolicy="disk"
         recyclingKey={uri}
+        transition={250}
       />
     </View>
   );

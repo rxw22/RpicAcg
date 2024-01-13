@@ -18,6 +18,7 @@ import { NativeStackScreenProps } from "@react-navigation/native-stack";
 import { RootStackParamList } from "@/navigations/mainStacks/types";
 import { useUtilsProvider } from "@/network/utilsProvider";
 import { Comment } from "@/network/types";
+import SendComment from "./SendComment";
 
 type Props = NativeStackScreenProps<RootStackParamList, "comchildren">;
 
@@ -82,7 +83,9 @@ const CommentList: React.FC<Props> = ({ navigation, route }) => {
           <View style={{ paddingTop: 8, paddingBottom: 4 }}>
             <Text variant="bodyMedium">{content}</Text>
           </View>
-          <View style={{ flexDirection: "row", justifyContent: "space-between" }}>
+          <View
+            style={{ flexDirection: "row", justifyContent: "space-between" }}
+          >
             <View style={{ marginRight: 40, paddingTop: 4 }}>
               <Text variant="bodySmall">
                 {dayjs(created_at).format("YYYY-MM-DD HH:mm:ss")}
@@ -91,7 +94,7 @@ const CommentList: React.FC<Props> = ({ navigation, route }) => {
             <View
               style={{
                 flexDirection: "row",
-                paddingRight: 15
+                paddingRight: 15,
               }}
             >
               <TouchableRipple
@@ -119,42 +122,44 @@ const CommentList: React.FC<Props> = ({ navigation, route }) => {
 
     return (
       <>
-      <View style={itemStyles.warpper}>
-        <View style={itemStyles.avatarView}>
-          <Card
-            style={[itemStyles.image, { overflow: "hidden" }]}
-            mode="contained"
-          >
-            <Image
-              style={itemStyles.image}
-              source={uri}
-              recyclingKey={_id}
-              transition={150}
-            />
-          </Card>
-        </View>
-        <View style={itemStyles.contentView}>
-          <View>
-            <Text variant="titleSmall" numberOfLines={1}>
-              {_user.name}
-            </Text>
+        <View style={itemStyles.warpper}>
+          <View style={itemStyles.avatarView}>
+            <Card
+              style={[itemStyles.image, { overflow: "hidden" }]}
+              mode="contained"
+            >
+              <Image
+                style={itemStyles.image}
+                source={uri}
+                recyclingKey={_id}
+                transition={150}
+              />
+            </Card>
           </View>
-          <View style={{ paddingVertical: 8, }}>
-            <Text variant="bodyMedium">{content}</Text>
-          </View>
-          <View style={{ flexDirection: "row", justifyContent: "space-between" }}>
+          <View style={itemStyles.contentView}>
             <View>
-              <Text variant="bodySmall">
-                {dayjs(created_at).format("YYYY-MM-DD HH:mm:ss")}
+              <Text variant="titleSmall" numberOfLines={1}>
+                {_user.name}
               </Text>
+            </View>
+            <View style={{ paddingVertical: 8 }}>
+              <Text variant="bodyMedium">{content}</Text>
+            </View>
+            <View
+              style={{ flexDirection: "row", justifyContent: "space-between" }}
+            >
+              <View>
+                <Text variant="bodySmall">
+                  {dayjs(created_at).format("YYYY-MM-DD HH:mm:ss")}
+                </Text>
+              </View>
             </View>
           </View>
         </View>
-      </View>
-      <Divider style={{ marginVertical: 15 }}/>
+        <Divider style={{ marginVertical: 15 }} />
       </>
     );
-  }
+  };
 
   const renderFooter = () => {
     return loading ? (
@@ -168,6 +173,15 @@ const CommentList: React.FC<Props> = ({ navigation, route }) => {
         <ActivityIndicator size="small" animating />
       </View>
     ) : null;
+  };
+
+  const initRefresh = () => {
+    pageRef.current.currerntPage = 1;
+    setDataSource([]);
+    run({
+      page: pageRef.current.currerntPage,
+      commentId: comment._id,
+    });
   };
 
   return (
@@ -184,7 +198,9 @@ const CommentList: React.FC<Props> = ({ navigation, route }) => {
           onEndReached={loadMore}
           ListFooterComponent={renderFooter}
           ListHeaderComponent={renderHeader}
+          keyboardDismissMode="on-drag"
         />
+        <SendComment commentId={comment._id} refresh={initRefresh} />
       </View>
     </BgBox>
   );
@@ -200,6 +216,7 @@ const styles = StyleSheet.create({
     width: "100%",
     height: "100%",
     paddingHorizontal: 8,
+    position: "relative",
   },
 });
 

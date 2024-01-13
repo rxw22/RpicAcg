@@ -24,9 +24,9 @@ export const useNetworkDelay = () => {
   });
 
   const [netState, setNetState] = useState({
-    分流一: "0ms",
-    分流二: "0ms",
-    分流三: "0ms",
+    分流一: "测速中",
+    分流二: "测速中",
+    分流三: "测速中",
   });
 
   const httpRequest1 = useMemo(
@@ -146,9 +146,9 @@ export const useNetworkDelay = () => {
 
   const start = useCallback(() => {
     setNetState({
-      分流一: "0ms",
-      分流二: "0ms",
-      分流三: "0ms",
+      分流一: "测速中",
+      分流二: "测速中",
+      分流三: "测速中",
     });
     run1();
     run2();

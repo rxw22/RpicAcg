@@ -192,9 +192,10 @@ export type ComicsResponse = BaseResponse<{
 
 export interface ComicsPayload {
   /** Category title */
-  c: string;
+  c?: string;
   page?: number;
   s?: ComicSort;
+  ca?: string;
 }
 
 export interface RankingPayload {
@@ -255,8 +256,7 @@ export type CommentResponse = BaseResponse<{
   topComments: Comment[];
 }>;
 
-
-export interface CommentChildrenPayload{
+export interface CommentChildrenPayload {
   page: number;
   commentId: string;
 }
@@ -272,50 +272,110 @@ export type CommentChildrenResponse = BaseResponse<{
 }>;
 
 export type LikeOrUnLikeComicResponse = BaseResponse<{
-  action: "like" | "unlike"
+  action: "like" | "unlike";
 }>;
 
 export type CollectResponse = BaseResponse<{
-  action: "un_favourite" | "favourite"
-}>
+  action: "un_favourite" | "favourite";
+}>;
 
 export type KeywordsResponse = BaseResponse<{
   keywords: string[];
-}>
+}>;
 
 export interface SearchComicsPayload {
-  keyword: string
-  categories?: string[]
-  page?: number
-  sort?: ComicSort
+  keyword: string;
+  categories?: string[];
+  page?: number;
+  sort?: ComicSort;
 }
 
 export type SearchComicsResponse = BaseResponse<{
   comics: {
-    docs: SearchedComic[]
-    total: number
-    limit: number
-    page: number
-    pages: number
-  }
-}>
-
+    docs: SearchedComic[];
+    total: number;
+    limit: number;
+    page: number;
+    pages: number;
+  };
+}>;
 
 export interface SearchedComic {
-  _id: string
-  title: string
-  author?: string
-  totalViews?: number
-  totalLikes?: number
-  likesCount: number
-  finished: boolean
-  categories: string[]
-  thumb: ImageMedia
-  chineseTeam?: string
-  description?: string
-  tags: string[]
-  updated_at: string
-  created_at: string
+  _id: string;
+  title: string;
+  author?: string;
+  totalViews?: number;
+  totalLikes?: number;
+  likesCount: number;
+  finished: boolean;
+  categories: string[];
+  thumb: ImageMedia;
+  chineseTeam?: string;
+  description?: string;
+  tags: string[];
+  updated_at: string;
+  created_at: string;
 }
 
+export type KnightResponse = BaseResponse<{
+  users: Knight[];
+}>;
 
+export interface Knight {
+  _id: string;
+  gender: string;
+  name: string;
+  slogan?: string;
+  title: string;
+  verified: boolean;
+  exp: number;
+  level: number;
+  characters: string[];
+  role: string;
+  avatar?: ImageMedia;
+  comicsUploaded: number;
+  character?: string;
+}
+
+export interface SendCommentPayload {
+  comicId: string;
+  content: string;
+}
+
+export type SendCommentResponse = BaseResponse<{}>;
+
+export interface SendReplyPayload {
+  commentId: string;
+  content: string;
+}
+
+export type SendReplyResponse = BaseResponse<{}>;
+
+export type GamesResponse = BaseResponse<{
+  games: Games;
+}>;
+export interface Games {
+  docs: Doc[];
+  total: number;
+  limit: number;
+  page: number;
+  pages: number;
+}
+
+export interface Doc {
+  _id: string;
+  title: string;
+  version: string;
+  publisher: string;
+  suggest: boolean;
+  adult: boolean;
+  android: boolean;
+  ios: boolean;
+  icon: Icon;
+}
+
+export interface Icon {
+  originalName: string;
+  path: string;
+  fileServer: string;
+}

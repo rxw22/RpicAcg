@@ -1,5 +1,5 @@
 import { useWindowDimensions } from "react-native";
-import React, { useCallback } from "react";
+import React, { useCallback, memo } from "react";
 import {
   TabBar,
   TabView,
@@ -11,7 +11,7 @@ import { useUtilsProvider } from "@/network/utilsProvider";
 import { useRequest } from "ahooks";
 import { LeaderQuery } from "@/network/types";
 // import CommonList from "./CommonList";
-import List from '@/components/ComicsList';
+import List from "@/components/ComicsList";
 import BgBox from "@/components/bgBox";
 import {
   NativeStackNavigationProp,
@@ -28,6 +28,7 @@ import {
 } from "@react-navigation/bottom-tabs";
 import { RootBottomTabsParamList } from "@/navigations/bottomTabs/types";
 import LoadingMask from "@/components/LoadingMask";
+import KnightList from "./KnightList";
 
 type SceneProps = {
   route: {
@@ -53,7 +54,7 @@ const DayRanking: React.FC<SceneProps> = ({ route }) => {
       defaultParams: [{ tt: LeaderQuery.Day, ct: "VC" }],
       onError(e) {
         console.log(e);
-      }
+      },
     }
   );
 
@@ -84,7 +85,7 @@ const WeekRanking: React.FC<SceneProps> = ({ route }) => {
       defaultParams: [{ tt: LeaderQuery.Week, ct: "VC" }],
       onError(e) {
         console.log(e);
-      }
+      },
     }
   );
 
@@ -115,7 +116,7 @@ const MonthRanking: React.FC<SceneProps> = ({ route }) => {
       defaultParams: [{ tt: LeaderQuery.Month, ct: "VC" }],
       onError(e) {
         console.log(e);
-      }
+      },
     }
   );
 
@@ -137,10 +138,36 @@ const MonthRanking: React.FC<SceneProps> = ({ route }) => {
   );
 };
 
+const KnightRanking: React.FC<SceneProps> = ({ route }) => {
+  const { httpRequest } = useUtilsProvider();
+
+  const { loading, data } = useRequest(
+    httpRequest.fetchKinghts.bind(httpRequest),
+    {
+      onError(e) {
+        console.log(e);
+      },
+    }
+  );
+
+  const navigate = useCallback((name: string, params: any) => {
+    // @ts-ignore
+    route.navigation.navigate(name, params);
+  }, []);
+
+  return (
+    <BgBox style={{ flex: 1, paddingHorizontal: 5, position: "relative" }}>
+      <LoadingMask once={true} loading={loading} />
+      <KnightList dataSource={data || []} navigate={navigate} />
+    </BgBox>
+  );
+};
+
 const renderScene = SceneMap({
-  first: DayRanking,
-  second: WeekRanking,
-  three: MonthRanking,
+  first: memo(DayRanking),
+  second: memo(WeekRanking),
+  three: memo(MonthRanking),
+  four: memo(KnightRanking),
 });
 
 type Props = CompositeScreenProps<
@@ -156,6 +183,7 @@ function Ranking({ navigation }: Props) {
     { key: "first", title: "24小时", navigation },
     { key: "second", title: "7天", navigation },
     { key: "three", title: "30天", navigation },
+    { key: "four", title: "骑士榜", navigation },
   ]);
 
   return (
@@ -165,7 +193,7 @@ function Ranking({ navigation }: Props) {
       onIndexChange={setIndex}
       initialLayout={{ width: layout.width }}
       lazy={({ route }) =>
-        route.key === "second" || route.key === "three"
+        route.key === "second" || route.key === "three" || route.key === "four"
       }
       renderTabBar={(props) => (
         <TabBar

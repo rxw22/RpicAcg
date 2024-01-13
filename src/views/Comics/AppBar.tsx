@@ -9,7 +9,7 @@ const ComicsAppBar: React.FC<NativeStackHeaderProps> = ({
   route,
   back,
 }) => {
-  const { c = "" } = route.params as any;
+  const { c = "", knight = "" } = route.params as any;
   const [visible, setVisible] = useState(false);
   const [anchor, setAnchor] = useState({
     x: 0,
@@ -45,7 +45,7 @@ const ComicsAppBar: React.FC<NativeStackHeaderProps> = ({
   return (
     <Appbar.Header>
       {back ? <Appbar.BackAction onPress={navigation.goBack} /> : null}
-      <Appbar.Content title={c} />
+      <Appbar.Content title={`${c}${knight}`} />
       <Menu visible={visible} onDismiss={closeMenu} anchor={anchor}>
         {options.map((item) => {
           return (

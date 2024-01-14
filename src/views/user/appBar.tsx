@@ -2,21 +2,10 @@ import { useAppConfigStore } from "@/store/appConfigStore";
 import React from "react";
 import { StyleSheet } from "react-native";
 import { Appbar, Dialog, Portal, Text, Button } from "react-native-paper";
-import { CompositeNavigationProp } from "@react-navigation/native";
-import { BottomTabNavigationProp } from "@react-navigation/bottom-tabs";
-import { RootBottomTabsParamList } from "@/navigations/bottomTabs/types";
-import { NativeStackNavigationProp } from "@react-navigation/native-stack";
-import { RootStackParamList } from "@/navigations/mainStacks/types";
 import { useUserStore } from "@/store/userStore";
+import { BottomTabHeaderProps } from "@react-navigation/bottom-tabs";
 
-interface Props {
-  navigation: CompositeNavigationProp<
-    BottomTabNavigationProp<RootBottomTabsParamList, "user", undefined>,
-    NativeStackNavigationProp<RootStackParamList>
-  >;
-}
-
-function UserAppBar({ navigation }: Props) {
+function UserAppBar({ navigation }: BottomTabHeaderProps) {
   const { setMode, mode } = useAppConfigStore();
   const { clearToken } = useUserStore();
   const [visible, setVisible] = React.useState(false);
@@ -31,6 +20,7 @@ function UserAppBar({ navigation }: Props) {
 
   const clearCache = () => {
     clearToken();
+    // @ts-ignore
     navigation.replace("login");
   };
 

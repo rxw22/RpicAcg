@@ -11,6 +11,7 @@ import { RootBottomTabsParamList } from "./types";
 import CategoryAppBar from "@/views/category/AppBar";
 import RankingAppBar from "@/views/ranking/AppBar";
 import GameAppBar from "@/views/game/AppBar";
+import UserAppBar from "@/views/user/appBar";
 
 const Tab = createBottomTabNavigator<RootBottomTabsParamList>();
 
@@ -102,6 +103,7 @@ export default function BottomTabs() {
         name="user"
         options={{
           tabBarLabel: "我的",
+          header: (props) => <UserAppBar {...props} />,
           tabBarIcon: ({ color, size, focused }) => {
             const name = focused ? "account" : "account-outline";
             return <Icon name={name} size={size} color={color} />;

@@ -1,5 +1,5 @@
 import { StyleSheet, View } from "react-native";
-import React, { useRef, useState } from "react";
+import React, { useCallback, useRef, useState } from "react";
 import {
   Card,
   Icon,
@@ -43,7 +43,7 @@ const CommentList: React.FC<Props> = ({ navigation, route }) => {
     }
   );
 
-  const loadMore = () => {
+  const loadMore = useCallback(() => {
     if (pageRef.current.currerntPage < pageRef.current.totalPage) {
       pageRef.current.currerntPage++;
       run({
@@ -51,7 +51,7 @@ const CommentList: React.FC<Props> = ({ navigation, route }) => {
         commentId: comment._id,
       });
     }
-  };
+  }, [run]);
 
   const renderItem: ListRenderItem<Comment> = ({ item }) => {
     const { _user, content, _id, created_at, likesCount, commentsCount } = item;

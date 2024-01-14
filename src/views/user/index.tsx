@@ -9,7 +9,7 @@ import {
 import { FAB, Text } from "react-native-paper";
 import { useRequest } from "ahooks";
 import { ImageBackground } from "expo-image";
-import { useLayoutEffect, useState } from "react";
+import { useState } from "react";
 import Image from "@/components/image";
 
 import BgBox from "@/components/bgBox";
@@ -60,13 +60,6 @@ const User: React.FC<Props> = (props) => {
 
   const { user } = data?.data || {};
 
-  useLayoutEffect(() => {
-    props.navigation.setOptions({
-      headerTransparent: true,
-      header: () => <AppBar navigation={props.navigation} />,
-    });
-  }, [flag]);
-
   const _onScroll = (e: NativeSyntheticEvent<NativeScrollEvent>) => {
     const { contentOffset } = e.nativeEvent;
     const { y } = contentOffset;
@@ -84,7 +77,7 @@ const User: React.FC<Props> = (props) => {
       }}
     >
       <ImageBackground
-        style={[styles.background, { paddingTop: statusBarHeight + 64 }]}
+        style={styles.background}
         source={
           loading
             ? require("@/assets/imgs/placeholder.png")
@@ -94,7 +87,7 @@ const User: React.FC<Props> = (props) => {
         }
         blurRadius={4}
       >
-        <View style={[styles.userWapper, { top: statusBarHeight + 64 }]}>
+        <View style={styles.userWapper}>
           <View style={styles.center}>
             <Text variant="bodyLarge" style={{ color: "#fff" }}>
               Lv.{user?.level || 0}

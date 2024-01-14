@@ -54,11 +54,11 @@ const NetCollect: React.FC<SceneProps> = ({ route }) => {
     }
   );
 
-  const loadMore = () => {
+  const loadMore = useCallback(() => {
     if (pageRef.current.page < pageRef.current.pages) {
       run({ page: pageRef.current.page + 1, s: pageRef.current.s });
     }
-  };
+  }, [run]);
 
   const navigate = useCallback((name: string, params: any) => {
     // @ts-ignore
@@ -81,7 +81,7 @@ const NetCollect: React.FC<SceneProps> = ({ route }) => {
 const LocalCollect: React.FC<SceneProps> = ({ route }) => {
   const { localCollect } = useReadStore();
 
-  const loadMore = () => {};
+  const loadMore = useCallback(() => {}, []);
 
   const navigate = useCallback((name: string, params: any) => {
     // @ts-ignore
@@ -103,7 +103,7 @@ const LocalCollect: React.FC<SceneProps> = ({ route }) => {
 const BrowsingHistory: React.FC<SceneProps> = ({ route }) => {
   const { browses } = useReadStore();
 
-  const loadMore = () => {};
+  const loadMore = useCallback(() => {}, []);
 
   const navigate = useCallback((name: string, params: any) => {
     // @ts-ignore

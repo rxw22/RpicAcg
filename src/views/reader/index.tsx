@@ -1,5 +1,5 @@
 import { StyleSheet, View, useWindowDimensions } from "react-native";
-import React, { useEffect, useLayoutEffect, useRef } from "react";
+import React, { useCallback, useEffect, useRef } from "react";
 import { StatusBar } from "expo-status-bar";
 import { useRequest, useUpdate } from "ahooks";
 import { GestureDetector, Gesture } from "react-native-gesture-handler";
@@ -44,7 +44,7 @@ const Reader: React.FC<Props> = ({ route, navigation }) => {
   );
   const listRef = useRef<Ref>(null);
 
-  useLayoutEffect(() => {
+  useEffect(() => {
     navigation.setOptions({
       header: () => (
         <Header
@@ -79,7 +79,6 @@ const Reader: React.FC<Props> = ({ route, navigation }) => {
     const page = comicRecord[comicId]?.page || 0;
     if (!loading && !isScratch && currentOrder.current === order) {
       setTimeout(() => {
-        // listRef.current?.scrollToOffset(y);
         listRef.current?.scrollToIndex(page);
       }, 180);
     }
@@ -97,24 +96,27 @@ const Reader: React.FC<Props> = ({ route, navigation }) => {
     });
 
   // 翻页回调
-  const onPageChange = (page: number) => {
-    recordRef.current.page = page;
-    update();
-    if (page >= (data?.length || 1) - 1 && hasNext) {
-      fabBottom.value = withTiming(0, {
-        duration: 300,
-      });
-    } else if (fabBottom.value === 0) {
-      fabBottom.value = withTiming(-90, {
-        duration: 300,
-      });
-    }
-  };
+  const onPageChange = useCallback(
+    (page: number) => {
+      recordRef.current.page = page;
+      update();
+      if (page >= (data?.length || 1) - 1 && hasNext) {
+        fabBottom.value = withTiming(0, {
+          duration: 300,
+        });
+      } else if (fabBottom.value === 0) {
+        fabBottom.value = withTiming(-90, {
+          duration: 300,
+        });
+      }
+    },
+    [update, hasNext, data]
+  );
 
   // 滑动回调
-  const onScrollYChange = (y: number) => {
+  const onScrollYChange = useCallback((y: number) => {
     recordRef.current.y = y;
-  };
+  }, []);
 
   // 翻页
   const flip = () => {
@@ -159,12 +161,14 @@ const Reader: React.FC<Props> = ({ route, navigation }) => {
             //   onPageChange={onPageChange}
             // />
           )}
-          <View style={styles.countPage}>
-            <Text variant="bodyMedium" style={{ color: "#fff" }}>
-              第 {currentOrder.current} 章: {recordRef.current.page + 1}/
-              {data?.length}
-            </Text>
-          </View>
+          {data?.length && !loading && (
+            <View style={styles.countPage}>
+              <Text variant="bodyMedium" style={{ color: "#fff" }}>
+                第 {currentOrder.current} 章: {recordRef.current.page + 1}/
+                {data?.length}
+              </Text>
+            </View>
+          )}
         </View>
         <Animated.View style={[styles.fab, { bottom: fabBottom }]}>
           <FAB
@@ -198,6 +202,7 @@ const styles = StyleSheet.create({
     position: "absolute",
     margin: 16,
     right: 0,
+    bottom: -90,
   },
   countPage: {
     position: "absolute",

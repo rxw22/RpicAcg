@@ -1,11 +1,10 @@
 import { ScrollView, StyleSheet, View } from "react-native";
-import React, { useState } from "react";
+import React, { useCallback, useState } from "react";
 import { NativeStackScreenProps } from "@react-navigation/native-stack";
 import {
   Text,
   Card,
   Button,
-  Surface,
   useTheme,
   Chip,
   Divider,
@@ -13,15 +12,17 @@ import {
   FAB,
 } from "react-native-paper";
 import { useRequest } from "ahooks";
-import dayjs from "dayjs";
 
 import { RootStackParamList } from "@/navigations/mainStacks/types";
 import BgBox from "@/components/bgBox";
 import { useUtilsProvider } from "@/network/utilsProvider";
 import Image from "@/components/image";
-import PressableButton from "@/components/button";
 import HorizontalList from "./horizontalList";
 import { useReadStore } from "@/store/readStore";
+import Author from "./Author";
+import Chapter from "./Chapter";
+import CollectOrLike from "./CollectOrLike";
+import Tags from "./Tags";
 
 type Props = NativeStackScreenProps<RootStackParamList, "details">;
 
@@ -34,10 +35,6 @@ const ComicDetails: React.FC<Props> = ({ route, navigation }) => {
   // 继续阅读
   const { comicRecord } = useReadStore();
   const record = comicRecord[comicId];
-  // 记录是否点赞
-  const [like, setLike] = useState(false);
-  // 记录是否收藏
-  const [collect, setCollect] = useState(false);
 
   // 获取comic详情
   const { loading, data, error, refresh } = useRequest(
@@ -46,10 +43,6 @@ const ComicDetails: React.FC<Props> = ({ route, navigation }) => {
       defaultParams: [comicId],
       onError(e) {
         console.log(e.message);
-      },
-      onSuccess(result) {
-        setLike(result.data.comic.isLiked);
-        setCollect(result.data.comic.isFavourite);
       },
     }
   );
@@ -79,49 +72,23 @@ const ComicDetails: React.FC<Props> = ({ route, navigation }) => {
     },
   });
 
-  const { run: likeRun, loading: likeLoading } = useRequest(
-    httpRequest.likeOrUnlikeComic.bind(httpRequest),
-    {
-      manual: true,
-      onError(e) {
-        console.log(e);
-      },
-      onSuccess() {
-        setLike(!like);
-      },
-    }
-  );
-
-  const { run: collectRun, loading: collectLoading } = useRequest(
-    httpRequest.collectOrUncollectComic.bind(httpRequest),
-    {
-      manual: true,
-      onError(e) {
-        console.log(e);
-      },
-      onSuccess() {
-        setCollect(!collect);
-      },
-    }
-  );
-
-  const startReader = (
-    order: number,
-    isScratch: boolean = true,
-    hasNext: boolean
-  ) => {
-    navigation.navigate("reader", {
-      comicId,
-      order,
-      title: response?.comic.title || "",
-      record,
-      isScratch,
-      hasNext,
-    });
-  };
-
   const { data: response } = data || {};
   const { comics } = comicRecommend?.data || {};
+
+  const startReader = useCallback(
+    (order: number, isScratch: boolean = true, hasNext: boolean) => {
+      navigation.navigate("reader", {
+        comicId,
+        order,
+        title: response?.comic.title || "",
+        record,
+        isScratch,
+        hasNext,
+      });
+    },
+    [response]
+  );
+
   return (
     <BgBox
       style={styles.container}
@@ -150,51 +117,16 @@ const ComicDetails: React.FC<Props> = ({ route, navigation }) => {
                 source={{
                   uri: `${response?.comic.thumb.fileServer}/static/${response?.comic.thumb.path}`,
                 }}
+                contentPosition="left center"
+                contentFit="cover"
               />
             </Card>
           </View>
-          <Surface style={styles.comicInfo} mode="flat">
-            <PressableButton
-              onPress={() => {
-                likeRun(comicId);
-              }}
-              rippleColor="rgba(0, 0, 0, .12)"
-              style={styles.infoItem}
-              title={response?.comic.likesCount}
-              icon={like ? "cards-heart" : "cards-heart-outline"}
-              iconSize={24}
-              iconColor={theme.colors.primary}
-              textProps={{ variant: "bodyLarge" }}
-              loading={likeLoading}
-            />
-            <PressableButton
-              onPress={() => {
-                collectRun(comicId);
-              }}
-              rippleColor="rgba(0, 0, 0, .12)"
-              style={styles.infoItem}
-              title={collect ? "已收藏" : "未收藏"}
-              icon={collect ? "tag-heart" : "tag-heart-outline"}
-              iconSize={24}
-              iconColor={theme.colors.primary}
-              textProps={{ variant: "bodyLarge" }}
-              loading={collectLoading}
-            />
-            <PressableButton
-              onPress={() => {
-                navigation.navigate("comment", {
-                  comicId,
-                });
-              }}
-              rippleColor="rgba(0, 0, 0, .12)"
-              style={styles.infoItem}
-              title={response?.comic.totalComments}
-              icon="comment-processing"
-              iconSize={24}
-              iconColor={theme.colors.primary}
-              textProps={{ variant: "bodyLarge" }}
-            />
-          </Surface>
+          <CollectOrLike
+            navigation={navigation}
+            comicId={comicId}
+            response={response?.comic}
+          />
           {record && (
             <View
               style={[
@@ -250,181 +182,16 @@ const ComicDetails: React.FC<Props> = ({ route, navigation }) => {
           </View>
           {/* 标签 */}
           <View style={styles.tags}>
-            <View style={{ flexDirection: "row" }}>
-              <Chip style={{ backgroundColor: theme.colors.primaryContainer }}>
-                作者
-              </Chip>
-              <Chip
-                onPress={() => console.log("Pressed")}
-                style={{
-                  marginLeft: 8,
-                  backgroundColor: theme.colors.surfaceVariant,
-                }}
-              >
-                {response?.comic.author || "未知"}
-              </Chip>
-            </View>
-            <View style={{ flexDirection: "row", marginTop: 8 }}>
-              <Chip style={{ backgroundColor: theme.colors.primaryContainer }}>
-                汉化
-              </Chip>
-              <Chip
-                onPress={() => console.log("Pressed")}
-                style={{
-                  marginLeft: 8,
-                  backgroundColor: theme.colors.surfaceVariant,
-                }}
-              >
-                {response?.comic.chineseTeam || "未知"}
-              </Chip>
-            </View>
-            <View style={{ flexDirection: "row", marginTop: 8 }}>
-              <View>
-                <Chip
-                  style={{ backgroundColor: theme.colors.primaryContainer }}
-                >
-                  分类
-                </Chip>
-              </View>
-              <View style={{ flexDirection: "row", flexWrap: "wrap", flex: 1 }}>
-                {response?.comic.categories.map((item) => (
-                  <Chip
-                    onPress={() => console.log("Pressed")}
-                    style={{
-                      marginLeft: 8,
-                      backgroundColor: theme.colors.surfaceVariant,
-                      marginBottom: 8,
-                    }}
-                    key={item}
-                  >
-                    {item}
-                  </Chip>
-                ))}
-              </View>
-            </View>
-            <View style={{ flexDirection: "row", marginTop: response ? 0 : 8 }}>
-              <View>
-                <Chip
-                  style={{ backgroundColor: theme.colors.primaryContainer }}
-                >
-                  标签
-                </Chip>
-              </View>
-              <View style={{ flexDirection: "row", flexWrap: "wrap", flex: 1 }}>
-                {response?.comic.tags.map((item) => (
-                  <Chip
-                    onPress={() => console.log("Pressed")}
-                    style={{
-                      marginLeft: 8,
-                      backgroundColor: theme.colors.surfaceVariant,
-                      marginBottom: 8,
-                    }}
-                    key={item}
-                  >
-                    {item}
-                  </Chip>
-                ))}
-              </View>
-            </View>
-            {response && (
-              <View
-                style={[
-                  styles.author,
-                  { backgroundColor: theme.colors.primaryContainer },
-                ]}
-              >
-                <Card style={styles.authorAvatar} mode="contained">
-                  <Image
-                    style={{ width: "100%", height: "100%" }}
-                    pageLoading={loading}
-                    showLoading={false}
-                    source={{
-                      uri: `${response?.comic._creator.avatar?.fileServer}/static/${response?.comic._creator.avatar?.path}`,
-                    }}
-                    size={14}
-                  />
-                </Card>
-                <View>
-                  <Text variant="headlineSmall" numberOfLines={1}>
-                    {response?.comic._creator.name}
-                  </Text>
-                  <Text variant="bodyMedium" numberOfLines={1}>
-                    {dayjs(response?.comic.updated_at).format("YYYY-MM-DD")}
-                  </Text>
-                </View>
-              </View>
-            )}
+            <Tags response={response?.comic} navigation={navigation} />
+            <Author
+              response={response?.comic}
+              loading={loading}
+              navigation={navigation}
+            />
           </View>
           <Divider />
           {/* 章节 */}
-          <View style={styles.epsView}>
-            <View style={{ marginBottom: 8 }}>
-              <Text variant="headlineSmall">章节</Text>
-            </View>
-            <View>
-              {Array.from({
-                length: Math.ceil((comicEpisodes?.length || 0) / 2),
-              }).map((_, index) => {
-                return (
-                  <View
-                    style={{ flexDirection: "row", flex: 1 }}
-                    key={comicEpisodes?.[index * 2]._id}
-                  >
-                    {comicEpisodes?.[index * 2] ? (
-                      <Button
-                        style={styles.epsBtn}
-                        contentStyle={styles.epsCard}
-                        mode="contained-tonal"
-                        onPress={() => {
-                          startReader(
-                            comicEpisodes?.[index * 2].order,
-                            true,
-                            (comicEpisodes?.length || 1) >
-                              comicEpisodes?.[index * 2].order
-                          );
-                        }}
-                      >
-                        {comicEpisodes?.[index * 2].title}
-                      </Button>
-                    ) : (
-                      <Button
-                        style={styles.epsBtn}
-                        contentStyle={styles.epsCard}
-                        mode="text"
-                      >
-                        {null}
-                      </Button>
-                    )}
-                    {comicEpisodes?.[index * 2 + 1] ? (
-                      <Button
-                        style={styles.epsBtn}
-                        contentStyle={styles.epsCard}
-                        mode="contained-tonal"
-                        onPress={() => {
-                          startReader(
-                            comicEpisodes?.[index * 2 + 1].order,
-                            true,
-                            (comicEpisodes?.length || 1) >
-                              comicEpisodes?.[index * 2 + 1].order
-                          );
-                        }}
-                      >
-                        {comicEpisodes?.[index * 2 + 1].title}
-                      </Button>
-                    ) : (
-                      <Button
-                        style={styles.epsBtn}
-                        contentStyle={styles.epsCard}
-                        mode="text"
-                      >
-                        {null}
-                      </Button>
-                    )}
-                  </View>
-                );
-              })}
-            </View>
-          </View>
+          <Chapter comicEpisodes={comicEpisodes} startReader={startReader} />
           <Divider />
           {/* 简介 */}
           <View style={styles.description}>
@@ -481,20 +248,6 @@ const styles = StyleSheet.create({
     height: "100%",
     width: "100%",
   },
-  comicInfo: {
-    width: "100%",
-    flexDirection: "row",
-    height: 55,
-    borderRadius: 20,
-    justifyContent: "space-around",
-    alignItems: "center",
-    paddingHorizontal: 8,
-  },
-  infoItem: {
-    padding: 10,
-    borderRadius: 10,
-    flex: 1,
-  },
   operates: {
     flexDirection: "row",
     marginTop: 12,
@@ -502,39 +255,6 @@ const styles = StyleSheet.create({
   operatesItem: {
     flex: 1,
     marginHorizontal: 10,
-  },
-  tags: {
-    marginTop: 12,
-    padding: 8,
-  },
-  author: {
-    width: "100%",
-    height: 60,
-    borderRadius: 10,
-    backgroundColor: "pink",
-    flexDirection: "row",
-    alignItems: "center",
-    paddingHorizontal: 12,
-  },
-  authorAvatar: {
-    height: 46,
-    width: 46,
-    borderRadius: 23,
-    overflow: "hidden",
-    marginRight: 12,
-  },
-  epsView: {
-    paddingVertical: 15,
-  },
-  epsBtn: {
-    flex: 1,
-    marginVertical: 4,
-    marginHorizontal: 12,
-  },
-  epsCard: {
-    flex: 1,
-    alignItems: "center",
-    justifyContent: "center",
   },
   description: {
     paddingVertical: 15,
@@ -546,5 +266,9 @@ const styles = StyleSheet.create({
     position: "absolute",
     bottom: 15,
     right: 15,
+  },
+  tags: {
+    marginTop: 12,
+    padding: 8,
   },
 });

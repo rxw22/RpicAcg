@@ -6,7 +6,7 @@ import {
   NativeScrollEvent,
   NativeSyntheticEvent,
 } from "react-native";
-import { FAB, Text } from "react-native-paper";
+import { Card, FAB, Text } from "react-native-paper";
 import { useRequest } from "ahooks";
 import { ImageBackground } from "expo-image";
 import { useState } from "react";
@@ -33,9 +33,7 @@ type Props = CompositeScreenProps<
 
 const User: React.FC<Props> = (props) => {
   const { httpRequest } = useUtilsProvider();
-  const statusBarHeight = StatusBar.currentHeight ? StatusBar.currentHeight : 0;
   const { localCollect, browses } = useReadStore();
-  const [flag, setFlag] = useState(true);
 
   const { data, loading, refresh, error } = useRequest(
     httpRequest.fetchUserProfile.bind(httpRequest),
@@ -59,12 +57,6 @@ const User: React.FC<Props> = (props) => {
   });
 
   const { user } = data?.data || {};
-
-  const _onScroll = (e: NativeSyntheticEvent<NativeScrollEvent>) => {
-    const { contentOffset } = e.nativeEvent;
-    const { y } = contentOffset;
-    setFlag(y <= 70);
-  };
 
   return (
     <BgBox
@@ -97,22 +89,25 @@ const User: React.FC<Props> = (props) => {
             </Text>
           </View>
           <View style={styles.avatar}>
-            <Image
-              source={
-                loading
-                  ? require("@/assets/imgs/user.png")
-                  : {
-                      uri: `${user?.avatar?.fileServer}/static/${user?.avatar?.path}`,
-                    }
-              }
-              contentPosition="top center"
-              style={styles.avatarImage}
-              showLoading={false}
-            />
+            <Card mode="contained" style={styles.avatarImage}>
+              <Image
+                source={
+                  user?.avatar
+                    ? `${user?.avatar?.fileServer}/static/${user?.avatar?.path}`
+                    : require("@/assets/imgs/user.png")
+                }
+                contentPosition="top center"
+                style={{ width: "100%", height: "100%" }}
+                showLoading={false}
+              />
+            </Card>
           </View>
           <View style={styles.center}>
             <Text variant="bodyLarge" style={{ color: "#fff" }}>
               {user?.name}
+            </Text>
+            <Text variant="bodyMedium" style={{ color: "#fff" }}>
+              {user?.title}
             </Text>
             <Text
               variant="bodyLarge"
@@ -126,7 +121,6 @@ const User: React.FC<Props> = (props) => {
         <ScrollView
           style={styles.scrollWarpper}
           showsVerticalScrollIndicator={false}
-          onScroll={_onScroll}
         >
           <View style={styles.userWapperMask} />
           <BgBox style={styles.content}>
@@ -180,7 +174,7 @@ const styles = StyleSheet.create({
   },
   userWapper: {
     width: "100%",
-    height: 210,
+    height: 250,
     padding: 5,
     left: 0,
     right: 0,
@@ -188,7 +182,7 @@ const styles = StyleSheet.create({
     paddingTop: 10,
   },
   userWapperMask: {
-    height: 210,
+    height: 250,
     padding: 5,
     width: "100%",
     opacity: 0,
@@ -211,6 +205,7 @@ const styles = StyleSheet.create({
     width: 70,
     height: 70,
     borderRadius: 35,
+    overflow: "hidden",
   },
   scrollWarpper: {
     width: "100%",

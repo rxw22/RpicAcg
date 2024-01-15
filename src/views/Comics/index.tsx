@@ -15,7 +15,7 @@ import { fliterEmpty } from "@/utils";
 type Props = NativeStackScreenProps<RootStackParamList, "comics">;
 
 const Comics: React.FC<Props> = ({ route, navigation }) => {
-  const { c, ca } = route.params;
+  const { c, ca, a, ct, t } = route.params;
   const { httpRequest } = useUtilsProvider();
   const pageRef = useRef({
     currerntPage: 1,
@@ -24,7 +24,13 @@ const Comics: React.FC<Props> = ({ route, navigation }) => {
   });
   const [dataSource, setDataSource] = useState<Comic[]>([]);
   const { comicSort } = useGlobalStore();
-  const params = fliterEmpty({ c: c ? encodeURIComponent(c) : c, ca });
+  const params = fliterEmpty({
+    c: c ? encodeURIComponent(c) : c,
+    ca,
+    a: a ? encodeURIComponent(a) : a,
+    ct: ct ? encodeURIComponent(ct) : ct,
+    t: t ? encodeURIComponent(t) : t,
+  });
 
   useEffect(() => {
     pageRef.current = {
@@ -64,7 +70,7 @@ const Comics: React.FC<Props> = ({ route, navigation }) => {
 
   const navigate = useCallback((name: string, params: any) => {
     // @ts-ignore
-    navigation.navigate(name, params);
+    navigation.push(name, params);
   }, []);
 
   return (

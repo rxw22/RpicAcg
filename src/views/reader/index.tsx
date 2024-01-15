@@ -1,5 +1,5 @@
 import { StyleSheet, View, useWindowDimensions } from "react-native";
-import React, { useCallback, useEffect, useRef } from "react";
+import React, { useCallback, useEffect, useLayoutEffect, useRef } from "react";
 import { StatusBar } from "expo-status-bar";
 import { useRequest, useUpdate } from "ahooks";
 import { GestureDetector, Gesture } from "react-native-gesture-handler";
@@ -44,7 +44,7 @@ const Reader: React.FC<Props> = ({ route, navigation }) => {
   );
   const listRef = useRef<Ref>(null);
 
-  useEffect(() => {
+  useLayoutEffect(() => {
     navigation.setOptions({
       header: () => (
         <Header

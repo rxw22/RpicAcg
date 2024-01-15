@@ -16,7 +16,7 @@ export type RootStackParamList = {
     hasNext: boolean; // 是否还有下一章
   };
   collect: undefined;
-  comics: { c?: string; ca?: string; knight?: string };
+  comics: { c?: string; ca?: string; knight?: string; a?: string; ct?: string; t?: string };
   comment: { comicId: string };
   comchildren: { comment: Comment };
   searchcomics: {

@@ -196,6 +196,9 @@ export interface ComicsPayload {
   page?: number;
   s?: ComicSort;
   ca?: string;
+  a?: string;
+  ct?: string;
+  t?: string;
 }
 
 export interface RankingPayload {

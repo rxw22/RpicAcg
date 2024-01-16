@@ -1,25 +1,32 @@
-import { useEffect, useState } from "react";
-
-import usePicaHttp from "@/network/httpRequest";
-import { PunchInResponse } from "@/network/types";
+import { useUtilsProvider } from "@/network/utilsProvider";
+import { useGlobalStore } from "@/store/globalStore";
+import { useRequest } from "ahooks";
 
 const usePunchIn = () => {
-  const { punchIn } = usePicaHttp();
-  const [result, setResult] = useState<PunchInResponse>();
-  const start = async () => {
-    try {
-      const result = await punchIn();
-      setResult(result);
-    } catch (error) {
-      console.log(error);
-    }
-  };
-  useEffect(() => {
-    start();
-    console.log(1111);
-  }, []);
+  const { httpRequest, Toast } = useUtilsProvider();
+  const { setUser } = useGlobalStore();
+  
+  const { run } = useRequest(httpRequest.punchIn.bind(httpRequest), {
+    manual: true,
+    onError(e) {
+      Toast.show("自动打卡失败", "error");
+    },
+    onSuccess() {
+      Toast.show("自动打卡成功", "success");
+    },
+  });
 
-  return { result };
+  useRequest(httpRequest.fetchUserProfile.bind(httpRequest), {
+    onError(e) {
+      console.log(e);
+    },
+    onSuccess(data) {
+      setUser(data);
+      if (!data.isPunched) {
+        run();
+      }
+    },
+  });
 };
 
 export default usePunchIn;

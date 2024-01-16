@@ -22,11 +22,16 @@ import ComChildren from "@/views/ComChildren";
 import SearchComics from "@/views/SearchComics";
 import SearchComicsAppBar from '@/views/SearchComics/AppBar';
 import WebViewPage from '@/views/WebView';
+import GameDetails from '@/views/game/details';
+import DetailsAppBar from '@/views/game/DetailsAppBar';
+import usePunchIn from "@/hooks/usePunchIn";
 
 const Stack = createNativeStackNavigator<RootStackParamList>();
 
 export default function MainStacks() {
   const { token } = useUserStore();
+  // 自动打卡
+  usePunchIn();
   const isLogin = token ? "main" : "login";
   return (
     <Stack.Navigator
@@ -120,6 +125,13 @@ export default function MainStacks() {
         options={{
           title: "webview",
           header: (props) => <CommentAppBar {...props} />,
+        }}
+      />
+      <Stack.Screen
+        name="game-details"
+        component={GameDetails}
+        options={{
+          header: (props) => <DetailsAppBar {...props} />,
         }}
       />
     </Stack.Navigator>

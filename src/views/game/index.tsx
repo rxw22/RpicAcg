@@ -7,8 +7,18 @@ import { useUtilsProvider } from "@/network/utilsProvider";
 import { FlashList, ListRenderItem } from "@shopify/flash-list";
 import { Image } from "expo-image";
 import { Doc } from "@/network/types";
+import { CompositeScreenProps } from "@react-navigation/native";
+import { BottomTabScreenProps } from "@react-navigation/bottom-tabs";
+import { RootBottomTabsParamList } from "@/navigations/bottomTabs/types";
+import { NativeStackScreenProps } from "@react-navigation/native-stack";
+import { RootStackParamList } from "@/navigations/mainStacks/types";
 
-function Game() {
+type Props = CompositeScreenProps<
+  BottomTabScreenProps<RootBottomTabsParamList, "game">,
+  NativeStackScreenProps<RootStackParamList>
+>;
+
+function Game({ navigation }: Props) {
   const { httpRequest } = useUtilsProvider();
   const { data, loading, refresh, error } = useRequest(
     httpRequest.fecthGames.bind(httpRequest),
@@ -24,7 +34,12 @@ function Game() {
     const uri = `${icon.fileServer}/static/${icon.path}`;
     return (
       <TouchableRipple
-        onPress={() => console.log("Pressed")}
+        onPress={() => {
+          navigation.navigate("game-details", {
+            gameId: _id,
+            title: title,
+          });
+        }}
         rippleColor="rgba(0, 0, 0, .2)"
       >
         <View style={styles.listItem}>

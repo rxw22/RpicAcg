@@ -28,12 +28,8 @@ function UserAppBar({ navigation }: BottomTabHeaderProps) {
     <>
       <Appbar.Header>
         <Appbar.Content title="我的" />
-        <Appbar.Action
-          icon="lead-pencil"
-          onPress={() => {
-            setMode(mode === "light" ? "dark" : "light");
-          }}
-        />
+        <Appbar.Action icon="lead-pencil" onPress={() => {}} />
+        <Appbar.Action icon="comment-multiple" onPress={() => {}} />
         <Appbar.Action icon="logout" onPress={logout} />
       </Appbar.Header>
       <Portal>

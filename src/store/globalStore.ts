@@ -1,5 +1,5 @@
 import { create } from "zustand";
-import { ComicSort } from "@/network/types";
+import { ComicSort, User } from "@/network/types";
 
 interface GlobalStore {
   /**
@@ -12,6 +12,11 @@ interface GlobalStore {
    */
   searchSort: ComicSort;
   setSearchSort(comicSort: ComicSort): void;
+  /**
+   * 个人信息接口信息缓存
+   */
+  user: User | undefined;
+  setUser(user: User): void;
 }
 
 export const useGlobalStore = create<GlobalStore>((set) => ({
@@ -22,5 +27,9 @@ export const useGlobalStore = create<GlobalStore>((set) => ({
   searchSort: ComicSort.NewToOld,
   setSearchSort(searchSort) {
     set({ searchSort });
+  },
+  user: undefined,
+  setUser(user) {
+    set({ user });
   },
 }));

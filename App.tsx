@@ -8,7 +8,7 @@ import { GestureHandlerRootView } from "react-native-gesture-handler";
 
 import MainStacks from "@/navigations/mainStacks";
 import useCustomTheme from "@/hooks/useCustomTheme";
-import NetworkProvider from "@/network/utilsProvider";
+import UtilsProvider from "@/network/utilsProvider";
 import { navigationRef } from "@/navigations/RootNavigation";
 import Toast, { ToastRef } from "@/components/Toast";
 
@@ -27,7 +27,7 @@ export default function App() {
   useEffect(() => {
     const timer = setTimeout(() => {
       setIsHidden(true);
-    }, 600);
+    }, 650);
     return () => {
       clearTimeout(timer);
     };
@@ -44,18 +44,18 @@ export default function App() {
   }
 
   return (
-    <GestureHandlerRootView style={{ flex: 1 }}>
+    <GestureHandlerRootView style={{ height: "100%", width: "100%" }}>
       <PaperProvider theme={paperTheme}>
         <NavigationContainer
           theme={navTheme}
           onReady={onLayoutRootView}
           ref={navigationRef}
         >
-          <NetworkProvider Toast={toastRef.current}>
+          <UtilsProvider Toast={toastRef.current}>
             <MainStacks />
             <StatusBar style="auto" translucent={true} />
             <Toast ref={toastRef} />
-          </NetworkProvider>
+          </UtilsProvider>
         </NavigationContainer>
       </PaperProvider>
     </GestureHandlerRootView>

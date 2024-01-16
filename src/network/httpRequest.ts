@@ -14,6 +14,7 @@ import {
   CommentPayload,
   CommentResponse,
   Doc,
+  GameDetailsResponse,
   GamesResponse,
   KeywordsResponse,
   KnightResponse,
@@ -75,7 +76,8 @@ class HttpRequest {
     if (result.code !== 200) {
       throw new Error(result.message);
     }
-    return result;
+    const { user } = result.data;
+    return user;
   }
 
   // 获取个人收藏
@@ -323,6 +325,16 @@ class HttpRequest {
       results.push(...docs);
     }
     return results;
+  }
+
+  // 获取游戏详情
+  async fetchGameDetails(gameId: string){
+    const result = await this.httpClient.get<GameDetailsResponse>(`games/${gameId}`);
+    if (result.code !== 200) {
+      throw new Error(result.message);
+    }
+    const { game } = result.data;
+    return game;
   }
 }
 

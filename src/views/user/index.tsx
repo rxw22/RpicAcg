@@ -1,21 +1,12 @@
-import {
-  StyleSheet,
-  View,
-  ScrollView,
-  StatusBar,
-  NativeScrollEvent,
-  NativeSyntheticEvent,
-} from "react-native";
+import { StyleSheet, View, ScrollView } from "react-native";
 import { Card, FAB, Text } from "react-native-paper";
 import { useRequest } from "ahooks";
 import { ImageBackground } from "expo-image";
-import { useState } from "react";
 import Image from "@/components/image";
 
 import BgBox from "@/components/bgBox";
 import { useUtilsProvider } from "@/network/utilsProvider";
 import { RootBottomTabsParamList } from "@/navigations/bottomTabs/types";
-import AppBar from "./appBar";
 
 import type { CompositeScreenProps } from "@react-navigation/native";
 import type { BottomTabScreenProps } from "@react-navigation/bottom-tabs";
@@ -24,7 +15,8 @@ import { RootStackParamList } from "@/navigations/mainStacks/types";
 import HorizontalList from "./horizontalList";
 import { ComicSort } from "@/network/types";
 import { useReadStore } from "@/store/readStore";
-import React from "react";
+import React, { useEffect } from "react";
+import { useGlobalStore } from "@/store/globalStore";
 
 type Props = CompositeScreenProps<
   BottomTabScreenProps<RootBottomTabsParamList, "user">,
@@ -34,15 +26,23 @@ type Props = CompositeScreenProps<
 const User: React.FC<Props> = (props) => {
   const { httpRequest } = useUtilsProvider();
   const { localCollect, browses } = useReadStore();
+  const { user } = useGlobalStore();
 
-  const { data, loading, refresh, error } = useRequest(
+  const { data, loading, refresh, error, run } = useRequest(
     httpRequest.fetchUserProfile.bind(httpRequest),
     {
+      manual: true,
       onError(e) {
         console.log(e);
       },
     }
   );
+
+  useEffect(() => {
+    if (!user) {
+      run();
+    }
+  }, [user]);
 
   const {
     data: favourites,
@@ -56,7 +56,7 @@ const User: React.FC<Props> = (props) => {
     },
   });
 
-  const { user } = data?.data || {};
+  const current = user || data;
 
   return (
     <BgBox
@@ -74,7 +74,7 @@ const User: React.FC<Props> = (props) => {
           loading
             ? require("@/assets/imgs/placeholder.png")
             : {
-                uri: `${user?.avatar?.fileServer}/static/${user?.avatar?.path}`,
+                uri: `${current?.avatar?.fileServer}/static/${current?.avatar?.path}`,
               }
         }
         blurRadius={4}
@@ -82,18 +82,18 @@ const User: React.FC<Props> = (props) => {
         <View style={styles.userWapper}>
           <View style={styles.center}>
             <Text variant="bodyLarge" style={{ color: "#fff" }}>
-              Lv.{user?.level || 0}
+              Lv.{current?.level || 0}
             </Text>
             <Text variant="bodyLarge" style={{ color: "#fff" }}>
-              Exp: {user?.exp || 0}
+              Exp: {current?.exp || 0}
             </Text>
           </View>
           <View style={styles.avatar}>
             <Card mode="contained" style={styles.avatarImage}>
               <Image
                 source={
-                  user?.avatar
-                    ? `${user?.avatar?.fileServer}/static/${user?.avatar?.path}`
+                  current?.avatar
+                    ? `${current?.avatar?.fileServer}/static/${current?.avatar?.path}`
                     : require("@/assets/imgs/user.png")
                 }
                 contentPosition="top center"
@@ -104,17 +104,17 @@ const User: React.FC<Props> = (props) => {
           </View>
           <View style={styles.center}>
             <Text variant="bodyLarge" style={{ color: "#fff" }}>
-              {user?.name}
+              {current?.name}
             </Text>
             <Text variant="bodyMedium" style={{ color: "#fff" }}>
-              {user?.title}
+              {current?.title}
             </Text>
             <Text
               variant="bodyLarge"
               style={{ color: "#fff" }}
               numberOfLines={2}
             >
-              {user?.slogan}
+              {current?.slogan}
             </Text>
           </View>
         </View>

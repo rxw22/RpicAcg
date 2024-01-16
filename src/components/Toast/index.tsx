@@ -1,4 +1,4 @@
-import { StyleSheet, View, useWindowDimensions } from "react-native";
+import { StyleSheet, View } from "react-native";
 import React, {
   useCallback,
   useState,
@@ -6,7 +6,7 @@ import React, {
   useImperativeHandle,
 } from "react";
 import Animated, { useSharedValue, withTiming } from "react-native-reanimated";
-import { Surface, Text, Icon, ActivityIndicator } from "react-native-paper";
+import { Surface, Text, Icon } from "react-native-paper";
 
 enum IconSource {
   success = "check-circle",
@@ -27,22 +27,21 @@ export type ToastRef = {
 
 type Props = {};
 
+const AnimatedSurface = Animated.createAnimatedComponent(Surface);
+
 const Toast = forwardRef<ToastRef, Props>((_, ref) => {
-  const { width: ScreenWidth } = useWindowDimensions();
-  const width = useSharedValue(0);
+  const top = useSharedValue(-60);
   const [iconInfo, setIconInfo] = useState({
     source: IconSource.info,
     color: IconColor.info,
   });
   const [content, setContent] = useState("");
-  const [loading, setLoading] = useState(false);
 
   const hide = useCallback(() => {
-    width.value = withTiming(0, {
+    top.value = withTiming(-60, {
       duration: 130,
     });
-    setLoading(false);
-  }, [setLoading]);
+  }, []);
 
   const show = useCallback(
     (content: string, status: "success" | "info" | "error" = "info") => {
@@ -51,7 +50,7 @@ const Toast = forwardRef<ToastRef, Props>((_, ref) => {
         source: IconSource[status],
         color: IconColor[status],
       });
-      width.value = withTiming(ScreenWidth * 0.6, {
+      top.value = withTiming(60, {
         duration: 130,
       });
       let timer = setTimeout(() => {
@@ -70,16 +69,22 @@ const Toast = forwardRef<ToastRef, Props>((_, ref) => {
   });
 
   return (
-    <Animated.View
+    <View
       style={{
-        ...styles.toast,
-        left: ScreenWidth * 0.2,
-        right: ScreenWidth * 0.2,
-        width,
-        top: 70,
+        width: "100%",
+        height: "100%",
+        position: "absolute",
+        left: 0,
+        top: 0,
+        zIndex: 99,
+        alignItems: "center",
+        pointerEvents: "none",
       }}
     >
-      <Surface elevation={4} style={styles.surface}>
+      <AnimatedSurface
+        elevation={4}
+        style={[styles.surface, { top }]}
+      >
         <View style={{ width: 15 }} />
         <View style={{ flex: 1 }}>
           <Text
@@ -90,27 +95,20 @@ const Toast = forwardRef<ToastRef, Props>((_, ref) => {
             {content}
           </Text>
         </View>
-        {loading ? (
-          <ActivityIndicator animating size={24} />
-        ) : (
-          <Icon size={24} {...iconInfo} />
-        )}
+        <Icon size={24} {...iconInfo} />
         <View style={{ width: 15 }} />
-      </Surface>
-    </Animated.View>
+      </AnimatedSurface>
+    </View>
   );
 });
 
 export default React.memo(Toast);
 
 const styles = StyleSheet.create({
-  toast: {
-    height: 60,
-    position: "absolute",
-  },
   surface: {
-    width: "100%",
-    height: "100%",
+    position: "absolute",
+    height: 60,
+    minWidth: 200,
     borderRadius: 14,
     alignItems: "center",
     justifyContent: "center",

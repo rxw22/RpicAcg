@@ -28,4 +28,8 @@ export type RootStackParamList = {
     userAgent?: string;
     injectedJavaScript?: string;
   };
+  "game-details": {
+    gameId: string;
+    title: string;
+  }
 };

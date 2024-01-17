@@ -1,4 +1,4 @@
-import { FlatList, StyleSheet, View } from "react-native";
+import { StyleSheet, View } from "react-native";
 import React from "react";
 import BgBox from "@/components/bgBox";
 import { NativeStackScreenProps } from "@react-navigation/native-stack";
@@ -7,6 +7,7 @@ import { useUtilsProvider } from "@/network/utilsProvider";
 import { useRequest } from "ahooks";
 import { Card, Icon, Text, useTheme, Button } from "react-native-paper";
 import { Image } from "expo-image";
+import HorizontalImages from "./HorizontalImages";
 
 type Props = NativeStackScreenProps<RootStackParamList, "game-details">;
 
@@ -39,13 +40,15 @@ const details: React.FC<Props> = ({ route }) => {
           <Image style={styles.full} source={uri} contentFit="contain" />
         </Card>
         <View style={{ marginLeft: 12, flex: 1 }}>
-          <Text variant="titleMedium">{title}</Text>
+          <Text variant="titleMedium" numberOfLines={2}>
+            {title}
+          </Text>
           <Text variant="bodyMedium" style={{ color: theme.colors.primary }}>
             {publisher}
           </Text>
           <Text variant="bodyMedium">{version}</Text>
         </View>
-        <View>
+        <View style={{ marginLeft: 8 }}>
           <Icon source="apple" size={32} color={theme.colors.primary} />
           <View style={{ height: 3 }} />
           <Icon source="android" size={32} color={theme.colors.primary} />
@@ -56,28 +59,15 @@ const details: React.FC<Props> = ({ route }) => {
           下载
         </Button>
       </View>
-      <View style={{ height: 200, width: "100%", marginVertical: 15, paddingHorizontal: 8 }}>
-        <FlatList
-          keyExtractor={(item) => item.path}
-          data={screenshots}
-          ItemSeparatorComponent={() => <View style={{ width: 10 }} />}
-          horizontal
-          showsHorizontalScrollIndicator={false}
-          renderItem={({ item }) => {
-            return (
-              <Card
-                mode="contained"
-                style={{ width: 130, height: 200, overflow: "hidden" }}
-              >
-                <Image
-                  style={styles.full}
-                  recyclingKey={item.path}
-                  source={`${item.fileServer}/static/${item.path}`}
-                />
-              </Card>
-            );
-          }}
-        />
+      <View
+        style={{
+          height: 240,
+          width: "100%",
+          marginVertical: 15,
+          paddingHorizontal: 8,
+        }}
+      >
+        <HorizontalImages dataSource={screenshots || []} />
       </View>
     </BgBox>
   );

@@ -20,7 +20,7 @@ interface GlobalStore {
 }
 
 export const useGlobalStore = create<GlobalStore>((set) => ({
-  comicSort: ComicSort.Default,
+  comicSort: ComicSort.NewToOld,
   setComicSort(comicSort) {
     set({ comicSort });
   },

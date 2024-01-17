@@ -38,8 +38,6 @@ const styles = StyleSheet.create({
     right: 0,
     width: "100%",
     height: 90,
-    borderTopLeftRadius: 12,
-    borderTopRightRadius: 12,
     padding: 12,
   },
   opts: {

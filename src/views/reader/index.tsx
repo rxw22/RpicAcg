@@ -122,6 +122,10 @@ const Reader: React.FC<Props> = ({ route, navigation }) => {
   const flip = () => {
     if (hasNext) {
       currentOrder.current++;
+      recordRef.current = {
+        page: 0,
+        y: 0
+      }
       run(comicId, currentOrder.current);
     }
   };

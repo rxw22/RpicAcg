@@ -48,22 +48,27 @@ const Category: React.FC<Props> = ({ navigation }) => {
     <BgBox style={styles.container} error={error?.message} refresh={refresh}>
       <View style={{ height: "100%", width: "100%" }}>
         <FlashList
-          data={(data || categories).filter((item) => !item.active)}
+          data={(data || categories).filter(
+            (item) => !item.active || !item.isWeb
+          )}
           keyExtractor={(item) => item.title}
           numColumns={3}
-          estimatedItemSize={200}
+          estimatedItemSize={layout.width / 3 + 24}
           showsVerticalScrollIndicator={false}
           refreshing={loading}
           onRefresh={refresh}
           renderItem={({ item }) => {
             const { thumb, title } = item;
-            const uri = thumb.fileServer.includes("static")
+            let uri = thumb.fileServer.includes("static")
               ? `${thumb.fileServer}${thumb.path}`
               : `${thumb.fileServer}/static/${thumb.path}`;
+            if (item.title === "大濕推薦") {
+              uri = require("@/assets/imgs/dashituijian.jpg");
+            }
             return (
               <View
                 style={{
-                  height: layout.width / 3 + 40,
+                  height: layout.width / 3 + 24,
                   width: layout.width / 3,
                   padding: 8,
                 }}
@@ -71,7 +76,7 @@ const Category: React.FC<Props> = ({ navigation }) => {
                 <Card
                   mode="contained"
                   style={{
-                    height: layout.width / 3,
+                    height: layout.width / 3 - 16,
                     width: "100%",
                     overflow: "hidden",
                   }}
@@ -82,8 +87,8 @@ const Category: React.FC<Props> = ({ navigation }) => {
                   }}
                 >
                   <Image
-                    source={{ uri }}
-                    recyclingKey={uri}
+                    source={uri}
+                    recyclingKey={title}
                     transition={100}
                     style={{ height: "100%", width: "100%" }}
                   />
@@ -96,7 +101,7 @@ const Category: React.FC<Props> = ({ navigation }) => {
                     justifyContent: "center",
                   }}
                 >
-                  <Text variant="bodyMedium">{title}</Text>
+                  <Text variant="labelLarge">{title}</Text>
                 </View>
               </View>
             );

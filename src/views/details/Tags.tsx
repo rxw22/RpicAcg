@@ -24,7 +24,7 @@ const Tags: React.FC<Props> = ({ navigation, response }) => {
         </Chip>
         <Chip
           onPress={() => {
-            navigation.navigate("comics", {
+            navigation.push("comics", {
               a: response?.author,
             });
           }}
@@ -42,7 +42,7 @@ const Tags: React.FC<Props> = ({ navigation, response }) => {
         </Chip>
         <Chip
           onPress={() => {
-            navigation.navigate("comics", {
+            navigation.push("comics", {
               ct: response?.chineseTeam,
             });
           }}
@@ -64,7 +64,7 @@ const Tags: React.FC<Props> = ({ navigation, response }) => {
           {response?.categories.map((item) => (
             <Chip
               onPress={() => {
-                navigation.navigate("comics", {
+                navigation.push("comics", {
                   c: item,
                 });
               }}
@@ -90,7 +90,7 @@ const Tags: React.FC<Props> = ({ navigation, response }) => {
           {response?.tags.map((item) => (
             <Chip
               onPress={() => {
-                navigation.navigate("comics", {
+                navigation.push("comics", {
                   t: item,
                 });
               }}

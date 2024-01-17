@@ -1,17 +1,19 @@
-import { StyleSheet, Text } from "react-native";
+import { FlatList, StyleSheet, View } from "react-native";
 import React from "react";
 import BgBox from "@/components/bgBox";
 import { NativeStackScreenProps } from "@react-navigation/native-stack";
 import { RootStackParamList } from "@/navigations/mainStacks/types";
 import { useUtilsProvider } from "@/network/utilsProvider";
 import { useRequest } from "ahooks";
-import { Button } from "react-native-paper";
+import { Card, Icon, Text, useTheme, Button } from "react-native-paper";
+import { Image } from "expo-image";
 
 type Props = NativeStackScreenProps<RootStackParamList, "game-details">;
 
 const details: React.FC<Props> = ({ route }) => {
   const { gameId } = route.params;
-  const { httpRequest, Toast } = useUtilsProvider();
+  const { httpRequest } = useUtilsProvider();
+  const theme = useTheme();
 
   const { loading, data, refresh, error } = useRequest(
     httpRequest.fetchGameDetails.bind(httpRequest),
@@ -22,6 +24,8 @@ const details: React.FC<Props> = ({ route }) => {
       },
     }
   );
+  const { icon, title = "", publisher, version, screenshots } = data || {};
+  const uri = icon?.fileServer + "/static/" + icon?.path;
 
   return (
     <BgBox
@@ -30,14 +34,51 @@ const details: React.FC<Props> = ({ route }) => {
       refresh={refresh}
       loading={loading}
     >
-      <Text>details</Text>
-      <Button
-        onPress={() => {
-          Toast.show("试一试", "success");
-        }}
-      >
-        点击
-      </Button>
+      <View style={styles.iconBox}>
+        <Card mode="contained" style={styles.card}>
+          <Image style={styles.full} source={uri} contentFit="contain" />
+        </Card>
+        <View style={{ marginLeft: 12, flex: 1 }}>
+          <Text variant="titleMedium">{title}</Text>
+          <Text variant="bodyMedium" style={{ color: theme.colors.primary }}>
+            {publisher}
+          </Text>
+          <Text variant="bodyMedium">{version}</Text>
+        </View>
+        <View>
+          <Icon source="apple" size={32} color={theme.colors.primary} />
+          <View style={{ height: 3 }} />
+          <Icon source="android" size={32} color={theme.colors.primary} />
+        </View>
+      </View>
+      <View style={{ marginTop: 15, paddingHorizontal: 10 }}>
+        <Button mode="contained" onPress={() => {}}>
+          下载
+        </Button>
+      </View>
+      <View style={{ height: 200, width: "100%", marginVertical: 15, paddingHorizontal: 8 }}>
+        <FlatList
+          keyExtractor={(item) => item.path}
+          data={screenshots}
+          ItemSeparatorComponent={() => <View style={{ width: 10 }} />}
+          horizontal
+          showsHorizontalScrollIndicator={false}
+          renderItem={({ item }) => {
+            return (
+              <Card
+                mode="contained"
+                style={{ width: 130, height: 200, overflow: "hidden" }}
+              >
+                <Image
+                  style={styles.full}
+                  recyclingKey={item.path}
+                  source={`${item.fileServer}/static/${item.path}`}
+                />
+              </Card>
+            );
+          }}
+        />
+      </View>
     </BgBox>
   );
 };
@@ -47,7 +88,20 @@ export default React.memo(details);
 const styles = StyleSheet.create({
   container: {
     flex: 1,
-    alignItems: "center",
-    justifyContent: "center"
+  },
+  iconBox: {
+    flexDirection: "row",
+    justifyContent: "space-between",
+    paddingHorizontal: 20,
+  },
+  card: {
+    width: 80,
+    height: 80,
+    borderRadius: 12,
+    overflow: "hidden",
+  },
+  full: {
+    width: "100%",
+    height: "100%",
   },
 });

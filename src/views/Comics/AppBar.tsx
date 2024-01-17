@@ -21,10 +21,6 @@ const ComicsAppBar: React.FC<NativeStackHeaderProps> = ({
 
   const options = [
     {
-      label: "默认",
-      value: ComicSort.Default,
-    },
-    {
       label: "新到旧",
       value: ComicSort.NewToOld,
     },

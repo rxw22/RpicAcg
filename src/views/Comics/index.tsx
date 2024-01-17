@@ -20,7 +20,7 @@ const Comics: React.FC<Props> = ({ route, navigation }) => {
   const pageRef = useRef({
     currerntPage: 1,
     totalPage: 0,
-    s: ComicSort.Default,
+    s: ComicSort.NewToOld,
   });
   const [dataSource, setDataSource] = useState<Comic[]>([]);
   const { comicSort } = useGlobalStore();

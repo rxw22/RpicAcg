@@ -19,6 +19,7 @@ const Item: React.FC<Props> = ({ item, navigate }) => {
     totalViews,
     categories,
     pagesCount,
+    likesCount,
   } = item;
   const uri = `${thumb.fileServer}/static/${thumb.path}`;
   return (
@@ -77,8 +78,8 @@ const Item: React.FC<Props> = ({ item, navigate }) => {
                   padding: 4,
                   backgroundColor: theme.colors.secondaryContainer,
                   borderRadius: 6,
-                  marginRight: 8,
-                  marginBottom: 8,
+                  marginRight: 4,
+                  marginBottom: 4,
                 }}
               >
                 <Text variant="labelSmall">{item}</Text>
@@ -93,22 +94,34 @@ const Item: React.FC<Props> = ({ item, navigate }) => {
                 justifyContent: "space-between",
               }}
             >
-              <Icon source="heart" size={12} />
+              <Icon source="heart" size={12} color={theme.colors.primary} />
               <View style={{ width: 5 }} />
-              <Text variant="labelSmall">{totalLikes} </Text>
+              <Text
+                variant="labelSmall"
+                style={{ color: theme.colors.primary }}
+              >
+                {totalLikes || likesCount}
+              </Text>
             </View>
             <View style={{ width: 15 }} />
-            <View
-              style={{
-                flexDirection: "row",
-                alignItems: "center",
-                justifyContent: "space-between",
-              }}
-            >
-              <Icon source="eye" size={12} />
-              <View style={{ width: 5 }} />
-              <Text variant="labelSmall">{totalViews} </Text>
-            </View>
+            {totalViews && (
+              <View
+                style={{
+                  flexDirection: "row",
+                  alignItems: "center",
+                  justifyContent: "space-between",
+                }}
+              >
+                <Icon source="eye" size={12} color={theme.colors.primary} />
+                <View style={{ width: 5 }} />
+                <Text
+                  variant="labelSmall"
+                  style={{ color: theme.colors.primary }}
+                >
+                  {totalViews}
+                </Text>
+              </View>
+            )}
           </View>
         </View>
       </View>

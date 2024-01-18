@@ -11,6 +11,7 @@ import {
   ComicsResponse,
   CommentChildrenPayload,
   CommentChildrenResponse,
+  CommentLikeResponse,
   CommentPayload,
   CommentResponse,
   Doc,
@@ -335,6 +336,16 @@ class HttpRequest {
     }
     const { game } = result.data;
     return game;
+  }
+
+  // 点赞取消点赞评论
+  async likeOrUnLikeComment(commentId: string){
+    const result = await this.httpClient.post<CommentLikeResponse>(`comments/${commentId}/like`);
+    if (result.code !== 200) {
+      throw new Error(result.message);
+    }
+    const { action } = result.data;
+    return action;
   }
 }
 

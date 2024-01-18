@@ -33,6 +33,7 @@ function Game({ navigation }: Props) {
     const { icon, title, publisher, _id } = item;
     const uri = `${icon.fileServer}/static/${icon.path}`;
     return (
+      <View style={{ borderRadius: 10, overflow: "hidden" }}>
       <TouchableRipple
         onPress={() => {
           navigation.navigate("game-details", {
@@ -65,6 +66,7 @@ function Game({ navigation }: Props) {
           </View>
         </View>
       </TouchableRipple>
+      </View>
     );
   };
 

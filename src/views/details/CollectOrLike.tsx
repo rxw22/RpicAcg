@@ -68,7 +68,7 @@ const CollectOrLike: React.FC<Props> = ({ response, comicId, navigation }) => {
         style={styles.infoItem}
         title={response?.likesCount}
         icon={like ? "cards-heart" : "cards-heart-outline"}
-        iconSize={24}
+        iconSize={22}
         iconColor={theme.colors.primary}
         textProps={{ variant: "bodyLarge" }}
         loading={likeLoading}
@@ -81,7 +81,7 @@ const CollectOrLike: React.FC<Props> = ({ response, comicId, navigation }) => {
         style={styles.infoItem}
         title={collect ? "已收藏" : "未收藏"}
         icon={collect ? "tag-heart" : "tag-heart-outline"}
-        iconSize={24}
+        iconSize={22}
         iconColor={theme.colors.primary}
         textProps={{ variant: "bodyLarge" }}
         loading={collectLoading}
@@ -96,7 +96,7 @@ const CollectOrLike: React.FC<Props> = ({ response, comicId, navigation }) => {
         style={styles.infoItem}
         title={response?.totalComments}
         icon="comment-processing"
-        iconSize={24}
+        iconSize={22}
         iconColor={theme.colors.primary}
         textProps={{ variant: "bodyLarge" }}
       />

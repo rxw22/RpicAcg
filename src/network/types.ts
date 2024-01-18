@@ -410,3 +410,7 @@ export interface Game {
 export type GameDetailsResponse = BaseResponse<{
   game: Game;
 }>
+
+export type CommentLikeResponse = BaseResponse<{
+  action: "like" | "unlike"
+}>

@@ -1,11 +1,20 @@
-import { StyleSheet, View } from "react-native";
+import { StyleSheet, View, Linking, ScrollView } from "react-native";
 import React from "react";
 import BgBox from "@/components/bgBox";
 import { NativeStackScreenProps } from "@react-navigation/native-stack";
 import { RootStackParamList } from "@/navigations/mainStacks/types";
 import { useUtilsProvider } from "@/network/utilsProvider";
 import { useRequest } from "ahooks";
-import { Card, Icon, Text, useTheme, Button } from "react-native-paper";
+import {
+  Card,
+  Icon,
+  Text,
+  useTheme,
+  Button,
+  Divider,
+  Portal,
+  Dialog,
+} from "react-native-paper";
 import { Image } from "expo-image";
 import HorizontalImages from "./HorizontalImages";
 
@@ -15,6 +24,11 @@ const details: React.FC<Props> = ({ route }) => {
   const { gameId } = route.params;
   const { httpRequest } = useUtilsProvider();
   const theme = useTheme();
+  const [visible, setVisible] = React.useState(false);
+
+  const showDialog = () => setVisible(true);
+
+  const hideDialog = () => setVisible(false);
 
   const { loading, data, refresh, error } = useRequest(
     httpRequest.fetchGameDetails.bind(httpRequest),
@@ -25,8 +39,26 @@ const details: React.FC<Props> = ({ route }) => {
       },
     }
   );
-  const { icon, title = "", publisher, version, screenshots } = data || {};
+  const {
+    icon,
+    title = "",
+    publisher,
+    version,
+    screenshots,
+    description,
+    likesCount,
+    commentsCount,
+    ios,
+    android,
+    androidLinks,
+    iosLinks,
+  } = data || {};
   const uri = icon?.fileServer + "/static/" + icon?.path;
+
+  const openDownload = () => {
+    const url = androidLinks?.[0] || iosLinks?.[0];
+    Linking.openURL(url);
+  };
 
   return (
     <BgBox
@@ -35,40 +67,119 @@ const details: React.FC<Props> = ({ route }) => {
       refresh={refresh}
       loading={loading}
     >
-      <View style={styles.iconBox}>
-        <Card mode="contained" style={styles.card}>
-          <Image style={styles.full} source={uri} contentFit="contain" />
-        </Card>
-        <View style={{ marginLeft: 12, flex: 1 }}>
-          <Text variant="titleMedium" numberOfLines={2}>
-            {title}
-          </Text>
-          <Text variant="bodyMedium" style={{ color: theme.colors.primary }}>
-            {publisher}
-          </Text>
-          <Text variant="bodyMedium">{version}</Text>
+      <ScrollView showsVerticalScrollIndicator={false}>
+        <View style={styles.iconBox}>
+          <Card mode="contained" style={styles.card}>
+            <Image style={styles.full} source={uri} contentFit="contain" />
+          </Card>
+          <View style={{ marginLeft: 12, flex: 1 }}>
+            <Text variant="titleMedium" numberOfLines={1}>
+              {title}
+            </Text>
+            <Text variant="bodyMedium" style={{ color: theme.colors.primary }}>
+              {publisher}
+            </Text>
+            <Text variant="bodyMedium">{version}</Text>
+          </View>
+          <View style={{ marginLeft: 8 }}>
+            {ios && (
+              <Icon source="apple" size={32} color={theme.colors.primary} />
+            )}
+            <View style={{ height: 3 }} />
+            {android && (
+              <Icon source="android" size={32} color={theme.colors.primary} />
+            )}
+          </View>
         </View>
-        <View style={{ marginLeft: 8 }}>
-          <Icon source="apple" size={32} color={theme.colors.primary} />
-          <View style={{ height: 3 }} />
-          <Icon source="android" size={32} color={theme.colors.primary} />
+        <View
+          style={{
+            marginTop: 10,
+            paddingHorizontal: 10,
+            flexDirection: "row",
+            justifyContent: "center",
+          }}
+        >
+          <Button
+            mode="text"
+            icon="cards-heart-outline"
+            style={{ marginRight: 8 }}
+            onPress={() => {}}
+          >
+            {likesCount}
+          </Button>
+          <Button
+            mode="text"
+            icon="comment-processing-outline"
+            onPress={() => {}}
+          >
+            {commentsCount}
+          </Button>
         </View>
-      </View>
-      <View style={{ marginTop: 15, paddingHorizontal: 10 }}>
-        <Button mode="contained" onPress={() => {}}>
-          下载
-        </Button>
-      </View>
-      <View
-        style={{
-          height: 240,
-          width: "100%",
-          marginVertical: 15,
-          paddingHorizontal: 8,
-        }}
-      >
-        <HorizontalImages dataSource={screenshots || []} />
-      </View>
+        <View style={{ marginTop: 8, paddingHorizontal: 10 }}>
+          <Button
+            mode="contained"
+            onPress={() => {
+              showDialog();
+            }}
+          >
+            下载
+          </Button>
+        </View>
+        <View
+          style={{
+            height: 240,
+            width: "100%",
+            marginVertical: 15,
+            paddingHorizontal: 8,
+          }}
+        >
+          <HorizontalImages dataSource={screenshots || []} />
+        </View>
+        <Divider />
+        <View style={{ padding: 8 }}>
+          <View
+            style={{
+              flexDirection: "row",
+              alignItems: "center",
+              marginBottom: 8,
+            }}
+          >
+            <Icon
+              source="book-information-variant"
+              size={22}
+              color={theme.colors.primary}
+            />
+            <View style={{ width: 5 }} />
+            <Text variant="titleMedium" style={{ color: theme.colors.primary }}>
+              简介
+            </Text>
+          </View>
+          <View>
+            <Text variant="bodyMedium">{description}</Text>
+          </View>
+        </View>
+      </ScrollView>
+      <Portal>
+        <Dialog visible={visible} onDismiss={hideDialog}>
+          <Dialog.Title>提示</Dialog.Title>
+          <Dialog.Content>
+            <Text variant="bodyMedium">
+              将要跳转到哔咔指定的下载页面，是否继续？
+            </Text>
+          </Dialog.Content>
+          <Dialog.Actions>
+            <Button onPress={hideDialog}>取消</Button>
+            <Button
+              onPress={() => {
+                hideDialog();
+                openDownload();
+              }}
+            >
+              确定
+            </Button>
+          </Dialog.Actions>
+        </Dialog>
+      </Portal>
     </BgBox>
   );
 };

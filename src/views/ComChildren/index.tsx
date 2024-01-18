@@ -1,5 +1,5 @@
 import { StyleSheet, View } from "react-native";
-import React, { useCallback, useRef, useState } from "react";
+import React, { useCallback, useMemo, useRef, useState } from "react";
 import {
   Card,
   Icon,
@@ -22,9 +22,9 @@ import SendComment from "./SendComment";
 
 type Props = NativeStackScreenProps<RootStackParamList, "comchildren">;
 
-const CommentList: React.FC<Props> = ({ navigation, route }) => {
+const CommentList: React.FC<Props> = ({ route }) => {
   const { comment } = route.params;
-  const { httpRequest } = useUtilsProvider();
+  const { httpRequest, Toast } = useUtilsProvider();
   const pageRef = useRef({
     currerntPage: 1,
     totalPage: 0,
@@ -43,6 +43,37 @@ const CommentList: React.FC<Props> = ({ navigation, route }) => {
     }
   );
 
+  const { run: likeRun, loading: likeLoading } = useRequest(
+    httpRequest.likeOrUnLikeComment.bind(httpRequest),
+    {
+      manual: true,
+      onSuccess(_, [id]) {
+        updateDataSource(id);
+      },
+      onError(e) {
+        console.log(e);
+        Toast.show("点赞失败", "error");
+      },
+    }
+  );
+
+  const updateDataSource = useCallback(
+    (id: string) => {
+      const current = dataSource.find((item) => item._id === id);
+      const info = !current?.isLiked
+        ? { likesCount: current!.likesCount + 1, isLiked: !current?.isLiked }
+        : { likesCount: current!.likesCount - 1, isLiked: !current?.isLiked };
+      const newDataSource = dataSource.map((item) => {
+        if (item._id === id) {
+          return { ...item, ...info };
+        }
+        return item;
+      });
+      setDataSource(newDataSource);
+    },
+    [dataSource]
+  );
+
   const loadMore = useCallback(() => {
     if (pageRef.current.currerntPage < pageRef.current.totalPage) {
       pageRef.current.currerntPage++;
@@ -54,7 +85,7 @@ const CommentList: React.FC<Props> = ({ navigation, route }) => {
   }, [run]);
 
   const renderItem: ListRenderItem<Comment> = ({ item }) => {
-    const { _user, content, _id, created_at, likesCount, commentsCount } = item;
+    const { _user, content, _id, created_at, likesCount, isLiked } = item;
     const uri = _user?.avatar
       ? `${_user.avatar.fileServer}/static/${_user.avatar.path}`
       : require("@/assets/imgs/user.png");
@@ -94,15 +125,26 @@ const CommentList: React.FC<Props> = ({ navigation, route }) => {
             <View
               style={{
                 flexDirection: "row",
-                paddingRight: 15,
+                marginRight: 15,
+                borderRadius: 5,
+                overflow: "hidden",
               }}
             >
               <TouchableRipple
-                onPress={() => console.log("Pressed")}
-                rippleColor="rgba(0, 0, 0, .22)"
+                onPress={() => {
+                  likeRun(_id);
+                }}
+                rippleColor="rgba(0, 0, 0, .2)"
               >
                 <View style={{ flexDirection: "row", padding: 4 }}>
-                  <Icon source="cards-heart-outline" size={15} />
+                  {likeLoading ? (
+                    <ActivityIndicator size={15} animating />
+                  ) : (
+                    <Icon
+                      source={isLiked ? "cards-heart" : "cards-heart-outline"}
+                      size={15}
+                    />
+                  )}
                   <View style={{ width: 5 }} />
                   <Text variant="bodySmall">{likesCount}</Text>
                 </View>
@@ -114,7 +156,7 @@ const CommentList: React.FC<Props> = ({ navigation, route }) => {
     );
   };
 
-  const renderHeader = () => {
+  const renderHeader = useMemo(() => {
     const { _user, content, _id, created_at } = comment;
     const uri = _user?.avatar
       ? `${_user.avatar.fileServer}/static/${_user.avatar.path}`
@@ -128,12 +170,7 @@ const CommentList: React.FC<Props> = ({ navigation, route }) => {
               style={[itemStyles.image, { overflow: "hidden" }]}
               mode="contained"
             >
-              <Image
-                style={itemStyles.image}
-                source={uri}
-                recyclingKey={_id}
-                transition={150}
-              />
+              <Image style={itemStyles.image} source={uri} recyclingKey={_id} />
             </Card>
           </View>
           <View style={itemStyles.contentView}>
@@ -159,7 +196,7 @@ const CommentList: React.FC<Props> = ({ navigation, route }) => {
         <Divider style={{ marginVertical: 15 }} />
       </>
     );
-  };
+  }, [comment]);
 
   const renderFooter = () => {
     return loading ? (
@@ -172,7 +209,9 @@ const CommentList: React.FC<Props> = ({ navigation, route }) => {
       >
         <ActivityIndicator size="small" animating />
       </View>
-    ) : null;
+    ) : (
+      <View style={{ height: 70 }} />
+    );
   };
 
   const initRefresh = () => {
@@ -193,7 +232,7 @@ const CommentList: React.FC<Props> = ({ navigation, route }) => {
           keyExtractor={(item) => item._id + item.content.slice(0, 10)}
           renderItem={renderItem}
           estimatedItemSize={120}
-          ItemSeparatorComponent={() => <View style={{ height: 11 }} />}
+          ItemSeparatorComponent={() => <View style={{ height: 15 }} />}
           onEndReachedThreshold={0.3}
           onEndReached={loadMore}
           ListFooterComponent={renderFooter}

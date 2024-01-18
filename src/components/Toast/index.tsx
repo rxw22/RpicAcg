@@ -86,7 +86,9 @@ const Toast = forwardRef<ToastRef, Props>((_, ref) => {
         style={[styles.surface, { top }]}
       >
         <View style={{ width: 15 }} />
-        <View style={{ flex: 1 }}>
+        <Icon size={24} {...iconInfo} />
+        <View style={{ width: 15 }} />
+        <View>
           <Text
             variant="bodyMedium"
             style={{ color: "#000" }}
@@ -95,7 +97,6 @@ const Toast = forwardRef<ToastRef, Props>((_, ref) => {
             {content}
           </Text>
         </View>
-        <Icon size={24} {...iconInfo} />
         <View style={{ width: 15 }} />
       </AnimatedSurface>
     </View>
@@ -107,8 +108,7 @@ export default React.memo(Toast);
 const styles = StyleSheet.create({
   surface: {
     position: "absolute",
-    height: 60,
-    minWidth: 200,
+    height: 58,
     borderRadius: 14,
     alignItems: "center",
     justifyContent: "center",

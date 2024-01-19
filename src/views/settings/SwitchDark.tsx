@@ -1,15 +1,10 @@
 import { StyleSheet, TouchableOpacity } from "react-native";
 import React, { useState } from "react";
-import { Icon, List, Menu, Surface, useTheme, Text } from "react-native-paper";
-import {
-  ImageQuality,
-  useAppConfigStore,
-  Qualitys,
-  DisplayImageQuality,
-} from "@/store/appConfigStore";
+import { List, useTheme, Text, Surface, Icon, Menu } from "react-native-paper";
+import { DarkModes, useAppConfigStore } from "@/store/appConfigStore";
 
-function PictureQuality() {
-  const { imageQuality, setImageQuality } = useAppConfigStore();
+function SwitchDark() {
+  const { darkMode, setDarkMode } = useAppConfigStore();
   const [visible, setVisible] = useState(false);
   const showMenu = () => setVisible(true);
   const hideMenu = () => setVisible(false);
@@ -19,26 +14,35 @@ function PictureQuality() {
   return (
     <>
       <Menu visible={visible} onDismiss={hideMenu} anchor={anchor}>
-        {Qualitys.map((item) => {
-          return (
-            <Menu.Item
-              title={item}
-              key={item}
-              onPress={() => {
-                setImageQuality(ImageQuality[item]);
-                hideMenu();
-              }}
-              trailingIcon={
-                imageQuality === ImageQuality[item] ? "check" : undefined
-              }
-            />
-          );
-        })}
+        <Menu.Item
+          onPress={() => {
+            setDarkMode("system");
+            hideMenu();
+          }}
+          title={DarkModes.system}
+          trailingIcon={darkMode === "system" ? "check" : undefined}
+        />
+        <Menu.Item
+          onPress={() => {
+            setDarkMode("dark");
+            hideMenu();
+          }}
+          title={DarkModes.dark}
+          trailingIcon={darkMode === "dark" ? "check" : undefined}
+        />
+        <Menu.Item
+          onPress={() => {
+            setDarkMode("light");
+            hideMenu();
+          }}
+          title={DarkModes.light}
+          trailingIcon={darkMode === "light" ? "check" : undefined}
+        />
       </Menu>
       <List.Item
-        title="图片质量"
+        title="深色模式"
         style={styles.listItem}
-        left={() => <List.Icon icon="image-filter-hdr" />}
+        left={() => <List.Icon icon="theme-light-dark" />}
         right={() => (
           <TouchableOpacity
             activeOpacity={0.9}
@@ -63,7 +67,7 @@ function PictureQuality() {
               }}
               elevation={2}
             >
-              <Text variant="bodyMedium">{DisplayImageQuality[imageQuality]}</Text>
+              <Text variant="bodyMedium">{DarkModes[darkMode]}</Text>
               <Icon source="menu-down" size={20} />
             </Surface>
           </TouchableOpacity>
@@ -73,7 +77,7 @@ function PictureQuality() {
   );
 }
 
-export default React.memo(PictureQuality);
+export default React.memo(SwitchDark);
 
 const styles = StyleSheet.create({
   listItem: {

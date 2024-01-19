@@ -2,7 +2,25 @@ import { create } from "zustand";
 import { persist, createJSONStorage } from "zustand/middleware";
 import AsyncStorage from "@react-native-async-storage/async-storage";
 
-export type ThemeMode = "light" | "dark" | "system"; // 系统主题
+export type DarkMode = "light" | "dark" | "system"; // 系统主题
+export type ThemeMode =
+  | "Dynamic"
+  | "Purple"
+  | "Orange"
+  | "Blue"
+  | "Pink"
+  | "Green";
+
+export const Colors = [
+  "Dynamic",
+  "Purple",
+  "Orange",
+  "Blue",
+  "Pink",
+  "Green",
+] as const;
+
+export const Qualitys = ["原图", "高", "中", "低"] as const;
 
 // 服务器分流
 export enum AppChannel {
@@ -19,11 +37,29 @@ export enum ImageQuality {
   高 = "high",
 }
 
+export enum DisplayImageQuality {
+  "original" = "原图",
+  "low" = "低",
+  "medium" = "中",
+  "high" = "高",
+}
+
+export enum DarkModes {
+  system = "跟随系统",
+  light = "关闭",
+  dark = "开启",
+}
+
 export type AppConfigStore = {
-  mode: ThemeMode;
-  setMode(mode: ThemeMode): void;
+  darkMode: DarkMode;
+  setDarkMode(mode: DarkMode): void;
+
+  themeMode: ThemeMode;
+  setThemeMode(mode: ThemeMode): void;
+
   appChannel: AppChannel;
   setAppChannel(appChannel: AppChannel): void;
+
   imageQuality: ImageQuality;
   setImageQuality(imageQuality: ImageQuality): void;
 };
@@ -31,10 +67,19 @@ export type AppConfigStore = {
 export const useAppConfigStore = create(
   persist<AppConfigStore>(
     (set) => ({
-      mode: "system",
-      setMode: (mode: ThemeMode) => set({ mode }),
+      // 深色模式
+      darkMode: "system",
+      setDarkMode: (mode: DarkMode) => set({ darkMode: mode }),
+
+      // 颜色主题
+      themeMode: "Dynamic",
+      setThemeMode: (mode: ThemeMode) => set({ themeMode: mode }),
+
+      // 图片分流
       appChannel: AppChannel.分流一,
       setAppChannel: (appChannel) => set({ appChannel }),
+
+      // 图片质量
       imageQuality: ImageQuality.原图,
       setImageQuality: (imageQuality) => set({ imageQuality }),
     }),

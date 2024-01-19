@@ -2,10 +2,11 @@ import { StyleSheet } from "react-native";
 import { List } from "react-native-paper";
 
 import BgBox from "@/components/bgBox";
-import SwitchTheme from "./SwitchTheme";
+import SwitchDark from "./SwitchDark";
 import SwitchShunt from "./SwitchShunt";
 import PictureQuality from "./PictureQuality";
 import ClearCache from "./ClearCache";
+import SwitchTheme from "./SwitchTheme";
 
 export default function Settings() {
   return (
@@ -13,6 +14,7 @@ export default function Settings() {
       <List.Section>
         <List.Subheader>外观</List.Subheader>
         <SwitchTheme />
+        <SwitchDark />
       </List.Section>
       <List.Section>
         <List.Subheader>浏览</List.Subheader>

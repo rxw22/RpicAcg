@@ -1,4 +1,3 @@
-import { useAppConfigStore } from "@/store/appConfigStore";
 import React from "react";
 import { StyleSheet } from "react-native";
 import { Appbar, Dialog, Portal, Text, Button } from "react-native-paper";
@@ -6,7 +5,6 @@ import { useUserStore } from "@/store/userStore";
 import { BottomTabHeaderProps } from "@react-navigation/bottom-tabs";
 
 function UserAppBar({ navigation }: BottomTabHeaderProps) {
-  const { setMode, mode } = useAppConfigStore();
   const { clearToken } = useUserStore();
   const [visible, setVisible] = React.useState(false);
 

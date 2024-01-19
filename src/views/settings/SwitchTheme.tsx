@@ -1,60 +1,72 @@
-import { StyleSheet } from "react-native";
+import { StyleSheet, TouchableOpacity } from "react-native";
 import React, { useState } from "react";
-import { Checkbox, Dialog, List, Portal } from "react-native-paper";
-import { useAppConfigStore } from "@/store/appConfigStore";
+import { List, useTheme, Text, Surface, Icon, Menu } from "react-native-paper";
+import { useAppConfigStore, Colors } from "@/store/appConfigStore";
 
-function SwitchTheme() {
-  const { mode, setMode } = useAppConfigStore();
-  const [digVisible, setDigVisible] = useState(false);
-  const showDialog = () => setDigVisible(true);
-  const hideDialog = () => setDigVisible(false);
+function SwitchDark() {
+  const { themeMode, setThemeMode } = useAppConfigStore();
+  const [visible, setVisible] = useState(false);
+  const showMenu = () => setVisible(true);
+  const hideMenu = () => setVisible(false);
+  const theme = useTheme();
+  const [anchor, setAnchor] = useState({ x: 0, y: 0 });
 
   return (
     <>
-      <Portal>
-        <Dialog visible={digVisible} onDismiss={hideDialog}>
-          <Dialog.Title>主题</Dialog.Title>
-          <Dialog.Content style={{ position: "relative" }}>
-            <Checkbox.Item
-              mode="ios"
-              label="跟随系统"
-              status={mode === "system" ? "checked" : "unchecked"}
+      <Menu visible={visible} onDismiss={hideMenu} anchor={anchor}>
+        {Colors.map((item) => {
+          return (
+            <Menu.Item
+              key={item}
               onPress={() => {
-                setMode("system");
+                setThemeMode(item);
+                hideMenu();
               }}
+              title={item}
+              trailingIcon={themeMode === item ? "check" : undefined}
             />
-            <Checkbox.Item
-              mode="ios"
-              label="明亮"
-              status={mode === "light" ? "checked" : "unchecked"}
-              onPress={() => {
-                setMode("light");
-              }}
-            />
-            <Checkbox.Item
-              mode="ios"
-              label="暗色"
-              status={mode === "dark" ? "checked" : "unchecked"}
-              onPress={() => {
-                setMode("dark");
-              }}
-            />
-          </Dialog.Content>
-        </Dialog>
-      </Portal>
+          );
+        })}
+      </Menu>
       <List.Item
-        title="主题切换"
+        title="颜色主题"
         style={styles.listItem}
-        left={() => <List.Icon icon="theme-light-dark" />}
-        onPress={() => {
-          showDialog();
-        }}
+        left={() => <List.Icon icon="palette" />}
+        right={() => (
+          <TouchableOpacity
+            activeOpacity={0.9}
+            onPress={(e) => {
+              setAnchor({
+                x: e.nativeEvent.pageX,
+                y: e.nativeEvent.pageY,
+              });
+              showMenu();
+            }}
+          >
+            <Surface
+              style={{
+                width: 110,
+                height: 36,
+                backgroundColor: theme.colors.secondaryContainer,
+                paddingHorizontal: 8,
+                borderRadius: 8,
+                flexDirection: "row",
+                alignItems: "center",
+                justifyContent: "space-between",
+              }}
+              elevation={2}
+            >
+              <Text variant="bodyMedium">{themeMode}</Text>
+              <Icon source="menu-down" size={20} />
+            </Surface>
+          </TouchableOpacity>
+        )}
       />
     </>
   );
 }
 
-export default React.memo(SwitchTheme);
+export default React.memo(SwitchDark);
 
 const styles = StyleSheet.create({
   listItem: {

@@ -8,7 +8,7 @@ import {
   Button,
   ActivityIndicator,
 } from "react-native-paper";
-import { Image } from "expo-image";
+// import { Image } from "expo-image";
 import * as FileSystem from "expo-file-system";
 
 function ClearCache() {
@@ -19,19 +19,19 @@ function ClearCache() {
   const [infoLoading, setInfoLoading] = useState(false);
   const [size, setSize] = useState("0M");
 
-  const clearCache = async () => {
-    try {
-      setLoading(true);
-      const result = await Image.clearDiskCache();
-      if (result) {
-        getCacheInfo();
-      }
-    } catch (error) {
-      console.log(error);
-    } finally {
-      setLoading(false);
-    }
-  };
+  // const clearCache = async () => {
+  //   try {
+  //     setLoading(true);
+  //     const result = await Image.clearDiskCache();
+  //     if (result) {
+  //       getCacheInfo();
+  //     }
+  //   } catch (error) {
+  //     console.log(error);
+  //   } finally {
+  //     setLoading(false);
+  //   }
+  // };
 
   const getCacheInfo = async () => {
     try {
@@ -43,11 +43,33 @@ function ClearCache() {
         } else {
           setSize("获取缓存大小失败");
         }
+      } else {
+        setSize("0M");
       }
     } catch (error) {
       setSize("获取缓存大小失败");
     } finally {
       setInfoLoading(false);
+    }
+  };
+
+  const clearAllCache = async () => {
+    try {
+      if (FileSystem.cacheDirectory) {
+        setLoading(true);
+        const info = await FileSystem.readDirectoryAsync(
+          FileSystem.cacheDirectory
+        );
+        const tasks = info.map((uri) =>
+          FileSystem.deleteAsync(`${FileSystem.cacheDirectory}/${uri}`)
+        );
+        await Promise.all(tasks);
+      }
+    } catch (error) {
+      console.log(error);
+    } finally {
+      setLoading(false);
+      getCacheInfo();
     }
   };
 
@@ -62,19 +84,19 @@ function ClearCache() {
           <Dialog.Title>提示</Dialog.Title>
           <Dialog.Content>
             <Text variant="bodyMedium">
-              确定要清除图片缓存吗？下次加载将会耗费流量
+              确定要清除缓存吗？有些资源（如图片）下次加载可能会耗费流量。
             </Text>
           </Dialog.Content>
           <Dialog.Actions>
+            <Button onPress={hideDialog}>取消</Button>
             <Button
               onPress={() => {
                 hideDialog();
-                clearCache();
+                clearAllCache();
               }}
             >
               确定
             </Button>
-            <Button onPress={hideDialog}>取消</Button>
           </Dialog.Actions>
         </Dialog>
       </Portal>

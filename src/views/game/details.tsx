@@ -20,7 +20,7 @@ import HorizontalImages from "./HorizontalImages";
 
 type Props = NativeStackScreenProps<RootStackParamList, "game-details">;
 
-const details: React.FC<Props> = ({ route }) => {
+const details: React.FC<Props> = ({ route, navigation }) => {
   const { gameId } = route.params;
   const { httpRequest } = useUtilsProvider();
   const theme = useTheme();
@@ -110,7 +110,11 @@ const details: React.FC<Props> = ({ route }) => {
           <Button
             mode="text"
             icon="comment-processing-outline"
-            onPress={() => {}}
+            onPress={() => {
+              navigation.navigate("game-comment", {
+                gameId,
+              });
+            }}
           >
             {commentsCount}
           </Button>

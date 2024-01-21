@@ -1,9 +1,13 @@
 import { View, StyleSheet, Pressable } from "react-native";
 import React from "react";
 import { SearchedComic } from "@/network/types";
-import { NativeStackNavigationProp } from "@react-navigation/native-stack";
-import { RootStackParamList } from "@/navigations/mainStacks/types";
-import { Card, Icon, Text, useTheme } from "react-native-paper";
+import {
+  Card,
+  Icon,
+  Text,
+  TouchableRipple,
+  useTheme,
+} from "react-native-paper";
 import { Image } from "expo-image";
 
 type Props = {
@@ -13,24 +17,12 @@ type Props = {
 
 const Item: React.FC<Props> = ({ item, navigate }) => {
   const theme = useTheme();
-  const {
-    thumb,
-    author,
-    title,
-    likesCount,
-    categories,
-  } = item;
+  const { thumb, author, title, likesCount, categories } = item;
   const uri = `${thumb.fileServer}/static/${thumb.path}`;
   return (
-    <Pressable
-      style={({ pressed }) => [
-        pressed
-          ? {
-              backgroundColor: `#00000020`,
-            }
-          : {},
-        styles.itemContainer,
-      ]}
+    <TouchableRipple
+      style={styles.itemContainer}
+      rippleColor="rgba(0, 0, 0, .2)"
       onPress={() => {
         navigate("details", { comicId: item._id });
       }}
@@ -93,15 +85,20 @@ const Item: React.FC<Props> = ({ item, navigate }) => {
                 justifyContent: "space-between",
               }}
             >
-              <Icon source="heart" size={12} color={theme.colors.primary}/>
+              <Icon source="heart" size={12} color={theme.colors.primary} />
               <View style={{ width: 5 }} />
-              <Text variant="labelSmall" style={{ color: theme.colors.primary }}>{likesCount} </Text>
+              <Text
+                variant="labelSmall"
+                style={{ color: theme.colors.primary }}
+              >
+                {likesCount}
+              </Text>
             </View>
             <View style={{ width: 15 }} />
           </View>
         </View>
       </View>
-    </Pressable>
+    </TouchableRipple>
   );
 };
 
@@ -110,15 +107,15 @@ export default React.memo(Item);
 const styles = StyleSheet.create({
   itemContainer: {
     width: "100%",
-    height: 180,
+    height: 150,
     marginVertical: 5,
     borderRadius: 10,
     overflow: "hidden",
     padding: 5,
   },
   itemWarpper: {
-    width: 120,
-    height: 170,
+    width: 99,
+    height: 140,
     overflow: "hidden",
     position: "relative",
   },

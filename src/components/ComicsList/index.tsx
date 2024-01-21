@@ -75,7 +75,7 @@ const CommonList: React.FC<Props> = ({
       onEndReachedThreshold={1}
       onEndReached={loadMore}
       ListFooterComponent={renderFooter}
-      estimatedItemSize={190}
+      estimatedItemSize={160}
       ListEmptyComponent={renderEmptyComponent}
       renderItem={renderItem}
     />

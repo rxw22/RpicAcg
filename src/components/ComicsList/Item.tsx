@@ -1,7 +1,13 @@
-import { View, StyleSheet, Pressable } from "react-native";
+import { View, StyleSheet } from "react-native";
 import React from "react";
 import { Comic } from "@/network/types";
-import { Card, Icon, Text, useTheme } from "react-native-paper";
+import {
+  Card,
+  Icon,
+  Text,
+  useTheme,
+  TouchableRipple,
+} from "react-native-paper";
 import { Image } from "expo-image";
 
 type Props = {
@@ -23,15 +29,9 @@ const Item: React.FC<Props> = ({ item, navigate }) => {
   } = item;
   const uri = `${thumb.fileServer}/static/${thumb.path}`;
   return (
-    <Pressable
-      style={({ pressed }) => [
-        pressed
-          ? {
-              backgroundColor: `#00000020`,
-            }
-          : {},
-        styles.itemContainer,
-      ]}
+    <TouchableRipple
+      style={styles.itemContainer}
+      rippleColor="rgba(0, 0, 0, .2)"
       onPress={() => {
         navigate("details", { comicId: item._id });
       }}
@@ -67,7 +67,7 @@ const Item: React.FC<Props> = ({ item, navigate }) => {
               flex: 1,
               flexDirection: "row",
               flexWrap: "wrap",
-              paddingVertical: 8,
+              paddingVertical: 4,
               overflow: "hidden",
             }}
           >
@@ -104,7 +104,7 @@ const Item: React.FC<Props> = ({ item, navigate }) => {
               </Text>
             </View>
             <View style={{ width: 15 }} />
-            {totalViews && (
+            {(totalViews || totalViews === 0) && (
               <View
                 style={{
                   flexDirection: "row",
@@ -125,7 +125,7 @@ const Item: React.FC<Props> = ({ item, navigate }) => {
           </View>
         </View>
       </View>
-    </Pressable>
+    </TouchableRipple>
   );
 };
 
@@ -134,15 +134,15 @@ export default React.memo(Item);
 const styles = StyleSheet.create({
   itemContainer: {
     width: "100%",
-    height: 180,
+    height: 150,
     marginVertical: 5,
     borderRadius: 10,
     overflow: "hidden",
     padding: 5,
   },
   itemWarpper: {
-    width: 120,
-    height: 170,
+    width: 99,
+    height: 140,
     overflow: "hidden",
     position: "relative",
   },

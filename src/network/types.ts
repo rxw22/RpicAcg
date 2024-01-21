@@ -383,34 +383,47 @@ export interface Icon {
   fileServer: string;
 }
 export interface Game {
-	_id: string;
-	title: string;
-	description: string;
-	version: string;
-	icon: Icon;
-	publisher: string;
-	ios: boolean;
-	iosLinks: any[];
-	android: boolean;
-	androidLinks: string[];
-	adult: boolean;
-	suggest: boolean;
-	downloadsCount: number;
-	screenshots: Icon[];
-	androidSize: number;
-	iosSize: number;
-	videoLink: string;
-	updated_at: string;
-	created_at: string;
-	likesCount: number;
-	isLiked: boolean;
-	commentsCount: number;
+  _id: string;
+  title: string;
+  description: string;
+  version: string;
+  icon: Icon;
+  publisher: string;
+  ios: boolean;
+  iosLinks: any[];
+  android: boolean;
+  androidLinks: string[];
+  adult: boolean;
+  suggest: boolean;
+  downloadsCount: number;
+  screenshots: Icon[];
+  androidSize: number;
+  iosSize: number;
+  videoLink: string;
+  updated_at: string;
+  created_at: string;
+  likesCount: number;
+  isLiked: boolean;
+  commentsCount: number;
 }
 
 export type GameDetailsResponse = BaseResponse<{
   game: Game;
-}>
+}>;
 
 export type CommentLikeResponse = BaseResponse<{
-  action: "like" | "unlike"
-}>
+  action: "like" | "unlike";
+}>;
+
+export type GameCommentsResponse = BaseResponse<{
+  comments: Comments;
+  topComments: any[];
+}>;
+
+export interface Comments {
+  docs: Comment[];
+  total: number;
+  limit: number;
+  page: string;
+  pages: number;
+}

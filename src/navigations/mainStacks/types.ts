@@ -16,7 +16,14 @@ export type RootStackParamList = {
     hasNext: boolean; // 是否还有下一章
   };
   collect: undefined;
-  comics: { c?: string; ca?: string; knight?: string; a?: string; ct?: string; t?: string };
+  comics: {
+    c?: string;
+    ca?: string;
+    knight?: string;
+    a?: string;
+    ct?: string;
+    t?: string;
+  };
   comment: { comicId: string };
   comchildren: { comment: Comment };
   searchcomics: {
@@ -31,5 +38,8 @@ export type RootStackParamList = {
   "game-details": {
     gameId: string;
     title: string;
-  }
+  };
+  "game-comment": {
+    gameId: string;
+  };
 };

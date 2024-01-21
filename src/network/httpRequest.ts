@@ -15,6 +15,7 @@ import {
   CommentPayload,
   CommentResponse,
   Doc,
+  GameCommentsResponse,
   GameDetailsResponse,
   GamesResponse,
   KeywordsResponse,
@@ -329,8 +330,10 @@ class HttpRequest {
   }
 
   // 获取游戏详情
-  async fetchGameDetails(gameId: string){
-    const result = await this.httpClient.get<GameDetailsResponse>(`games/${gameId}`);
+  async fetchGameDetails(gameId: string) {
+    const result = await this.httpClient.get<GameDetailsResponse>(
+      `games/${gameId}`
+    );
     if (result.code !== 200) {
       throw new Error(result.message);
     }
@@ -339,13 +342,42 @@ class HttpRequest {
   }
 
   // 点赞取消点赞评论
-  async likeOrUnLikeComment(commentId: string){
-    const result = await this.httpClient.post<CommentLikeResponse>(`comments/${commentId}/like`);
+  async likeOrUnLikeComment(commentId: string) {
+    const result = await this.httpClient.post<CommentLikeResponse>(
+      `comments/${commentId}/like`
+    );
     if (result.code !== 200) {
       throw new Error(result.message);
     }
     const { action } = result.data;
     return action;
+  }
+
+  // 获取游戏评论
+  async fetchGameComment(payload: { gameId: string; page: number }) {
+    const { gameId, page } = payload;
+    const result = await this.httpClient.get<GameCommentsResponse>(
+      `games/${gameId}/comments`,
+      { page }
+    );
+    if (result.code !== 200) {
+      throw new Error(result.message);
+    }
+    const { comments } = result.data;
+    return comments;
+  }
+
+  // 评论游戏
+  async sendGameComment(payload: { gameId: string; content: string }) {
+    const { gameId, content } = payload;
+    const result = await this.httpClient.post<SendCommentResponse>(
+      `games/${gameId}/comments`,
+      { content }
+    );
+    if (result.code !== 200) {
+      throw new Error(result.message);
+    }
+    return result;
   }
 }
 

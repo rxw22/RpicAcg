@@ -12,19 +12,22 @@ import CollectBar from "@/components/collectBar";
 import ComicDetails from "@/views/details";
 import Reader from "@/views/reader";
 
+import usePunchIn from "@/hooks/usePunchIn";
+
 import type { RootStackParamList } from "./types";
 import Collect from "@/views/collect";
 import ComicsAppBar from "@/views/Comics/AppBar";
 import Comics from "@/views/Comics";
-import Comment from '@/views/comment';
-import CommentAppBar from '@/views/comment/AppBar';
+import Comment from "@/views/comment";
+import CommentAppBar from "@/views/comment/AppBar";
 import ComChildren from "@/views/ComChildren";
 import SearchComics from "@/views/SearchComics";
-import SearchComicsAppBar from '@/views/SearchComics/AppBar';
-import WebViewPage from '@/views/WebView';
-import GameDetails from '@/views/game/details';
-import DetailsAppBar from '@/views/game/DetailsAppBar';
-import usePunchIn from "@/hooks/usePunchIn";
+import SearchComicsAppBar from "@/views/SearchComics/AppBar";
+import WebViewPage from "@/views/WebView";
+import GameDetails from "@/views/game/details";
+import DetailsAppBar from "@/views/game/DetailsAppBar";
+import GameComment from "@/views/game/Comment";
+import GameCommentAppBar from "@/views/game/Comment/AppBar";
 
 const Stack = createNativeStackNavigator<RootStackParamList>();
 
@@ -132,6 +135,14 @@ export default function MainStacks() {
         component={GameDetails}
         options={{
           header: (props) => <DetailsAppBar {...props} />,
+        }}
+      />
+      <Stack.Screen
+        name="game-comment"
+        component={GameComment}
+        options={{
+          title: "评论",
+          header: (props) => <GameCommentAppBar {...props} />,
         }}
       />
     </Stack.Navigator>

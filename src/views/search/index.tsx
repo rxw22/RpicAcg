@@ -7,22 +7,34 @@ import { useUtilsProvider } from "@/network/utilsProvider";
 import React, { useEffect, useState } from "react";
 import { NativeStackScreenProps } from "@react-navigation/native-stack";
 import { RootStackParamList } from "@/navigations/mainStacks/types";
+import { useGlobalStore } from "@/store/globalStore";
 
 type Props = NativeStackScreenProps<RootStackParamList, "search">;
 
 const Search: React.FC<Props> = ({ navigation }) => {
   const { httpRequest } = useUtilsProvider();
+  const { keywords, setKeywords } = useGlobalStore();
   const [searchQuery, setSearchQuery] = useState("");
   const onChangeSearch = (query: string) => setSearchQuery(query);
 
-  const { data, refresh, loading, error } = useRequest(
+  const { data, refresh, loading, error, run } = useRequest(
     httpRequest.fetchKeywords.bind(httpRequest),
     {
+      manual: true,
       onError(e) {
         console.log(e);
       },
+      onSuccess(result) {
+        setKeywords(result);
+      },
     }
   );
+
+  useEffect(() => {
+    if (!keywords) {
+      run();
+    }
+  }, [keywords]);
 
   useEffect(() => {
     navigation.setOptions({
@@ -50,13 +62,18 @@ const Search: React.FC<Props> = ({ navigation }) => {
   }, [searchQuery]);
 
   return (
-    <BgBox style={styles.container} loading={loading} error={error?.message} refresh={refresh}>
+    <BgBox
+      style={styles.container}
+      loading={loading}
+      error={error?.message}
+      refresh={refresh}
+    >
       <View style={styles.keyWarpper}>
         <View style={{ paddingBottom: 8 }}>
           <Text variant="titleLarge">大家都在搜</Text>
         </View>
         <View style={{ flexDirection: "row", flexWrap: "wrap" }}>
-          {data?.map((item) => {
+          {(data || keywords)?.map((item) => {
             return (
               <Chip
                 key={item}

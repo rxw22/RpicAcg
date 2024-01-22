@@ -21,6 +21,7 @@ import {
   KeywordsResponse,
   KnightResponse,
   LikeOrUnLikeComicResponse,
+  MyCommentsResponse,
   PunchInResponse,
   RankingPayload,
   RankingResponse,
@@ -378,6 +379,30 @@ class HttpRequest {
       throw new Error(result.message);
     }
     return result;
+  }
+
+  // 点赞或取消点赞游戏
+  async likeOrUnLikeGame(gameId: string) {
+    const result = await this.httpClient.post<CommentLikeResponse>(
+      `games/${gameId}/like`
+    );
+    if (result.code !== 200) {
+      throw new Error(result.message);
+    }
+    return result;
+  }
+
+  // 获取我的评论
+  async fetchMyComments(page: number) {
+    const result = await this.httpClient.get<MyCommentsResponse>(
+      `users/my-comments`,
+      { page }
+    );
+    if (result.code !== 200) {
+      throw new Error(result.message);
+    }
+    const { comments } = result.data;
+    return comments;
   }
 }
 

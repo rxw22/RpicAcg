@@ -14,6 +14,7 @@ export type RootStackParamList = {
     record: ComicRecord | undefined; // 阅读记录
     isScratch: boolean; // 从一章的头开始
     hasNext: boolean; // 是否还有下一章
+    chapterLength: number // 总共有几章
   };
   collect: undefined;
   comics: {
@@ -42,4 +43,5 @@ export type RootStackParamList = {
   "game-comment": {
     gameId: string;
   };
+  "my-comments": undefined
 };

@@ -1,6 +1,11 @@
 import { StyleSheet, TextInput, View } from "react-native";
 import React, { memo, useRef, useState } from "react";
-import { IconButton, Searchbar, useTheme } from "react-native-paper";
+import {
+  IconButton,
+  Searchbar,
+  useTheme,
+  ActivityIndicator,
+} from "react-native-paper";
 import { useUtilsProvider } from "@/network/utilsProvider";
 import { useRequest } from "ahooks";
 
@@ -51,10 +56,16 @@ const SendComment: React.FC<Props> = ({ comicId, refresh }) => {
         icon="chat"
         onChangeText={setContent}
         value={content}
-        loading={loading}
         keyboardType="default"
         returnKeyType="done"
-        right={() => <IconButton icon="send" size={22} onPress={send} />}
+        style={{ paddingRight: 10 }}
+        right={() =>
+          loading ? (
+            <ActivityIndicator animating size={20} />
+          ) : (
+            <IconButton icon="send" size={22} onPress={send} />
+          )
+        }
       />
     </View>
   );

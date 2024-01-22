@@ -17,6 +17,11 @@ interface GlobalStore {
    */
   user: User | undefined;
   setUser(user: User): void;
+  /**
+   * 大家都在搜缓存
+   */
+  keywords: string[] | undefined;
+  setKeywords(keywords: string[] | undefined): void;
 }
 
 export const useGlobalStore = create<GlobalStore>((set) => ({
@@ -24,12 +29,19 @@ export const useGlobalStore = create<GlobalStore>((set) => ({
   setComicSort(comicSort) {
     set({ comicSort });
   },
+
   searchSort: ComicSort.NewToOld,
   setSearchSort(searchSort) {
     set({ searchSort });
   },
+
   user: undefined,
   setUser(user) {
     set({ user });
+  },
+
+  keywords: undefined,
+  setKeywords(keywords) {
+    set({ keywords });
   },
 }));

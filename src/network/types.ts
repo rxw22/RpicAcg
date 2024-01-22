@@ -427,3 +427,35 @@ export interface Comments {
   page: string;
   pages: number;
 }
+
+export interface _comic {
+  _id: string;
+  title: string;
+}
+
+export interface MyCommentDoc {
+  _id: string;
+  content: string;
+  _comic?: _comic;
+  _game?: _comic;
+  totalComments: number;
+  hide: boolean;
+  created_at: string;
+  id: string;
+  likesCount: number;
+  commentsCount: number;
+  isLiked: boolean;
+}
+
+export interface MyComment {
+  docs: MyCommentDoc[];
+  total: number;
+  limit: number;
+  page: string;
+  pages: number;
+}
+
+
+export type MyCommentsResponse = BaseResponse<{
+  comments: MyComment;
+}>;

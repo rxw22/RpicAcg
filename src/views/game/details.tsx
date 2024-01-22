@@ -1,5 +1,5 @@
 import { StyleSheet, View, Linking, ScrollView } from "react-native";
-import React from "react";
+import React, { useRef, useState } from "react";
 import BgBox from "@/components/bgBox";
 import { NativeStackScreenProps } from "@react-navigation/native-stack";
 import { RootStackParamList } from "@/navigations/mainStacks/types";
@@ -24,7 +24,11 @@ const details: React.FC<Props> = ({ route, navigation }) => {
   const { gameId } = route.params;
   const { httpRequest } = useUtilsProvider();
   const theme = useTheme();
-  const [visible, setVisible] = React.useState(false);
+  const [visible, setVisible] = useState(false);
+  const [likeInfo, setLikeInfo] = useState({
+    isLiked: false,
+    likesCount: 0,
+  });
 
   const showDialog = () => setVisible(true);
 
@@ -37,8 +41,33 @@ const details: React.FC<Props> = ({ route, navigation }) => {
       onError(e) {
         console.log(e);
       },
+      onSuccess(result) {
+        setLikeInfo({
+          isLiked: result.isLiked,
+          likesCount: result.likesCount,
+        });
+      },
     }
   );
+
+  const { run: likeRun } = useRequest(
+    httpRequest.likeOrUnLikeGame.bind(httpRequest),
+    {
+      manual: true,
+      onError(e) {
+        console.log(e);
+      },
+      onBefore() {
+        setLikeInfo({
+          isLiked: !likeInfo.isLiked,
+          likesCount: !likeInfo.isLiked
+            ? likeInfo.likesCount + 1
+            : likeInfo.likesCount - 1,
+        });
+      },
+    }
+  );
+
   const {
     icon,
     title = "",
@@ -46,7 +75,6 @@ const details: React.FC<Props> = ({ route, navigation }) => {
     version,
     screenshots,
     description,
-    likesCount,
     commentsCount,
     ios,
     android,
@@ -101,11 +129,13 @@ const details: React.FC<Props> = ({ route, navigation }) => {
         >
           <Button
             mode="text"
-            icon="cards-heart-outline"
+            icon={likeInfo.isLiked ? "cards-heart" : "cards-heart-outline"}
             style={{ marginRight: 8 }}
-            onPress={() => {}}
+            onPress={() => {
+              likeRun(gameId);
+            }}
           >
-            {likesCount}
+            {likeInfo.likesCount}
           </Button>
           <Button
             mode="text"

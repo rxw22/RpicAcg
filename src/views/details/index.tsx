@@ -84,9 +84,10 @@ const ComicDetails: React.FC<Props> = ({ route, navigation }) => {
         record,
         isScratch,
         hasNext,
+        chapterLength: comicEpisodes?.length || 1
       });
     },
-    [response]
+    [response, comicEpisodes]
   );
 
   return (

@@ -19,7 +19,7 @@ import { useReadStore } from "@/store/readStore";
 type Props = NativeStackScreenProps<RootStackParamList, "reader">;
 
 const Reader: React.FC<Props> = ({ route, navigation }) => {
-  const { comicId, order, title, record, isScratch, hasNext } = route.params;
+  const { comicId, order, title, record, isScratch, hasNext, chapterLength } = route.params;
   const { httpRequest } = useUtilsProvider();
   const headerPosition = useSharedValue(-64);
   const bottomPosition = useSharedValue(-90);
@@ -100,7 +100,7 @@ const Reader: React.FC<Props> = ({ route, navigation }) => {
     (page: number) => {
       recordRef.current.page = page;
       update();
-      if (page >= (data?.length || 1) - 1 && hasNext) {
+      if (page >= (data?.length || 1) - 1 && hasNext && currentOrder.current < chapterLength) {
         fabBottom.value = withTiming(0, {
           duration: 300,
         });
@@ -110,7 +110,7 @@ const Reader: React.FC<Props> = ({ route, navigation }) => {
         });
       }
     },
-    [update, hasNext, data]
+    [update, hasNext, data, chapterLength]
   );
 
   // 滑动回调
@@ -126,6 +126,9 @@ const Reader: React.FC<Props> = ({ route, navigation }) => {
         page: 0,
         y: 0
       }
+      fabBottom.value = withTiming(-90, {
+        duration: 300,
+      });
       run(comicId, currentOrder.current);
     }
   };

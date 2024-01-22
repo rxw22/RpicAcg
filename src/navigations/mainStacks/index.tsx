@@ -28,6 +28,8 @@ import GameDetails from "@/views/game/details";
 import DetailsAppBar from "@/views/game/DetailsAppBar";
 import GameComment from "@/views/game/Comment";
 import GameCommentAppBar from "@/views/game/Comment/AppBar";
+import MyComments from '@/views/MyComment';
+import MyCommentsAppBar from '@/views/MyComment/AppBar';
 
 const Stack = createNativeStackNavigator<RootStackParamList>();
 
@@ -79,7 +81,6 @@ export default function MainStacks() {
         component={Reader}
         options={{
           title: "阅读器",
-          // headerShown: false,
           headerTransparent: true,
         }}
       />
@@ -143,6 +144,14 @@ export default function MainStacks() {
         options={{
           title: "评论",
           header: (props) => <GameCommentAppBar {...props} />,
+        }}
+      />
+      <Stack.Screen
+        name="my-comments"
+        component={MyComments}
+        options={{
+          title: "评论",
+          header: (props) => <MyCommentsAppBar {...props} />,
         }}
       />
     </Stack.Navigator>

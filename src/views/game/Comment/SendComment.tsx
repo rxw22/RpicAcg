@@ -8,6 +8,7 @@ import {
 } from "react-native-paper";
 import { useUtilsProvider } from "@/network/utilsProvider";
 import { useRequest } from "ahooks";
+import { Toast } from "toastify-react-native";
 
 type Props = {
   gameId: string;
@@ -16,7 +17,7 @@ type Props = {
 
 const SendComment: React.FC<Props> = ({ gameId, refresh }) => {
   const theme = useTheme();
-  const { httpRequest, Toast } = useUtilsProvider();
+  const { httpRequest } = useUtilsProvider();
   const [content, setContent] = useState("");
   const inputRef = useRef<TextInput>(null);
 
@@ -26,13 +27,12 @@ const SendComment: React.FC<Props> = ({ gameId, refresh }) => {
       manual: true,
       onSuccess() {
         setContent("");
-        Toast.show("评论成功", "success");
+        Toast.success("评论成功", "bottom");
         refresh();
       },
       onError(e) {
         console.log(e);
-
-        Toast.show(e.message, "error");
+        Toast.error(e.message, "bottom");
       },
       onFinally() {
         inputRef.current?.blur();
@@ -42,7 +42,7 @@ const SendComment: React.FC<Props> = ({ gameId, refresh }) => {
 
   const send = () => {
     if (!content.length) {
-      Toast.show("需要说点什么~", "info");
+      Toast.info("需要说点什么~", "bottom");
       return;
     }
     run({ gameId, content });

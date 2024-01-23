@@ -3,26 +3,24 @@ import { PaperProvider } from "react-native-paper";
 import { NavigationContainer } from "@react-navigation/native";
 import { useFonts } from "expo-font";
 import * as SplashScreen from "expo-splash-screen";
-import { useCallback, useState, useEffect, useRef } from "react";
+import { useCallback, useState, useEffect } from "react";
 import { GestureHandlerRootView } from "react-native-gesture-handler";
 import Icon from "@expo/vector-icons/MaterialCommunityIcons";
+import ToastManager from "toastify-react-native";
 
 import MainStacks from "@/navigations/mainStacks";
 import useCustomTheme from "@/hooks/useCustomTheme";
 import UtilsProvider from "@/network/utilsProvider";
 import { navigationRef } from "@/navigations/RootNavigation";
-import Toast, { ToastRef } from "@/components/Toast";
+import { useWindowDimensions } from "react-native";
 
 export default function App() {
   const { paperTheme } = useCustomTheme();
   const [isHidden, setIsHidden] = useState(false);
-  const toastRef = useRef<ToastRef>({
-    show() {},
-    hide() {},
-  });
   const [fontsLoaded] = useFonts({
     font1: require("@/assets/fonts/Poppins-Regular.ttf"),
   });
+  const { height: ScreenHeight } = useWindowDimensions();
 
   // 防止加载太快出现闪屏现象
   useEffect(() => {
@@ -45,7 +43,7 @@ export default function App() {
   }
 
   return (
-    <GestureHandlerRootView style={{ height: "100%", width: "100%" }}>
+    <GestureHandlerRootView style={{ flex: 1 }}>
       <PaperProvider
         theme={paperTheme}
         settings={{
@@ -54,10 +52,10 @@ export default function App() {
         }}
       >
         <NavigationContainer onReady={onLayoutRootView} ref={navigationRef}>
-          <UtilsProvider Toast={toastRef.current}>
+          <UtilsProvider>
             <MainStacks />
             <StatusBar style="auto" translucent={true} />
-            <Toast ref={toastRef} />
+            <ToastManager positionValue={ScreenHeight - 120} />
           </UtilsProvider>
         </NavigationContainer>
       </PaperProvider>

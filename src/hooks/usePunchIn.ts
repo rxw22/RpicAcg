@@ -1,18 +1,19 @@
 import { useUtilsProvider } from "@/network/utilsProvider";
 import { useGlobalStore } from "@/store/globalStore";
 import { useRequest } from "ahooks";
+import { Toast } from "toastify-react-native";
 
 const usePunchIn = () => {
-  const { httpRequest, Toast } = useUtilsProvider();
+  const { httpRequest } = useUtilsProvider();
   const { setUser } = useGlobalStore();
-  
+
   const { run } = useRequest(httpRequest.punchIn.bind(httpRequest), {
     manual: true,
     onError(e) {
-      Toast.show("自动打卡失败", "error");
+      Toast.error("自动打卡失败", "bottom");
     },
     onSuccess() {
-      Toast.show("自动打卡成功", "success");
+      Toast.success("自动打卡成功", "bottom");
     },
   });
 

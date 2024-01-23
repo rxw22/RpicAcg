@@ -14,6 +14,7 @@ import { Image } from "expo-image";
 import dayjs from "dayjs";
 import { NativeStackNavigationProp } from "@react-navigation/native-stack";
 import { RootStackParamList } from "@/navigations/mainStacks/types";
+import { Toast } from "toastify-react-native";
 
 interface Props {
   item: Comment;
@@ -26,7 +27,7 @@ interface Props {
 }
 
 const Item: React.FC<Props> = ({ item, navigation, updateDataSource }) => {
-  const { httpRequest, Toast } = useUtilsProvider();
+  const { httpRequest } = useUtilsProvider();
   const {
     _user,
     content,
@@ -49,7 +50,7 @@ const Item: React.FC<Props> = ({ item, navigation, updateDataSource }) => {
       },
       onError(e) {
         console.log(e);
-        Toast.show("点赞失败", "error");
+        Toast.error("点赞失败", "bottom");
       },
     }
   );

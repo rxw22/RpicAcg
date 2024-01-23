@@ -85,14 +85,13 @@ const MyComment: React.FC<Props> = ({ navigation }) => {
                     <View style={{ height: 8 }} />
                     <Text variant="bodyLarge">{content}</Text>
                   </View>
-                  <View style={{ height: 8 }} />
+                  <View style={{ height: 20 }} />
                   <Text
                     variant="bodySmall"
                     style={{ color: theme.colors.primary }}
                   >
                     {_comic?.title || _game?.title}
                   </Text>
-                  <View style={{ height: 5 }} />
                   <View style={{ flexDirection: "row", alignItems: "center" }}>
                     <Text variant="bodySmall">
                       {dayjs(created_at).format("YYYY-MM-DD HH:mm:ss")}

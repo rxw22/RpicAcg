@@ -2,27 +2,19 @@ import { useUserStore } from "@/store/userStore";
 import HttpRequest from "./httpRequest";
 import React, { useContext, useMemo } from "react";
 import { navigate } from "@/navigations/RootNavigation";
-import { ToastRef } from "@/components/Toast";
 import { useAppConfigStore } from "@/store/appConfigStore";
 
 type ContextType = {
   httpRequest: HttpRequest;
-  Toast: ToastRef;
 };
 
 const Context = React.createContext<ContextType>({
   httpRequest: new HttpRequest({}),
-  Toast: { show: () => {}, hide: () => {} },
 });
 
-type Props = React.ComponentProps<typeof Context.Provider> & {
-  Toast: ToastRef;
-};
+type Props = React.ComponentProps<typeof Context.Provider>;
 
-const NetworkProvider: React.FC<Omit<Props, "value">> = ({
-  Toast,
-  ...props
-}) => {
+const NetworkProvider: React.FC<Omit<Props, "value">> = ({ ...props }) => {
   const { token } = useUserStore();
   const { appChannel, imageQuality } = useAppConfigStore();
 
@@ -41,15 +33,14 @@ const NetworkProvider: React.FC<Omit<Props, "value">> = ({
     [token, appChannel, imageQuality]
   );
 
-  return <Context.Provider {...props} value={{ httpRequest, Toast }} />;
+  return <Context.Provider {...props} value={{ httpRequest }} />;
 };
 
 export default NetworkProvider;
 
 export const useUtilsProvider = () => {
-  const { httpRequest, Toast } = useContext(Context);
+  const { httpRequest } = useContext(Context);
   return {
     httpRequest,
-    Toast,
   };
 };

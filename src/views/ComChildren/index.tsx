@@ -19,12 +19,13 @@ import { RootStackParamList } from "@/navigations/mainStacks/types";
 import { useUtilsProvider } from "@/network/utilsProvider";
 import { Comment } from "@/network/types";
 import SendComment from "./SendComment";
+import { Toast } from "toastify-react-native";
 
 type Props = NativeStackScreenProps<RootStackParamList, "comchildren">;
 
 const CommentList: React.FC<Props> = ({ route }) => {
   const { comment } = route.params;
-  const { httpRequest, Toast } = useUtilsProvider();
+  const { httpRequest } = useUtilsProvider();
   const pageRef = useRef({
     currerntPage: 1,
     totalPage: 0,
@@ -52,7 +53,7 @@ const CommentList: React.FC<Props> = ({ route }) => {
       },
       onError(e) {
         console.log(e);
-        Toast.show("点赞失败", "error");
+        Toast.error("点赞失败", "bottom");
       },
     }
   );

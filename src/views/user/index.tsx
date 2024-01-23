@@ -1,5 +1,14 @@
 import { StyleSheet, View, ScrollView } from "react-native";
-import { Card, FAB, Text } from "react-native-paper";
+import {
+  Avatar,
+  Button,
+  Card,
+  Divider,
+  FAB,
+  List,
+  Text,
+  useTheme,
+} from "react-native-paper";
 import { useRequest } from "ahooks";
 import { ImageBackground } from "expo-image";
 import Image from "@/components/image";
@@ -25,8 +34,9 @@ type Props = CompositeScreenProps<
 
 const User: React.FC<Props> = (props) => {
   const { httpRequest } = useUtilsProvider();
-  const { localCollect, browses } = useReadStore();
+  // const { localCollect, browses } = useReadStore();
   const { user } = useGlobalStore();
+  const theme = useTheme();
 
   const { data, loading, refresh, error, run } = useRequest(
     httpRequest.fetchUserProfile.bind(httpRequest),
@@ -44,28 +54,27 @@ const User: React.FC<Props> = (props) => {
     }
   }, [user]);
 
-  const {
-    data: favourites,
-    loading: favouriteLoading,
-    refresh: favouriteRefresh,
-    error: favouriteError,
-  } = useRequest(httpRequest.fetchUserFavourite.bind(httpRequest), {
-    defaultParams: [{ page: 1, s: ComicSort.NewToOld }],
-    onError(e) {
-      console.log(e);
-    },
-  });
+  // const {
+  //   data: favourites,
+  //   loading: favouriteLoading,
+  //   refresh: favouriteRefresh,
+  //   error: favouriteError,
+  // } = useRequest(httpRequest.fetchUserFavourite.bind(httpRequest), {
+  //   defaultParams: [{ page: 1, s: ComicSort.NewToOld }],
+  //   onError(e) {
+  //     console.log(e);
+  //   },
+  // });
 
   const current = user || data;
 
   return (
     <BgBox
       style={styles.container}
-      error={error?.message || favouriteError?.message}
-      loading={loading || favouriteLoading}
+      error={error?.message}
+      loading={loading}
       refresh={() => {
         refresh();
-        favouriteRefresh();
       }}
     >
       <ImageBackground
@@ -118,40 +127,56 @@ const User: React.FC<Props> = (props) => {
             </Text>
           </View>
         </View>
-        <ScrollView
+        <View
           style={styles.scrollWarpper}
-          showsVerticalScrollIndicator={false}
         >
           <View style={styles.userWapperMask} />
           <BgBox style={styles.content}>
-            <HorizontalList
-              title="网络收藏"
-              dataSource={favourites?.data.comics.docs || []}
-              navigation={props.navigation}
-              total={favourites?.data.comics.total || 0}
-            />
-            <View style={styles.sizeBox} />
-            <HorizontalList
-              title="本地收藏"
-              dataSource={localCollect}
-              navigation={props.navigation}
-              total={localCollect.length}
-            />
-            <View style={styles.sizeBox} />
-            <HorizontalList
-              title="浏览记录"
-              dataSource={browses}
-              navigation={props.navigation}
-              total={browses.length}
-            />
+            <Card style={styles.card} onPress={() => {
+              props.navigation.navigate("collect");
+            }}>
+              <Card.Title
+                title="网络收藏"
+                subtitle="来自哔咔服务器的账号收藏"
+                left={(props) => (
+                  <Avatar.Icon {...props} icon="bookmark-box-multiple" />
+                )}
+              />
+            </Card>
+            <Card style={styles.card} onPress={() => {
+              props.navigation.navigate("collect");
+            }}>
+              <Card.Title
+                title="本地收藏"
+                subtitle="储存在设备本地"
+                left={(props) => <Avatar.Icon {...props} icon="folder" />}
+              />
+            </Card>
+            <Card style={styles.card} onPress={() => {}}>
+              <Card.Title
+                title="浏览记录"
+                subtitle="历史观看记录，储存在设备本地"
+                left={(props) => (
+                  <Avatar.Icon {...props} icon="clipboard-text-clock" />
+                )}
+              />
+            </Card>
+            <Card style={[styles.card, { marginBottom: 0 }]} onPress={() => {}}>
+              <Card.Title
+                title="我的下载"
+                subtitle="下载的漫画"
+                left={(props) => (
+                  <Avatar.Icon {...props} icon="download-multiple" />
+                )}
+              />
+            </Card>
           </BgBox>
-        </ScrollView>
+        </View>
         <FAB
           icon="restore"
           style={styles.fab}
           onPress={() => {
             refresh();
-            favouriteRefresh();
           }}
           size="medium"
         />
@@ -191,7 +216,10 @@ const styles = StyleSheet.create({
   content: {
     borderTopLeftRadius: 16,
     borderTopRightRadius: 16,
-    padding: 5,
+    padding: 10,
+    paddingTop: 20,
+    flex: 1,
+    // justifyContent: "center",
     // height: 700,
   },
   center: {
@@ -209,6 +237,7 @@ const styles = StyleSheet.create({
   },
   scrollWarpper: {
     width: "100%",
+    flex: 1,
   },
   sizeBox: {
     width: "100%",
@@ -218,5 +247,8 @@ const styles = StyleSheet.create({
     position: "absolute",
     bottom: 15,
     right: 15,
+  },
+  card: {
+    marginBottom: 10,
   },
 });

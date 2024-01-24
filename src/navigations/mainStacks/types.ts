@@ -26,7 +26,7 @@ export type RootStackParamList = {
     t?: string;
   };
   comment: { comicId: string };
-  comchildren: { comment: Comment };
+  comchildren: { comment?: Comment, commentId?: string };
   searchcomics: {
     keyword: string;
   };
@@ -43,5 +43,8 @@ export type RootStackParamList = {
   "game-comment": {
     gameId: string;
   };
-  "my-comments": undefined
+  "my-comments": undefined,
+  "net-collect": undefined,
+  "local-collect": undefined,
+  history: undefined
 };

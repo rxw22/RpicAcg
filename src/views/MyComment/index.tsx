@@ -1,9 +1,10 @@
 import { StyleSheet, View } from "react-native";
-import React from "react";
+import React, { useState, useRef, useCallback } from "react";
 import { NativeStackScreenProps } from "@react-navigation/native-stack";
 import { RootStackParamList } from "@/navigations/mainStacks/types";
 import BgBox from "@/components/bgBox";
 import {
+  ActivityIndicator,
   Card,
   Divider,
   Icon,
@@ -17,6 +18,8 @@ import { FlashList } from "@shopify/flash-list";
 import dayjs from "dayjs";
 import { useGlobalStore } from "@/store/globalStore";
 import { Image } from "expo-image";
+import { MyCommentDoc } from "@/network/types";
+import { Toast } from "toastify-react-native";
 
 type Props = NativeStackScreenProps<RootStackParamList, "my-comments">;
 
@@ -24,14 +27,63 @@ const MyComment: React.FC<Props> = ({ navigation }) => {
   const { httpRequest } = useUtilsProvider();
   const { user } = useGlobalStore();
   const theme = useTheme();
+  const [dataSource, setDataSource] = useState<MyCommentDoc[]>([]);
+  const pageRef = useRef({
+    page: 1,
+    pages: 0,
+  });
 
-  const { data, loading, error, refresh } = useRequest(
+  const { loading, error, refresh, run } = useRequest(
     httpRequest.fetchMyComments.bind(httpRequest),
     {
+      defaultParams: [pageRef.current.page],
       onError(e) {
         console.log(e);
       },
+      onSuccess(result) {
+        const { pages, docs } = result;
+        pageRef.current.pages = pages;
+        setDataSource([...dataSource, ...docs]);
+      },
     }
+  );
+
+  const { run: likeRun, loading: likeLoading } = useRequest(
+    httpRequest.likeOrUnLikeComment.bind(httpRequest),
+    {
+      manual: true,
+      onSuccess(_, [id]) {
+        updateDataSource(id);
+      },
+      onError(e) {
+        console.log(e);
+        Toast.error("点赞失败", "bottom");
+      },
+    }
+  );
+
+  const loadMore = () => {
+    if (pageRef.current.page < pageRef.current.pages) {
+      pageRef.current.page++;
+      run(pageRef.current.page);
+    }
+  };
+
+  const updateDataSource = useCallback(
+    (id: string) => {
+      const current = dataSource.find((item) => item._id === id);
+      const info = !current?.isLiked
+        ? { likesCount: current!.likesCount + 1, isLiked: !current?.isLiked }
+        : { likesCount: current!.likesCount - 1, isLiked: !current?.isLiked };
+      const newDataSource = dataSource.map((item) => {
+        if (item._id === id) {
+          return { ...item, ...info };
+        }
+        return item;
+      });
+      setDataSource(newDataSource);
+    },
+    [dataSource]
   );
 
   const avatarUri = user?.avatar
@@ -47,10 +99,12 @@ const MyComment: React.FC<Props> = ({ navigation }) => {
     >
       <View style={styles.full}>
         <FlashList
-          data={data?.docs}
+          data={dataSource}
           estimatedItemSize={160}
           ItemSeparatorComponent={() => <Divider />}
           showsVerticalScrollIndicator={false}
+          onEndReached={loadMore}
+          onEndReachedThreshold={0.7}
           renderItem={({ item }) => {
             const {
               content,
@@ -60,107 +114,141 @@ const MyComment: React.FC<Props> = ({ navigation }) => {
               created_at,
               likesCount,
               commentsCount,
+              isLiked,
             } = item;
             return (
-              <View style={styles.itemWarpper}>
-                <View style={styles.avatar}>
-                  <Card
-                    style={{
-                      width: 50,
-                      height: 50,
-                      borderRadius: 25,
-                      overflow: "hidden",
-                    }}
-                    mode="contained"
-                  >
-                    <Image source={avatarUri} style={styles.full} />
-                  </Card>
-                </View>
-                <View style={styles.content}>
-                  <View style={{ flex: 1 }}>
-                    <Text variant="labelLarge">
-                      {user?.name}{" "}
-                      <Text variant="bodySmall">Lv.{user?.level}</Text>
-                    </Text>
-                    <View style={{ height: 8 }} />
-                    <Text variant="bodyLarge">{content}</Text>
+              <TouchableRipple
+                rippleColor="rgba(0, 0, 0, .2)"
+                onPress={() => {
+                  if (_comic) {
+                    navigation.navigate("details", {
+                      comicId: _comic?._id,
+                    });
+                  } else if (_game) {
+                    navigation.navigate("game-details", {
+                      gameId: _game._id,
+                      title: _game.title,
+                    });
+                  }
+                }}
+              >
+                <View style={styles.itemWarpper}>
+                  <View style={styles.avatar}>
+                    <Card
+                      style={{
+                        width: 50,
+                        height: 50,
+                        borderRadius: 25,
+                        overflow: "hidden",
+                      }}
+                      mode="contained"
+                    >
+                      <Image source={avatarUri} style={styles.full} />
+                    </Card>
                   </View>
-                  <View style={{ height: 20 }} />
-                  <Text
-                    variant="bodySmall"
-                    style={{ color: theme.colors.primary }}
-                  >
-                    {_comic?.title || _game?.title}
-                  </Text>
-                  <View style={{ flexDirection: "row", alignItems: "center" }}>
-                    <Text variant="bodySmall">
-                      {dayjs(created_at).format("YYYY-MM-DD HH:mm:ss")}
+                  <View style={styles.content}>
+                    <View style={{ flex: 1 }}>
+                      <Text variant="labelLarge">
+                        {user?.name}{" "}
+                        <Text variant="bodySmall">Lv.{user?.level}</Text>
+                      </Text>
+                      <View style={{ height: 8 }} />
+                      <Text variant="bodyLarge">{content}</Text>
+                    </View>
+                    <View style={{ height: 20 }} />
+                    <Text
+                      variant="bodySmall"
+                      style={{ color: theme.colors.primary }}
+                    >
+                      {_comic?.title || _game?.title}
                     </Text>
                     <View
-                      style={{
-                        flexDirection: "row",
-                        flex: 1,
-                        justifyContent: "space-between",
-                        alignItems: "center",
-                        marginLeft: 20,
-                      }}
+                      style={{ flexDirection: "row", alignItems: "center" }}
                     >
+                      <Text variant="bodySmall">
+                        {dayjs(created_at).format("YYYY-MM-DD HH:mm:ss")}
+                      </Text>
                       <View
                         style={{
-                          borderRadius: 5,
-                          overflow: "hidden",
-                          marginRight: 8,
+                          flexDirection: "row",
+                          flex: 1,
+                          justifyContent: "space-between",
+                          alignItems: "center",
+                          marginLeft: 20,
                         }}
                       >
-                        <TouchableRipple
-                          onPress={() => {}}
-                          rippleColor="rgba(0, 0, 0, .2)"
-                        >
-                          <View
-                            style={{
-                              flexDirection: "row",
-                              padding: 5,
-                              alignItems: "center",
-                            }}
-                          >
-                            <Icon source={"cards-heart-outline"} size={15} />
-                            <View style={{ width: 5 }} />
-                            <Text variant="bodySmall">{likesCount}</Text>
-                          </View>
-                        </TouchableRipple>
-                      </View>
-                      <View
-                        style={{
-                          borderRadius: 5,
-                          overflow: "hidden",
-                          marginRight: 12,
-                        }}
-                      >
-                        <TouchableRipple
-                          onPress={() => {
-                            // navigation.navigate("comchildren", {
-                            //   comment: item,
-                            // });
+                        <View
+                          style={{
+                            borderRadius: 5,
+                            overflow: "hidden",
+                            marginRight: 8,
                           }}
-                          rippleColor="rgba(0, 0, 0, .2)"
                         >
-                          <View
-                            style={{
-                              flexDirection: "row",
-                              padding: 5,
-                              alignItems: "center",
+                          <TouchableRipple
+                            onPress={(e) => {
+                              e.stopPropagation();
+                              likeRun(_id);
                             }}
+                            rippleColor="rgba(0, 0, 0, .2)"
                           >
-                            <Icon source="comment-outline" size={15} />
-                            <View style={{ width: 5 }} />
-                            <Text variant="bodySmall">{commentsCount}</Text>
-                          </View>
-                        </TouchableRipple>
+                            <View
+                              style={{
+                                flexDirection: "row",
+                                padding: 5,
+                                alignItems: "center",
+                              }}
+                            >
+                              {likeLoading ? (
+                                <ActivityIndicator size={15} animating />
+                              ) : (
+                                <Icon
+                                  source={
+                                    isLiked
+                                      ? "cards-heart"
+                                      : "cards-heart-outline"
+                                  }
+                                  size={15}
+                                />
+                              )}
+                              <View style={{ width: 5 }} />
+                              <Text variant="bodySmall">{likesCount}</Text>
+                            </View>
+                          </TouchableRipple>
+                        </View>
+                        <View
+                          style={{
+                            borderRadius: 5,
+                            overflow: "hidden",
+                            marginRight: 12,
+                          }}
+                        >
+                          <TouchableRipple
+                            onPress={(e) => {
+                              e.stopPropagation();
+                              navigation.navigate("comchildren", {
+                                commentId: _id,
+                              });
+                            }}
+                            rippleColor="rgba(0, 0, 0, .2)"
+                          >
+                            <View
+                              style={{
+                                flexDirection: "row",
+                                padding: 5,
+                                alignItems: "center",
+                              }}
+                            >
+                              <Icon source="comment-outline" size={15} />
+                              <View style={{ width: 5 }} />
+                              <Text variant="bodySmall">{commentsCount}</Text>
+                            </View>
+                          </TouchableRipple>
+                        </View>
                       </View>
                     </View>
                   </View>
                 </View>
-              </View>
+              </TouchableRipple>
             );
           }}
         />

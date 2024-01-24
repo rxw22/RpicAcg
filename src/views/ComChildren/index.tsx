@@ -24,7 +24,7 @@ import { Toast } from "toastify-react-native";
 type Props = NativeStackScreenProps<RootStackParamList, "comchildren">;
 
 const CommentList: React.FC<Props> = ({ route }) => {
-  const { comment } = route.params;
+  const { comment, commentId } = route.params;
   const { httpRequest } = useUtilsProvider();
   const pageRef = useRef({
     currerntPage: 1,
@@ -32,10 +32,10 @@ const CommentList: React.FC<Props> = ({ route }) => {
   });
   const [dataSource, setDataSource] = useState<Comment[]>([]);
 
-  const { loading, data, run } = useRequest(
+  const { loading, run } = useRequest(
     httpRequest.fetchCommentChildren.bind(httpRequest),
     {
-      defaultParams: [{ commentId: comment._id, page: 1 }],
+      defaultParams: [{ commentId: comment?._id || commentId!, page: 1 }],
       onSuccess(data) {
         const { pages, docs } = data.comments;
         pageRef.current.totalPage = pages;
@@ -80,7 +80,7 @@ const CommentList: React.FC<Props> = ({ route }) => {
       pageRef.current.currerntPage++;
       run({
         page: pageRef.current.currerntPage,
-        commentId: comment._id,
+        commentId: comment?._id || commentId!,
       });
     }
   }, [run]);
@@ -158,7 +158,7 @@ const CommentList: React.FC<Props> = ({ route }) => {
   };
 
   const renderHeader = useMemo(() => {
-    const { _user, content, _id, created_at } = comment;
+    const { _user, content, _id, created_at } = comment || {};
     const uri = _user?.avatar
       ? `${_user.avatar.fileServer}/static/${_user.avatar.path}`
       : require("@/assets/imgs/user.png");
@@ -177,7 +177,7 @@ const CommentList: React.FC<Props> = ({ route }) => {
           <View style={itemStyles.contentView}>
             <View>
               <Text variant="titleSmall" numberOfLines={1}>
-                {_user.name}
+                {_user?.name}
               </Text>
             </View>
             <View style={{ paddingVertical: 8 }}>
@@ -220,7 +220,7 @@ const CommentList: React.FC<Props> = ({ route }) => {
     setDataSource([]);
     run({
       page: pageRef.current.currerntPage,
-      commentId: comment._id,
+      commentId: comment?._id || commentId!,
     });
   };
 
@@ -237,10 +237,10 @@ const CommentList: React.FC<Props> = ({ route }) => {
           onEndReachedThreshold={0.3}
           onEndReached={loadMore}
           ListFooterComponent={renderFooter}
-          ListHeaderComponent={renderHeader}
+          ListHeaderComponent={comment ? renderHeader : null}
           keyboardDismissMode="on-drag"
         />
-        <SendComment commentId={comment._id} refresh={initRefresh} />
+        <SendComment commentId={comment?._id || commentId!} refresh={initRefresh} />
       </View>
     </BgBox>
   );

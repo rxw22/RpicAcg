@@ -28,8 +28,14 @@ import GameDetails from "@/views/game/details";
 import DetailsAppBar from "@/views/game/DetailsAppBar";
 import GameComment from "@/views/game/Comment";
 import GameCommentAppBar from "@/views/game/Comment/AppBar";
-import MyComments from '@/views/MyComment';
-import MyCommentsAppBar from '@/views/MyComment/AppBar';
+import MyComments from "@/views/MyComment";
+import MyCommentsAppBar from "@/views/MyComment/AppBar";
+import NetCollect from "@/views/collect/NetCollect";
+import NetCollectAppBar from "@/views/collect/NetCollectAppBar";
+import LocalCollect from "@/views/collect/LocalCollect";
+import LocalCollectAppBar from "@/views/collect/LocalCollectAppBar";
+import History from "@/views/History";
+import HistoryAppBar from "@/views/History/AppBar";
 
 const Stack = createNativeStackNavigator<RootStackParamList>();
 
@@ -152,6 +158,30 @@ export default function MainStacks() {
         options={{
           title: "评论",
           header: (props) => <MyCommentsAppBar {...props} />,
+        }}
+      />
+      <Stack.Screen
+        name="net-collect"
+        component={NetCollect}
+        options={{
+          title: "网络收藏",
+          header: (props) => <NetCollectAppBar {...props} />,
+        }}
+      />
+      <Stack.Screen
+        name="local-collect"
+        component={LocalCollect}
+        options={{
+          title: "本地收藏",
+          header: (props) => <LocalCollectAppBar {...props} />,
+        }}
+      />
+      <Stack.Screen
+        name="history"
+        component={History}
+        options={{
+          title: "本地收藏",
+          header: (props) => <HistoryAppBar {...props} />,
         }}
       />
     </Stack.Navigator>

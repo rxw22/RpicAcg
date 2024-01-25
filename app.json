@@ -11,7 +11,9 @@
       "resizeMode": "contain",
       "backgroundColor": "#ffffff"
     },
-    "assetBundlePatterns": ["**/*"],
+    "assetBundlePatterns": [
+      "**/*"
+    ],
     "ios": {
       "supportsTablet": true
     },
@@ -29,6 +31,9 @@
       "eas": {
         "projectId": "537e03f7-6c30-456a-b3d8-a70245a82c8a"
       }
-    }
+    },
+    "plugins": [
+      "expo-font"
+    ]
   }
 }

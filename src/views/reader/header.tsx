@@ -42,6 +42,6 @@ export default React.memo(Header);
 
 const styles = StyleSheet.create({
   warpper: {
-    top: -64,
+    top: -120,
   },
 });

@@ -15,13 +15,15 @@ import cacheMap from "./cacheMap";
 import Header from "./header";
 import Bottom from "./bottom";
 import { useReadStore } from "@/store/readStore";
+import { average } from "@/utils";
 
 type Props = NativeStackScreenProps<RootStackParamList, "reader">;
 
 const Reader: React.FC<Props> = ({ route, navigation }) => {
-  const { comicId, order, title, record, isScratch, hasNext, chapterLength } = route.params;
+  const { comicId, order, title, record, isScratch, hasNext, chapterLength } =
+    route.params;
   const { httpRequest } = useUtilsProvider();
-  const headerPosition = useSharedValue(-64);
+  const headerPosition = useSharedValue(-120);
   const bottomPosition = useSharedValue(-90);
   const { saveComicRecord, comicRecord } = useReadStore();
   const recordRef = useRef({
@@ -30,7 +32,7 @@ const Reader: React.FC<Props> = ({ route, navigation }) => {
   });
   const currentOrder = useRef(order);
   const fabBottom = useSharedValue(-90);
-  const { width: ScreenWidth } = useWindowDimensions();
+  const { width: ScreenWidth, height: ScreenHeight } = useWindowDimensions();
   const update = useUpdate();
 
   const { data, loading, refresh, run } = useRequest(
@@ -67,7 +69,7 @@ const Reader: React.FC<Props> = ({ route, navigation }) => {
         order: currentOrder.current,
         page: recordRef.current.page,
         y: recordRef.current.y,
-        layout: cacheMap.getCacheMap(),
+        layout: { ...record?.layout, ...cacheMap.getCacheMap() },
       });
       // 清除图片宽高缓存
       cacheMap.clear();
@@ -91,7 +93,7 @@ const Reader: React.FC<Props> = ({ route, navigation }) => {
       width: ScreenWidth * 0.5,
     })
     .onEnd(() => {
-      headerPosition.value = withTiming(headerPosition.value === 0 ? -64 : 0);
+      headerPosition.value = withTiming(headerPosition.value === 0 ? -120 : 0);
       bottomPosition.value = withTiming(bottomPosition.value === 0 ? -90 : 0);
     });
 
@@ -100,7 +102,11 @@ const Reader: React.FC<Props> = ({ route, navigation }) => {
     (page: number) => {
       recordRef.current.page = page;
       update();
-      if (page >= (data?.length || 1) - 1 && hasNext && currentOrder.current < chapterLength) {
+      if (
+        page >= (data?.length || 1) - 1 &&
+        hasNext &&
+        currentOrder.current < chapterLength
+      ) {
         fabBottom.value = withTiming(0, {
           duration: 300,
         });
@@ -124,8 +130,8 @@ const Reader: React.FC<Props> = ({ route, navigation }) => {
       currentOrder.current++;
       recordRef.current = {
         page: 0,
-        y: 0
-      }
+        y: 0,
+      };
       fabBottom.value = withTiming(-90, {
         duration: 300,
       });
@@ -136,7 +142,7 @@ const Reader: React.FC<Props> = ({ route, navigation }) => {
   return (
     <GestureDetector gesture={gesture}>
       <View style={styles.container}>
-        <StatusBar style="light" animated hidden />
+        <StatusBar style="light" animated />
         <View
           style={{
             height: "100%",
@@ -161,6 +167,7 @@ const Reader: React.FC<Props> = ({ route, navigation }) => {
               ref={listRef}
               onPageChange={onPageChange}
               onScrollYChange={onScrollYChange}
+              // averageHeight={record?.layout ? average(Object.values(record.layout)) : (ScreenHeight * 3) / 5}
             />
             // <HorizontalView
             //   dataSource={data || []}

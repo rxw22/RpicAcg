@@ -13,6 +13,7 @@ import VerticalImage from "./VerticalImage";
 interface Props {
   dataSource: ComicEpisodePage[];
   loading: boolean;
+  averageHeight?: number;
   onPageChange: (page: number) => void;
   onScrollYChange: (y: number) => void;
 }
@@ -28,7 +29,10 @@ interface ViewableParams {
 }
 
 const VerticalView = forwardRef<Ref, Props>(
-  ({ dataSource, loading, onPageChange, onScrollYChange }, ref) => {
+  (
+    { dataSource, loading, onPageChange, onScrollYChange, averageHeight },
+    ref
+  ) => {
     const listRef = useRef<FlashList<any>>(null);
     const layout = useWindowDimensions();
 

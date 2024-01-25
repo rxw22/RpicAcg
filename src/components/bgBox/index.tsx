@@ -71,8 +71,8 @@ const BgBox: React.FC<Props> = ({ loading, error, refresh, ...props }) => {
           <LottieView
             autoPlay
             style={{
-              width: 200,
-              height: 200,
+              width: 130,
+              height: 130,
             }}
             source={require("@/assets/lottie/loading.json")}
           />

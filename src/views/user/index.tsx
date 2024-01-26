@@ -1,5 +1,5 @@
 import { StyleSheet, View } from "react-native";
-import { Card, FAB, List, Text, useTheme } from "react-native-paper";
+import { Card, FAB, List, Text } from "react-native-paper";
 import { useRequest } from "ahooks";
 import { ImageBackground } from "expo-image";
 import Image from "@/components/image";
@@ -23,7 +23,6 @@ type Props = CompositeScreenProps<
 const User: React.FC<Props> = (props) => {
   const { httpRequest } = useUtilsProvider();
   const { user } = useGlobalStore();
-  const theme = useTheme();
 
   const { data, loading, refresh, error, run } = useRequest(
     httpRequest.fetchUserProfile.bind(httpRequest),

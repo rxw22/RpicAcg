@@ -36,6 +36,8 @@ import LocalCollect from "@/views/collect/LocalCollect";
 import LocalCollectAppBar from "@/views/collect/LocalCollectAppBar";
 import History from "@/views/History";
 import HistoryAppBar from "@/views/History/AppBar";
+import RankingAppBar from "@/views/ranking/AppBar";
+import Ranking from "@/views/ranking";
 
 const Stack = createNativeStackNavigator<RootStackParamList>();
 
@@ -73,6 +75,14 @@ export default function MainStacks() {
         options={{
           header: (props) => <CustomSearchBar {...props} />,
         }}
+      />
+      <Stack.Screen
+        name="ranking"
+        options={{
+          title: "排行",
+          header: (props) => <RankingAppBar {...props} />,
+        }}
+        component={Ranking}
       />
       <Stack.Screen
         name="details"

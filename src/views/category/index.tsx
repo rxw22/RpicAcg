@@ -6,6 +6,7 @@ import { Image } from "expo-image";
 
 import BgBox from "@/components/bgBox";
 import { useUtilsProvider } from "@/network/utilsProvider";
+import { Category as CategoryInterface, ComicSort } from "@/network/types";
 import { CompositeScreenProps } from "@react-navigation/native";
 import { BottomTabScreenProps } from "@react-navigation/bottom-tabs";
 import { RootBottomTabsParamList } from "@/navigations/bottomTabs/types";
@@ -13,16 +14,61 @@ import { NativeStackScreenProps } from "@react-navigation/native-stack";
 import { RootStackParamList } from "@/navigations/mainStacks/types";
 import React, { useEffect } from "react";
 import { useRequestStore } from "@/store/requestStore";
+import { useGlobalStore } from "@/store/globalStore";
 
 type Props = CompositeScreenProps<
   BottomTabScreenProps<RootBottomTabsParamList, "category">,
   NativeStackScreenProps<RootStackParamList>
 >;
 
+interface FixCatItem {
+  img: string;
+  title: string;
+  navigator: () => void;
+}
+
 const Category: React.FC<Props> = ({ navigation }) => {
   const { httpRequest } = useUtilsProvider();
   const layout = useWindowDimensions();
   const { categories, setCategories } = useRequestStore();
+  const { setComicSort } = useGlobalStore();
+  const fixCats: FixCatItem[] = [
+    {
+      img: require("@/assets/imgs/ranking.jpg"),
+      title: "哔咔排行榜",
+      navigator: () => {
+        navigation.navigate("ranking");
+      },
+    },
+    {
+      img: require("@/assets/imgs/cat_forum.jpg"),
+      title: "哔咔留言板",
+      navigator: () => {
+        navigation.navigate("comment", {
+          comicId: "5822a6e3ad7ede654696e482",
+        });
+      },
+    },
+    {
+      img: require("@/assets/imgs/cat_latest.jpg"),
+      title: "最新更新",
+      navigator: () => {
+        setComicSort(ComicSort.NewToOld);
+        navigation.navigate("comics", {
+          knight: "最新更新",
+        });
+      },
+    },
+    {
+      img: require("@/assets/imgs/cat_random.jpg"),
+      title: "随机本子",
+      navigator: () => {
+        // navigation.navigate("comics", {
+        //   knight: "最新更新",
+        // });
+      },
+    },
+  ];
 
   const { data, loading, error, refresh, run } = useRequest(
     httpRequest.fetchCategories.bind(httpRequest),
@@ -44,13 +90,16 @@ const Category: React.FC<Props> = ({ navigation }) => {
     }
   }, []);
 
+  const dataSource = [
+    ...fixCats,
+    ...(data || categories).filter((item) => !item.active || !item.isWeb),
+  ];
+
   return (
     <BgBox style={styles.container} error={error?.message} refresh={refresh}>
       <View style={{ height: "100%", width: "100%" }}>
         <FlashList
-          data={(data || categories).filter(
-            (item) => !item.active || !item.isWeb
-          )}
+          data={dataSource}
           keyExtractor={(item) => item.title}
           numColumns={3}
           estimatedItemSize={layout.width / 3 + 24}
@@ -58,7 +107,52 @@ const Category: React.FC<Props> = ({ navigation }) => {
           refreshing={loading}
           onRefresh={refresh}
           renderItem={({ item }) => {
-            const { thumb, title } = item;
+            if (
+              ["哔咔排行榜", "最新更新", "哔咔留言板", "随机本子"].includes(
+                item.title
+              )
+            ) {
+              const { img, navigator, title } = item as FixCatItem;
+              return (
+                <View
+                  style={{
+                    height: layout.width / 3 + 24,
+                    width: layout.width / 3,
+                    padding: 8,
+                  }}
+                >
+                  <Card
+                    mode="contained"
+                    style={{
+                      height: layout.width / 3 - 16,
+                      width: "100%",
+                      overflow: "hidden",
+                    }}
+                    onPress={() => {
+                      navigator();
+                    }}
+                  >
+                    <Image
+                      source={img}
+                      recyclingKey={title}
+                      transition={100}
+                      style={{ height: "100%", width: "100%" }}
+                    />
+                  </Card>
+                  <View
+                    style={{
+                      height: 40,
+                      width: "100%",
+                      alignItems: "center",
+                      justifyContent: "center",
+                    }}
+                  >
+                    <Text variant="labelLarge">{title}</Text>
+                  </View>
+                </View>
+              );
+            }
+            const { thumb, title } = item as CategoryInterface;
             let uri = thumb.fileServer.includes("static")
               ? `${thumb.fileServer}${thumb.path}`
               : `${thumb.fileServer}/static/${thumb.path}`;

@@ -46,5 +46,6 @@ export type RootStackParamList = {
   "my-comments": undefined,
   "net-collect": undefined,
   "local-collect": undefined,
-  history: undefined
+  history: undefined,
+  ranking: undefined
 };

@@ -18,15 +18,6 @@ import {
   NativeStackScreenProps,
 } from "@react-navigation/native-stack";
 import { RootStackParamList } from "@/navigations/mainStacks/types";
-import {
-  CompositeNavigationProp,
-  CompositeScreenProps,
-} from "@react-navigation/native";
-import {
-  BottomTabScreenProps,
-  BottomTabNavigationProp,
-} from "@react-navigation/bottom-tabs";
-import { RootBottomTabsParamList } from "@/navigations/bottomTabs/types";
 import LoadingMask from "@/components/LoadingMask";
 import KnightList from "./KnightList";
 
@@ -34,14 +25,7 @@ type SceneProps = {
   route: {
     key: string;
     title: string;
-    navigation: CompositeNavigationProp<
-      BottomTabNavigationProp<RootBottomTabsParamList, "ranking", undefined>,
-      NativeStackNavigationProp<
-        RootStackParamList,
-        keyof RootStackParamList,
-        undefined
-      >
-    >;
+    navigation: NativeStackNavigationProp<RootStackParamList, "ranking", undefined>
   };
 } & Omit<SceneRendererProps, "layout">;
 
@@ -170,10 +154,7 @@ const renderScene = SceneMap({
   four: memo(KnightRanking),
 });
 
-type Props = CompositeScreenProps<
-  BottomTabScreenProps<RootBottomTabsParamList, "ranking">,
-  NativeStackScreenProps<RootStackParamList>
->;
+type Props = NativeStackScreenProps<RootStackParamList, "ranking">;
 
 function Ranking({ navigation }: Props) {
   const layout = useWindowDimensions();

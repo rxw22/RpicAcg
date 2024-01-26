@@ -6,10 +6,8 @@ import { BottomNavigation } from "react-native-paper";
 import Game from "@/views/game";
 import User from "@/views/user";
 import Category from "@/views/category";
-import Ranking from "@/views/ranking";
 import { RootBottomTabsParamList } from "./types";
 import CategoryAppBar from "@/views/category/AppBar";
-import RankingAppBar from "@/views/ranking/AppBar";
 import GameAppBar from "@/views/game/AppBar";
 import UserAppBar from "@/views/user/appBar";
 
@@ -75,7 +73,7 @@ export default function BottomTabs() {
         }}
         component={Category}
       />
-      <Tab.Screen
+      {/* <Tab.Screen
         name="ranking"
         options={{
           tabBarLabel: "排行",
@@ -86,7 +84,7 @@ export default function BottomTabs() {
           },
         }}
         component={Ranking}
-      />
+      /> */}
       <Tab.Screen
         name="game"
         options={{

@@ -204,14 +204,14 @@ const CommentList: React.FC<Props> = ({ route }) => {
       <View
         style={{
           alignItems: "center",
-          justifyContent: "center",
           paddingVertical: 10,
+          height: 110
         }}
       >
         <ActivityIndicator size="small" animating />
       </View>
     ) : (
-      <View style={{ height: 70 }} />
+      <View style={{ height: 110 }} />
     );
   };
 

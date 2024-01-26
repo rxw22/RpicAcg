@@ -193,6 +193,7 @@ class HttpRequest {
   }
 
   // 获取漫画评论
+  // 获取哔咔留言板 comics/5822a6e3ad7ede654696e482/comments
   async fetchComicComment(payload: CommentPayload) {
     const { page, comicId } = payload;
     const result = await this.httpClient.get<CommentResponse>(
@@ -404,6 +405,8 @@ class HttpRequest {
     const { comments } = result.data;
     return comments;
   }
+
+  // comics/5822a6e3ad7ede654696e482/comments
 }
 
 export default HttpRequest;

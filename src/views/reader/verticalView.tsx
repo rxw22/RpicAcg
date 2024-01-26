@@ -9,11 +9,11 @@ import React, { forwardRef, useRef, useImperativeHandle } from "react";
 import { ComicEpisodePage } from "@/network/types";
 import { FlashList } from "@shopify/flash-list";
 import VerticalImage from "./VerticalImage";
+import cacheMap from "./cacheMap";
 
 interface Props {
   dataSource: ComicEpisodePage[];
   loading: boolean;
-  averageHeight?: number;
   onPageChange: (page: number) => void;
   onScrollYChange: (y: number) => void;
 }
@@ -29,10 +29,7 @@ interface ViewableParams {
 }
 
 const VerticalView = forwardRef<Ref, Props>(
-  (
-    { dataSource, loading, onPageChange, onScrollYChange, averageHeight },
-    ref
-  ) => {
+  ({ dataSource, loading, onPageChange, onScrollYChange }, ref) => {
     const listRef = useRef<FlashList<any>>(null);
     const layout = useWindowDimensions();
 
@@ -80,6 +77,12 @@ const VerticalView = forwardRef<Ref, Props>(
         estimatedItemSize={(layout.height * 3) / 5}
         estimatedListSize={{ height: layout.height, width: layout.width }}
         estimatedFirstItemOffset={0}
+        overrideItemLayout={(layout, item) => {
+          const size = cacheMap.getHeight(item.media.path);
+          if (size) {
+            layout.size = size;
+          }
+        }}
         onScroll={_onScroll}
         renderItem={({ item }) => {
           return <VerticalImage item={item} />;

@@ -459,3 +459,7 @@ export interface MyComment {
 export type MyCommentsResponse = BaseResponse<{
   comments: MyComment;
 }>;
+
+export type RandomComicsResponse = BaseResponse<{
+  comics: Comic[];
+}>

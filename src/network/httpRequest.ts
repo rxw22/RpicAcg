@@ -23,6 +23,7 @@ import {
   LikeOrUnLikeComicResponse,
   MyCommentsResponse,
   PunchInResponse,
+  RandomComicsResponse,
   RankingPayload,
   RankingResponse,
   SearchComicsPayload,
@@ -406,7 +407,17 @@ class HttpRequest {
     return comments;
   }
 
-  // comics/5822a6e3ad7ede654696e482/comments
+  // 获取随机本子
+  async fetchRandomComics() {
+    const result = await this.httpClient.get<RandomComicsResponse>(
+      `comics/random`
+    );
+    if (result.code !== 200) {
+      throw new Error(result.message);
+    }
+    const { comics } = result.data;
+    return comics;
+  }
 }
 
 export default HttpRequest;

@@ -167,7 +167,6 @@ const Reader: React.FC<Props> = ({ route, navigation }) => {
               ref={listRef}
               onPageChange={onPageChange}
               onScrollYChange={onScrollYChange}
-              // averageHeight={record?.layout ? average(Object.values(record.layout)) : (ScreenHeight * 3) / 5}
             />
             // <HorizontalView
             //   dataSource={data || []}

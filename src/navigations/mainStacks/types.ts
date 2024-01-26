@@ -47,5 +47,6 @@ export type RootStackParamList = {
   "net-collect": undefined,
   "local-collect": undefined,
   history: undefined,
-  ranking: undefined
+  ranking: undefined,
+  random: undefined
 };

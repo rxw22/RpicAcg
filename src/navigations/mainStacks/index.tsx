@@ -38,6 +38,8 @@ import History from "@/views/History";
 import HistoryAppBar from "@/views/History/AppBar";
 import RankingAppBar from "@/views/ranking/AppBar";
 import Ranking from "@/views/ranking";
+import Random from "@/views/Random";
+import RandomAppBar from "@/views/Random/AppBar";
 
 const Stack = createNativeStackNavigator<RootStackParamList>();
 
@@ -192,6 +194,14 @@ export default function MainStacks() {
         options={{
           title: "本地收藏",
           header: (props) => <HistoryAppBar {...props} />,
+        }}
+      />
+      <Stack.Screen
+        name="random"
+        component={Random}
+        options={{
+          title: "随机本子",
+          header: (props) => <RandomAppBar {...props} />,
         }}
       />
     </Stack.Navigator>

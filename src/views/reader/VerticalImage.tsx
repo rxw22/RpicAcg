@@ -10,6 +10,7 @@ import { Text, useTheme } from "react-native-paper";
 import cacheMap from "./cacheMap";
 import * as Progress from "react-native-progress";
 import { ComicEpisodePage } from "@/network/types";
+import Animated, { withTiming, useSharedValue } from "react-native-reanimated";
 
 interface Props {
   item: ComicEpisodePage;
@@ -25,6 +26,7 @@ const ReaderImage: React.FC<Props> = ({ item }) => {
   const [loading, setLoading] = useState(true);
   const [progress, setProgress] = useState(0);
   const [error, setError] = useState("");
+  const opacity = useSharedValue(0);
 
   const height = cacheMap.getHeight(media.path) || (screenHeight * 3) / 5;
 
@@ -42,12 +44,16 @@ const ReaderImage: React.FC<Props> = ({ item }) => {
     setLoading(true);
     setProgress(0);
     setLayout(initLayout);
+    opacity.value = withTiming(0);
   }
 
   const _onLoad = (event: ImageLoadEventData) => {
     const { height, width } = event.source;
     setLayout({ ...layout, height: (screenWidth * height) / width });
     cacheMap.setHeight(media.path, (screenWidth * height) / width);
+    opacity.value = withTiming(1, {
+      duration: 350,
+    });
   };
 
   const _onLoadStart = () => {
@@ -129,12 +135,14 @@ const ReaderImage: React.FC<Props> = ({ item }) => {
           </Text>
         </View>
       )}
-      <Image
-        style={{ width: "100%", height: "100%" }}
-        source={{ uri }}
-        cachePolicy="disk"
-        recyclingKey={uri}
-      />
+      <Animated.View style={{ width: "100%", height: "100%", opacity }}>
+        <Image
+          style={{ width: "100%", height: "100%" }}
+          source={{ uri }}
+          cachePolicy="disk"
+          recyclingKey={uri}
+        />
+      </Animated.View>
     </View>
   );
 };

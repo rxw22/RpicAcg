@@ -63,9 +63,7 @@ const Category: React.FC<Props> = ({ navigation }) => {
       img: require("@/assets/imgs/cat_random.jpg"),
       title: "随机本子",
       navigator: () => {
-        // navigation.navigate("comics", {
-        //   knight: "最新更新",
-        // });
+        navigation.navigate("random");
       },
     },
   ];

@@ -37,7 +37,7 @@ const WebViewPage: React.FC<Props> = ({ navigation, route }) => {
           try {
             const data = JSON.parse(event.nativeEvent.data);
             saveUserInfo({ token: data.token, email: "", password: "" });
-            navigation.replace("main");
+            // navigation.replace("main");
           } catch {}
         }
       }}

@@ -75,6 +75,11 @@ const ComicDetails: React.FC<Props> = ({ route, navigation }) => {
   const { data: response } = data || {};
   const { comics } = comicRecommend?.data || {};
 
+  /**
+   * @order 章节
+   * @isScratch 从头开始？
+   * @isScratch 有下一页？
+   */
   const startReader = useCallback(
     (order: number, isScratch: boolean = true, hasNext: boolean) => {
       navigation.navigate("reader", {

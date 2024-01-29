@@ -21,7 +21,7 @@ const Header: React.FC<Props> = ({ position, navigation, title }) => {
   return (
     <Animated.View style={[styles.warpper, { top: position }]}>
       <Appbar.Header
-        style={{ backgroundColor: `${theme.colors.secondaryContainer}C0` }}
+        style={{ backgroundColor: theme.colors.secondaryContainer }}
       >
         {navigation.canGoBack() ? (
           <Appbar.BackAction onPress={navigation.goBack} />

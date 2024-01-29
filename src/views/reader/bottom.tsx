@@ -16,7 +16,7 @@ const Bottom: React.FC<Props> = ({ position }) => {
         styles.container,
         {
           bottom: position,
-          backgroundColor: `${theme.colors.secondaryContainer}F0`,
+          backgroundColor: theme.colors.secondaryContainer,
         },
       ]}
     >

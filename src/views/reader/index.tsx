@@ -15,7 +15,6 @@ import cacheMap from "./cacheMap";
 import Header from "./header";
 import Bottom from "./bottom";
 import { useReadStore } from "@/store/readStore";
-import { average } from "@/utils";
 
 type Props = NativeStackScreenProps<RootStackParamList, "reader">;
 
@@ -32,7 +31,7 @@ const Reader: React.FC<Props> = ({ route, navigation }) => {
   });
   const currentOrder = useRef(order);
   const fabBottom = useSharedValue(-90);
-  const { width: ScreenWidth, height: ScreenHeight } = useWindowDimensions();
+  const { width: ScreenWidth } = useWindowDimensions();
   const update = useUpdate();
 
   const { data, loading, refresh, run } = useRequest(
@@ -41,6 +40,12 @@ const Reader: React.FC<Props> = ({ route, navigation }) => {
       defaultParams: [comicId, order],
       onError(e) {
         console.log("Reader Error", e);
+      },
+      onSuccess(_, [, currentOrder]) {
+        // 如果order变化了，前一章的布局缓存可以舍弃了
+        if (currentOrder !== order) {
+          cacheMap.clear();
+        }
       },
     }
   );
@@ -82,7 +87,7 @@ const Reader: React.FC<Props> = ({ route, navigation }) => {
     if (!loading && !isScratch && currentOrder.current === order) {
       setTimeout(() => {
         listRef.current?.scrollToIndex(page);
-      }, 180);
+      }, 150);
     }
   }, [loading]);
 
@@ -124,7 +129,7 @@ const Reader: React.FC<Props> = ({ route, navigation }) => {
     recordRef.current.y = y;
   }, []);
 
-  // 翻页
+  // 下一章
   const flip = () => {
     if (hasNext) {
       currentOrder.current++;

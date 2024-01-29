@@ -52,7 +52,7 @@ const ReaderImage: React.FC<Props> = ({ item }) => {
     setLayout({ ...layout, height: (screenWidth * height) / width });
     cacheMap.setHeight(media.path, (screenWidth * height) / width);
     opacity.value = withTiming(1, {
-      duration: 350,
+      duration: 300,
     });
   };
 

@@ -2,12 +2,12 @@ import { create } from "zustand";
 import { persist, createJSONStorage } from "zustand/middleware";
 import AsyncStorage from "@react-native-async-storage/async-storage";
 import { Comic } from "@/network/types";
+import { limitProperties } from "@/utils";
 
 export type ComicRecord = {
   order: number;
   page: number;
   y: number | undefined;
-  layout: Record<string, number>;
 };
 
 export type readRecord = {
@@ -17,19 +17,6 @@ export type readRecord = {
   comicRecord: Record<string, ComicRecord | undefined>;
   saveComicRecord(id: string, record: ComicRecord): void;
 };
-
-// 限制一下comicRecord的储存大小,最多储存maxPropertiesLength条历史记录
-function limitProperties(
-  obj: Record<string, ComicRecord | undefined>,
-  maxPropertiesLength: number = 500
-) {
-  let keys = Object.keys(obj);
-  if (keys.length > maxPropertiesLength) {
-    let oldestKey = keys[0];
-    delete obj[oldestKey];
-  }
-  return obj;
-}
 
 export const useReadStore = create(
   persist<readRecord>(

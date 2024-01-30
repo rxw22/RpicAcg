@@ -7,16 +7,17 @@ import {
   ImageProgressEventData,
 } from "expo-image";
 import { Text, useTheme } from "react-native-paper";
-import cacheMap from "./cacheMap";
 import * as Progress from "react-native-progress";
 import { ComicEpisodePage } from "@/network/types";
 import Animated, { withTiming, useSharedValue } from "react-native-reanimated";
+import CacheUtils from "@/utils/CacheUtils";
 
 interface Props {
   item: ComicEpisodePage;
+  cacheUtils: CacheUtils
 }
 
-const ReaderImage: React.FC<Props> = ({ item }) => {
+const ReaderImage: React.FC<Props> = ({ item, cacheUtils }) => {
   const { width: screenWidth, height: screenHeight } = Dimensions.get("window");
   const { media } = item;
   const lastUri = useRef(`${media.fileServer}/static/${media.path}`);
@@ -28,7 +29,7 @@ const ReaderImage: React.FC<Props> = ({ item }) => {
   const [error, setError] = useState("");
   const opacity = useSharedValue(0);
 
-  const height = cacheMap.getHeight(media.path) || (screenHeight * 3) / 5;
+  const height = cacheUtils?.getHeight?.(media.path) || (screenHeight * 3) / 5;
 
   // 图片宽高有缓存使用缓存数据，可以避免抖动
   const initLayout = {
@@ -50,7 +51,7 @@ const ReaderImage: React.FC<Props> = ({ item }) => {
   const _onLoad = (event: ImageLoadEventData) => {
     const { height, width } = event.source;
     setLayout({ ...layout, height: (screenWidth * height) / width });
-    cacheMap.setHeight(media.path, (screenWidth * height) / width);
+    cacheUtils?.setHeight?.(media.path, (screenWidth * height) / width);
     opacity.value = withTiming(1, {
       duration: 300,
     });

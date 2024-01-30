@@ -1,5 +1,11 @@
 import { StyleSheet, View, useWindowDimensions } from "react-native";
-import React, { useCallback, useEffect, useLayoutEffect, useRef } from "react";
+import React, {
+  useCallback,
+  useEffect,
+  useLayoutEffect,
+  useRef,
+  useState,
+} from "react";
 import { StatusBar } from "expo-status-bar";
 import { useRequest, useUpdate } from "ahooks";
 import { GestureDetector, Gesture } from "react-native-gesture-handler";
@@ -11,10 +17,10 @@ import { RootStackParamList } from "@/navigations/mainStacks/types";
 import { useUtilsProvider } from "@/network/utilsProvider";
 // import HorizontalView from "./horizontalView";
 import VerticalView, { Ref } from "./verticalView";
-import cacheMap from "./cacheMap";
 import Header from "./header";
 import Bottom from "./bottom";
 import { useReadStore } from "@/store/readStore";
+import CacheUtils from "@/utils/CacheUtils";
 
 type Props = NativeStackScreenProps<RootStackParamList, "reader">;
 
@@ -33,6 +39,8 @@ const Reader: React.FC<Props> = ({ route, navigation }) => {
   const fabBottom = useSharedValue(-90);
   const { width: ScreenWidth } = useWindowDimensions();
   const update = useUpdate();
+  const [initLoading, setInitLoading] = useState(true);
+  const cacheUtilsRef = useRef(new CacheUtils(comicId));
 
   const { data, loading, refresh, run } = useRequest(
     httpRequest.fetchComicEpisodePages.bind(httpRequest),
@@ -40,12 +48,6 @@ const Reader: React.FC<Props> = ({ route, navigation }) => {
       defaultParams: [comicId, order],
       onError(e) {
         console.log("Reader Error", e);
-      },
-      onSuccess(_, [, currentOrder]) {
-        // 如果order变化了，前一章的布局缓存可以舍弃了
-        if (currentOrder !== order) {
-          cacheMap.clear();
-        }
       },
     }
   );
@@ -63,28 +65,39 @@ const Reader: React.FC<Props> = ({ route, navigation }) => {
     });
   }, []);
 
+  const init = async () => {
+    try {
+      setInitLoading(true);
+      await cacheUtilsRef.current.init();
+    } catch (error) {
+    } finally {
+      setInitLoading(false);
+    }
+  };
+
   // 可以大幅降低上滑抖动
   useEffect(() => {
-    if (!isScratch) {
-      cacheMap.initCacheMap(record?.layout);
-    }
+    init();
     return () => {
+      cacheUtilsRef.current?.commit();
       // 保存阅读记录
       saveComicRecord(comicId, {
         order: currentOrder.current,
         page: recordRef.current.page,
         y: recordRef.current.y,
-        layout: { ...record?.layout, ...cacheMap.getCacheMap() },
       });
-      // 清除图片宽高缓存
-      cacheMap.clear();
     };
   }, []);
 
   // 跳转到指定offset
   useEffect(() => {
     const page = comicRecord[comicId]?.page || 0;
-    if (!loading && !isScratch && currentOrder.current === order) {
+    if (
+      !loading &&
+      !initLoading &&
+      !isScratch &&
+      currentOrder.current === order
+    ) {
       setTimeout(() => {
         listRef.current?.scrollToIndex(page);
       }, 150);
@@ -154,7 +167,7 @@ const Reader: React.FC<Props> = ({ route, navigation }) => {
             width: "100%",
           }}
         >
-          {loading ? (
+          {loading || initLoading ? (
             <View
               style={{
                 height: "100%",
@@ -172,6 +185,7 @@ const Reader: React.FC<Props> = ({ route, navigation }) => {
               ref={listRef}
               onPageChange={onPageChange}
               onScrollYChange={onScrollYChange}
+              cacheUtils={cacheUtilsRef.current}
             />
             // <HorizontalView
             //   dataSource={data || []}

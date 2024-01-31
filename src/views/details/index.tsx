@@ -1,12 +1,11 @@
 import { ScrollView, StyleSheet, View } from "react-native";
-import React, { useCallback, useState } from "react";
+import React, { useCallback, useLayoutEffect } from "react";
 import { NativeStackScreenProps } from "@react-navigation/native-stack";
 import {
   Text,
   Card,
   Button,
   useTheme,
-  Chip,
   Divider,
   Icon,
   FAB,
@@ -23,15 +22,16 @@ import Author from "./Author";
 import Chapter from "./Chapter";
 import CollectOrLike from "./CollectOrLike";
 import Tags from "./Tags";
+import AppBar from "./AppBar";
+import { Toast } from "toastify-react-native";
 
 type Props = NativeStackScreenProps<RootStackParamList, "details">;
 
 const ComicDetails: React.FC<Props> = ({ route, navigation }) => {
-  const { httpRequest } = useUtilsProvider();
+  const { httpRequest, historyFileCache, localCollectCache } =
+    useUtilsProvider();
   const { comicId } = route.params;
   const theme = useTheme();
-  // 保存浏览记录
-  const { addRecord } = useReadStore();
   // 继续阅读
   const { comicRecord } = useReadStore();
   const record = comicRecord[comicId];
@@ -75,6 +75,21 @@ const ComicDetails: React.FC<Props> = ({ route, navigation }) => {
   const { data: response } = data || {};
   const { comics } = comicRecommend?.data || {};
 
+  useLayoutEffect(() => {
+    navigation.setOptions({
+      header: (props) => (
+        <AppBar
+          {...props}
+          collect={() => {
+            localCollectCache?.setData(response?.comic, () => {
+              Toast.success("已添加本地搜藏", "bottom");
+            });
+          }}
+        />
+      ),
+    });
+  }, [response]);
+
   /**
    * @order 章节
    * @isScratch 从头开始？
@@ -89,7 +104,7 @@ const ComicDetails: React.FC<Props> = ({ route, navigation }) => {
         record,
         isScratch,
         hasNext,
-        chapterLength: comicEpisodes?.length || 1
+        chapterLength: comicEpisodes?.length || 1,
       });
     },
     [response, comicEpisodes]
@@ -175,7 +190,7 @@ const ComicDetails: React.FC<Props> = ({ route, navigation }) => {
               mode="contained"
               style={styles.operatesItem}
               onPress={() => {
-                addRecord(response?.comic, "browses");
+                historyFileCache?.setData(response?.comic);
                 startReader(
                   comicEpisodes?.at(-1)?.order || 1,
                   true,

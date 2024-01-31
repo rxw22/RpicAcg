@@ -3,13 +3,19 @@ import List from "@/components/ComicsList/";
 import BgBox from "@/components/bgBox";
 import { NativeStackScreenProps } from "@react-navigation/native-stack";
 import { RootStackParamList } from "@/navigations/mainStacks/types";
-import { useReadStore } from "@/store/readStore";
+import { useRequest } from "ahooks";
+import { useUtilsProvider } from "@/network/utilsProvider";
 
 type Props = NativeStackScreenProps<RootStackParamList, "local-collect">;
 
 const LocalCollect: React.FC<Props> = ({ navigation }) => {
-  const { localCollect } = useReadStore();
+  const { localCollectCache } = useUtilsProvider();
 
+  const {data, error, refresh} = useRequest(localCollectCache!.getData.bind(localCollectCache), {
+    onError(e){
+      console.log(e);
+    }
+  })
   const loadMore = useCallback(() => {}, []);
 
   const navigate = useCallback((name: string, params: any) => {
@@ -18,9 +24,9 @@ const LocalCollect: React.FC<Props> = ({ navigation }) => {
   }, []);
 
   return (
-    <BgBox style={{ flex: 1, paddingHorizontal: 5 }}>
+    <BgBox style={{ flex: 1, paddingHorizontal: 5 }} refresh={refresh} error={error?.message}>
       <List
-        dataSource={localCollect}
+        dataSource={data || []}
         navigate={navigate}
         loadMore={loadMore}
         loading={false}

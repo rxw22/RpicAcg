@@ -8,14 +8,12 @@ import Settings from "@/views/settings";
 import Search from "@/views/search";
 import CustomSearchBar from "@/components/searchBar";
 import { useUserStore } from "@/store/userStore";
-import CollectBar from "@/components/collectBar";
 import ComicDetails from "@/views/details";
 import Reader from "@/views/reader";
 
 import usePunchIn from "@/hooks/usePunchIn";
 
 import type { RootStackParamList } from "./types";
-import Collect from "@/views/collect";
 import ComicsAppBar from "@/views/Comics/AppBar";
 import Comics from "@/views/Comics";
 import Comment from "@/views/comment";
@@ -91,7 +89,6 @@ export default function MainStacks() {
         component={ComicDetails}
         options={{
           title: "漫画详情",
-          header: (props) => <CollectBar {...props} />,
         }}
       />
       <Stack.Screen
@@ -100,13 +97,6 @@ export default function MainStacks() {
         options={{
           title: "阅读器",
           headerTransparent: true,
-        }}
-      />
-      <Stack.Screen
-        name="collect"
-        component={Collect}
-        options={{
-          title: "收藏夹",
         }}
       />
       <Stack.Screen

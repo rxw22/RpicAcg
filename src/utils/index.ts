@@ -16,7 +16,6 @@ export const average = (arr: number[]) => {
   return sum / arr.length;
 };
 
-// 限制一下comicRecord的储存大小,最多储存maxPropertiesLength条历史记录
 export function limitProperties<T extends Record<any, any>>(
   obj: T,
   maxPropertiesLength: number = 200

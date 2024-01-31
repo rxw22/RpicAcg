@@ -3,9 +3,13 @@ import HttpRequest from "./httpRequest";
 import React, { useContext, useMemo } from "react";
 import { navigate } from "@/navigations/RootNavigation";
 import { useAppConfigStore } from "@/store/appConfigStore";
+import { Comic } from "./types";
+import FileCache from "@/utils/FileCache";
 
 type ContextType = {
   httpRequest: HttpRequest;
+  historyFileCache?: FileCache<Comic>;
+  localCollectCache?: FileCache<Comic>;
 };
 
 const Context = React.createContext<ContextType>({
@@ -33,14 +37,33 @@ const NetworkProvider: React.FC<Omit<Props, "value">> = ({ ...props }) => {
     [token, appChannel, imageQuality]
   );
 
-  return <Context.Provider {...props} value={{ httpRequest }} />;
+  // 提前初始化
+  const historyFileCache = useMemo(
+    () => new FileCache<Comic>(FileCache.historyFilePath),
+    []
+  );
+
+  const localCollectCache = useMemo(
+    () => new FileCache<Comic>(FileCache.collectFilePath),
+    []
+  );
+
+  return (
+    <Context.Provider
+      {...props}
+      value={{ httpRequest, historyFileCache, localCollectCache }}
+    />
+  );
 };
 
 export default NetworkProvider;
 
 export const useUtilsProvider = () => {
-  const { httpRequest } = useContext(Context);
+  const { httpRequest, historyFileCache, localCollectCache } =
+    useContext(Context);
   return {
     httpRequest,
+    historyFileCache,
+    localCollectCache,
   };
 };

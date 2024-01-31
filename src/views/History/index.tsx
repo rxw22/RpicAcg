@@ -1,14 +1,40 @@
-import React, { useCallback, memo } from "react";
+import React, { useCallback, memo, useLayoutEffect } from "react";
 import List from "@/components/ComicsList/";
 import BgBox from "@/components/bgBox";
 import { NativeStackScreenProps } from "@react-navigation/native-stack";
 import { RootStackParamList } from "@/navigations/mainStacks/types";
-import { useReadStore } from "@/store/readStore";
+import { useUtilsProvider } from "@/network/utilsProvider";
+import { useRequest } from "ahooks";
+import AppBar from "./AppBar";
 
 type Props = NativeStackScreenProps<RootStackParamList, "history">;
 
 const BrowsingHistory: React.FC<Props> = ({ navigation }) => {
-  const { browses } = useReadStore();
+  const { historyFileCache } = useUtilsProvider();
+
+  const { data, error, refresh } = useRequest(
+    historyFileCache!.getData.bind(historyFileCache),
+    {
+      onError(e) {
+        console.log(e);
+      },
+    }
+  );
+
+  useLayoutEffect(() => {
+    navigation.setOptions({
+      header: (props) => (
+        <AppBar
+          {...props}
+          clearAll={() => {
+            historyFileCache?.removeAll(() => {
+              refresh();
+            });
+          }}
+        />
+      ),
+    });
+  }, []);
 
   const loadMore = useCallback(() => {}, []);
 
@@ -18,9 +44,13 @@ const BrowsingHistory: React.FC<Props> = ({ navigation }) => {
   }, []);
 
   return (
-    <BgBox style={{ flex: 1, paddingHorizontal: 5 }}>
+    <BgBox
+      style={{ flex: 1, paddingHorizontal: 5 }}
+      error={error?.message}
+      refresh={refresh}
+    >
       <List
-        dataSource={browses}
+        dataSource={data || []}
         navigate={navigate}
         loadMore={loadMore}
         loading={false}

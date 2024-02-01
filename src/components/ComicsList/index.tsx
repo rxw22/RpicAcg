@@ -12,6 +12,7 @@ interface Props {
   loadMore(): void;
   loading: boolean;
   CustomItem?: any;
+  longPress?: (_id: string) => void;
 }
 
 const CommonList: React.FC<Props> = ({
@@ -20,6 +21,7 @@ const CommonList: React.FC<Props> = ({
   loadMore,
   loading,
   CustomItem,
+  longPress
 }) => {
   const layout = useWindowDimensions();
   const renderFooter = () => {
@@ -40,7 +42,7 @@ const CommonList: React.FC<Props> = ({
     return CustomItem ? (
       <CustomItem item={item} navigate={navigate} />
     ) : (
-      <Item item={item} navigate={navigate} />
+      <Item item={item} navigate={navigate} longPress={longPress}/>
     );
   };
 

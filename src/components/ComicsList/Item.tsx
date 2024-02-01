@@ -1,5 +1,5 @@
 import { View, StyleSheet } from "react-native";
-import React from "react";
+import React, { useState } from "react";
 import { Comic } from "@/network/types";
 import {
   Card,
@@ -7,15 +7,17 @@ import {
   Text,
   useTheme,
   TouchableRipple,
+  Menu,
 } from "react-native-paper";
 import { Image } from "expo-image";
 
 type Props = {
   item: Comic;
   navigate: (name: string, params: any) => void;
+  longPress?: (_id: string) => void;
 };
 
-const Item: React.FC<Props> = ({ item, navigate }) => {
+const Item: React.FC<Props> = ({ item, navigate, longPress }) => {
   const theme = useTheme();
   const {
     thumb,
@@ -28,12 +30,31 @@ const Item: React.FC<Props> = ({ item, navigate }) => {
     likesCount,
   } = item;
   const uri = `${thumb.fileServer}/static/${thumb.path}`;
+
+  const [visible, setVisible] = React.useState(false);
+  const openMenu = () => setVisible(true);
+  const closeMenu = () => setVisible(false);
+  const [anchor, setAnchor] = useState({
+    x: 0,
+    y: 0,
+  });
+
   return (
     <TouchableRipple
       style={styles.itemContainer}
       rippleColor="rgba(0, 0, 0, .2)"
       onPress={() => {
         navigate("details", { comicId: item._id });
+      }}
+      onLongPress={(e) => {
+        if (longPress) {
+          const { pageX, pageY } = e.nativeEvent;
+          setAnchor({
+            x: pageX,
+            y: pageY,
+          });
+          openMenu();
+        }
       }}
     >
       <View
@@ -45,6 +66,17 @@ const Item: React.FC<Props> = ({ item, navigate }) => {
           },
         ]}
       >
+        <Menu visible={visible} onDismiss={closeMenu} anchor={anchor}>
+          <Menu.Item
+            onPress={() => {
+              if (longPress) {
+                longPress(item._id);
+                closeMenu();
+              }
+            }}
+            title="移除当前项"
+          />
+        </Menu>
         <Card style={styles.itemWarpper} mode="contained">
           <Image
             style={styles.full}

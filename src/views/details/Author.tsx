@@ -91,7 +91,7 @@ const Author: React.FC<Props> = ({ response, loading, navigation }) => {
             <Button
               onPress={() => {
                 hideDialog();
-                navigation.navigate("comics", {
+                navigation.push("comics", {
                   ca: response?._creator._id,
                   knight: response?._creator.name,
                 });

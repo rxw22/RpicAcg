@@ -54,6 +54,11 @@ const BrowsingHistory: React.FC<Props> = ({ navigation }) => {
         navigate={navigate}
         loadMore={loadMore}
         loading={false}
+        longPress={(id) => {
+          historyFileCache?.remove(id).then(() => {
+            refresh();
+          });
+        }}
       />
     </BgBox>
   );

@@ -41,7 +41,7 @@ const SendComment: React.FC<Props> = ({ comicId, refresh }) => {
 
   const send = () => {
     if (!content.length) {
-      Toast.info("需要说点什么~", "bottom");
+      Toast.warn("需要说点什么~", "bottom");
       return;
     }
     run({ comicId, content });

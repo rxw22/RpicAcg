@@ -31,9 +31,7 @@ import MyCommentsAppBar from "@/views/MyComment/AppBar";
 import NetCollect from "@/views/collect/NetCollect";
 import NetCollectAppBar from "@/views/collect/NetCollectAppBar";
 import LocalCollect from "@/views/collect/LocalCollect";
-import LocalCollectAppBar from "@/views/collect/LocalCollectAppBar";
 import History from "@/views/History";
-import HistoryAppBar from "@/views/History/AppBar";
 import RankingAppBar from "@/views/ranking/AppBar";
 import Ranking from "@/views/ranking";
 import Random from "@/views/Random";
@@ -175,15 +173,13 @@ export default function MainStacks() {
         component={LocalCollect}
         options={{
           title: "本地收藏",
-          header: (props) => <LocalCollectAppBar {...props} />,
         }}
       />
       <Stack.Screen
         name="history"
         component={History}
         options={{
-          title: "本地收藏",
-          header: (props) => <HistoryAppBar {...props} />,
+          title: "浏览记录",
         }}
       />
       <Stack.Screen

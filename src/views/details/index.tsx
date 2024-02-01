@@ -82,7 +82,7 @@ const ComicDetails: React.FC<Props> = ({ route, navigation }) => {
           {...props}
           collect={() => {
             localCollectCache?.setData(response?.comic, () => {
-              Toast.success("已添加本地搜藏", "bottom");
+              Toast.success("已添加本地收藏", "bottom");
             });
           }}
         />

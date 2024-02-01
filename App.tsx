@@ -55,7 +55,7 @@ export default function App() {
           <UtilsProvider>
             <MainStacks />
             <StatusBar style="auto" translucent={true} />
-            <ToastManager positionValue={ScreenHeight - 120} />
+            <ToastManager positionValue={ScreenHeight - 120} height={60} />
           </UtilsProvider>
         </NavigationContainer>
       </PaperProvider>

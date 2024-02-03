@@ -2,12 +2,21 @@ import { View, StyleSheet } from "react-native";
 import React from "react";
 import Animated, { SharedValue } from "react-native-reanimated";
 import { useTheme } from "react-native-paper";
+import Slider from "@react-native-community/slider";
 
 interface Props {
   position: SharedValue<number>;
+  currentPage: number;
+  max: number;
+  scrollToIndexBySlider: (value: number) => void;
 }
 
-const Bottom: React.FC<Props> = ({ position }) => {
+const Bottom: React.FC<Props> = ({
+  position,
+  currentPage,
+  max,
+  scrollToIndexBySlider,
+}) => {
   const theme = useTheme();
 
   return (
@@ -21,7 +30,20 @@ const Bottom: React.FC<Props> = ({ position }) => {
       ]}
     >
       <View style={styles.opts}>
-        <View></View>
+        <View style={{ width: "100%" }}>
+          <Slider
+            style={{ width: "100%", height: 40 }}
+            minimumValue={0}
+            maximumValue={max}
+            step={1}
+            minimumTrackTintColor={theme.colors.primary}
+            maximumTrackTintColor="#000000C0"
+            value={currentPage}
+            onSlidingComplete={(value) => {
+              scrollToIndexBySlider(value);
+            }}
+          />
+        </View>
         <View></View>
       </View>
     </Animated.View>

@@ -6,15 +6,14 @@ import {
   ImageErrorEventData,
   ImageProgressEventData,
 } from "expo-image";
-import { Text, useTheme } from "react-native-paper";
+import { IconButton, Text, useTheme } from "react-native-paper";
 import * as Progress from "react-native-progress";
 import { ComicEpisodePage } from "@/network/types";
 import Animated, { withTiming, useSharedValue } from "react-native-reanimated";
 import CacheUtils from "@/utils/CacheUtils";
-
 interface Props {
   item: ComicEpisodePage;
-  cacheUtils: CacheUtils
+  cacheUtils: CacheUtils;
 }
 
 const ReaderImage: React.FC<Props> = ({ item, cacheUtils }) => {
@@ -78,6 +77,20 @@ const ReaderImage: React.FC<Props> = ({ item, cacheUtils }) => {
     setProgress(progress);
   };
 
+  const retry = async () => {
+    setLoading(true);
+    try {
+      const result = await Image.prefetch(uri);
+      if (!result) {
+        throw new Error("加载错误");
+      }
+    } catch (error) {
+      setError((error as Error).message);
+    } finally {
+      setLoading(false);
+    }
+  };
+
   // 加载状态
   if (loading) {
     return (
@@ -126,14 +139,24 @@ const ReaderImage: React.FC<Props> = ({ item, cacheUtils }) => {
       {error && (
         <View
           style={[
-            styles.center,
+            styles.error,
             layout,
             { position: "absolute", top: 0, left: 0, zIndex: 9 },
           ]}
         >
-          <Text variant="bodyLarge" style={{ color: "#fff" }}>
-            {error}
-          </Text>
+          <View style={{ flex: 1 }}>
+            <Text variant="bodyLarge" style={{ color: "#fff", textAlign: "center" }}>
+              {error}
+            </Text>
+          </View>
+          <IconButton
+            icon="reload"
+            iconColor={theme.colors.primary}
+            size={26}
+            onPress={() => {
+              retry();
+            }}
+          />
         </View>
       )}
       <Animated.View style={{ width: "100%", height: "100%", opacity }}>
@@ -167,5 +190,11 @@ const styles = StyleSheet.create({
   center: {
     alignItems: "center",
     justifyContent: "center",
+  },
+  error: {
+    flexDirection: "row",
+    alignItems: "center",
+    justifyContent: "space-between",
+    paddingHorizontal: 15
   },
 });

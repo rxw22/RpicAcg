@@ -157,6 +157,12 @@ const Reader: React.FC<Props> = ({ route, navigation }) => {
     }
   };
 
+  // 滑动条翻页
+  const scrollToIndexBySlider = (value: number) => {
+    listRef.current?.scrollToIndex(value);
+    onPageChange(value);
+  };
+
   return (
     <GestureDetector gesture={gesture}>
       <View style={styles.container}>
@@ -210,7 +216,12 @@ const Reader: React.FC<Props> = ({ route, navigation }) => {
             }}
           />
         </Animated.View>
-        <Bottom position={bottomPosition} />
+        <Bottom
+          position={bottomPosition}
+          currentPage={recordRef.current.page}
+          max={(data?.length || 1) - 1}
+          scrollToIndexBySlider={scrollToIndexBySlider}
+        />
       </View>
     </GestureDetector>
   );

@@ -8,11 +8,11 @@
 基本功能已经实现，接下来计划增加多种漫画阅读方式（目前只支持条漫模式）以及增加下载功能与账号编辑功能。
 
 ## 项目参考
-[![Readme Card](https://github-readme-stats.vercel.app/api/pin/?username=wgh136&repo=PicaComic)]((https://github.com/wgh136/PicaComic))  
+[![Readme Card](https://github-readme-stats.vercel.app/api/pin/?username=wgh136&repo=PicaComic)](https://github.com/wgh136/PicaComic)  
 
 很多界面UI仿造这个项目
 
-[![Readme Card](https://github-readme-stats.vercel.app/api/pin/?username=youniaogu&repo=MangaReader)]((https://github.com/youniaogu/MangaReader))  
+[![Readme Card](https://github-readme-stats.vercel.app/api/pin/?username=youniaogu&repo=MangaReader)](https://github.com/youniaogu/MangaReader)  
 
 灵感来源
 
